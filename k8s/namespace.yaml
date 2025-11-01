@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: godjira
+  labels:
+    name: godjira
+    app.kubernetes.io/name: godjira
+    app.kubernetes.io/part-of: godjira

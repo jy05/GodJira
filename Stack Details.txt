@@ -1,0 +1,250 @@
+Complete Jira Clone Project Stack Specification
+Project Overview
+Create a full-stack JIRA clone project management system called "GodJira" that supports agile methodologies, sprint management, issue tracking, user management, and team collaboration. The system must be enterprise-grade, NIST-compliant, and deployable on Kubernetes infrastructure including Raspberry Pi devices.
+
+Architecture Pattern
+Monorepo Structure: Single repository containing multiple applications and shared libraries
+Microservices Architecture: Separate backend API and frontend web applications
+Containerized Deployment: Docker containers orchestrated by Kubernetes
+Cloud-Native: Designed for horizontal scaling and high availability
+Zero-Trust Security: All communications encrypted, no public IP exposure
+Technology Stack
+Frontend (web)
+Framework: React 18+ with TypeScript
+Routing: React Router v6 with hash-based routing for SPA
+State Management: TanStack Query (React Query) for server state, Context API for auth
+UI Framework: Tailwind CSS for styling (production build, not CDN)
+Form Handling: React Hook Form with validation
+HTTP Client: Axios with interceptors for auth tokens
+Build Tool: Vite for fast development and optimized production builds
+File Upload: Support for avatar images and ticket attachments (screenshots, documents)
+Backend (api)
+Framework: NestJS (Node.js framework with TypeScript)
+ORM: Prisma (type-safe database client with migrations)
+Database: PostgreSQL 15+ for production reliability
+Authentication:
+JWT (JSON Web Tokens) for stateless authentication
+Passport.js with local and JWT strategies
+bcrypt for password hashing (NIST-compliant, minimum 10 rounds)
+Authorization: Role-Based Access Control (RBAC) with guards and decorators
+File Upload: Multer middleware for handling multipart/form-data
+Validation: class-validator and class-transformer for DTO validation
+API Documentation: Swagger/OpenAPI integration
+Database Schema Requirements
+User Model:
+
+UUID primary keys
+Email (unique, indexed)
+Hashed passwords (bcrypt, never store plaintext)
+Name, bio, job title, department
+Role (ADMIN, USER, MANAGER)
+Avatar stored as base64-encoded data URL in TEXT column (not file paths)
+isActive flag for soft account deactivation
+Password reset tokens with expiration timestamps
+Timestamps (createdAt, updatedAt)
+Project Model:
+
+UUID primary key
+Unique project key (e.g., "WEB", "MOB") for ticket prefixes
+Name, description
+Owner relationship to User
+Timestamps
+Sprint Model:
+
+UUID primary key
+Name, goal, start date, end date
+Status (PLANNED, ACTIVE, COMPLETED, CANCELLED)
+Belongs to Project
+Contains multiple Issues
+Timestamps
+Issue/Ticket Model:
+
+UUID primary key
+Unique key combining project key and number (e.g., "WEB-123")
+Title, description (rich text support)
+Type (TASK, BUG, STORY, EPIC, SPIKE)
+Status (BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, BLOCKED, DONE, CLOSED)
+Priority (LOW, MEDIUM, HIGH, URGENT, CRITICAL)
+Story point estimate (Fibonacci scale)
+Creator and Assignee relationships to Users
+Belongs to Project and optionally Sprint
+Attachment support for screenshots (stored as base64 in database)
+Labels/tags for categorization (team tags like "Platform Team", "Developers")
+Timestamps
+Comment Model:
+
+UUID primary key
+Content (text, markdown support)
+Author relationship to User
+Belongs to Issue or Task
+Timestamps
+WorkLog Model:
+
+UUID primary key
+Description
+Time spent (in minutes)
+Log date/timestamp
+Belongs to Issue
+Created by User
+Timestamps
+Task Model (legacy support):
+
+UUID primary key
+Title, description
+Status, priority, due date
+Belongs to Project
+Creator and Assignee relationships
+Timestamps
+Package Manager & Monorepo Tools
+pnpm: Fast, disk-space efficient package manager
+Turborepo or Nx: Monorepo build system for caching and task orchestration
+pnpm workspaces: Managing dependencies across apps
+Security & Compliance (NIST)
+Password Requirements:
+
+Minimum 8 characters
+Must include uppercase, lowercase, number, special character
+bcrypt hashing with 10+ rounds
+Password history to prevent reuse
+Account lockout after failed attempts
+Session Management:
+
+JWT tokens with short expiration (15-30 minutes)
+Refresh tokens stored securely
+HTTP-only cookies for token storage
+Data Protection:
+
+All sensitive data encrypted at rest (avatars as base64 in database)
+No file paths or public URLs for user content
+Environment variables for secrets
+Never commit .env files
+HTTPS/SSL:
+
+Let's Encrypt SSL certificates
+Automatic renewal with cert-manager in Kubernetes
+TLS 1.2+ only
+HSTS headers
+Avatar & File Upload Specifications
+Avatar Images:
+
+Supported formats: JPEG, PNG, GIF, WebP
+Maximum file size: 10MB
+Validation on mimetype and file signature
+Convert to base64 data URL and store in database TEXT column
+Format: data:image/png;base64,iVBORw0KGgoAAAANS...
+Never store file paths or serve from public directories
+Ticket Attachments:
+
+Screenshots and documents
+Similar base64 encoding and database storage
+Thumbnail generation for images
+Virus scanning before acceptance
+DevOps & Infrastructure
+Containerization:
+
+Docker: Multi-stage builds for optimized images
+Base Images: Node Alpine for small footprint
+Architecture Support: ARM64 for Raspberry Pi, AMD64 for x86
+Registry: Private Docker registry or GitHub Container Registry
+Kubernetes Deployment:
+
+Helm Charts: Templated Kubernetes manifests for all services
+
+Components:
+
+Frontend deployment (React SPA)
+Backend deployment (NestJS API)
+PostgreSQL StatefulSet with persistent volumes
+Ingress controller (Nginx or Traefik)
+cert-manager for SSL certificates
+Monitoring:
+
+k9s for cluster visualization and management
+Prometheus for metrics
+Grafana for dashboards
+Loki for log aggregation
+Cloudflare Integration:
+
+Cloudflare Tunnel (formerly Argo Tunnel): Zero-trust network access without exposing public IP
+
+Benefits:
+
+Private IP remains hidden
+DDoS protection
+CDN for static assets
+WAF (Web Application Firewall)
+Analytics and bot management
+Setup:
+
+Install cloudflared daemon in cluster
+Configure tunnel to route traffic to Kubernetes ingress
+DNS managed through Cloudflare
+CI/CD Pipeline:
+
+GitHub Actions or GitLab CI
+Automated testing on pull requests
+Build and push Docker images
+Helm chart deployment to Kubernetes
+Environment-based deployments (dev, staging, prod)
+Development Environment
+Primary OS: Windows 11 with WSL2 (Ubuntu)
+
+Production OS: Linux (Ubuntu Server 22.04 LTS)
+
+IDE: Visual Studio Code with extensions:
+
+ESLint, Prettier
+Prisma extension
+Docker extension
+Kubernetes extension
+Local Development:
+
+Docker Desktop for local Kubernetes
+PostgreSQL container for database
+Hot module reloading for frontend
+Watch mode for backend
+Agile/Jira Features Required
+Sprint Management:
+
+Create, edit, delete sprints
+Start/complete sprint workflow
+Sprint burndown charts
+Velocity tracking
+Sprint retrospectives
+Issue Management:
+
+Drag-and-drop kanban board
+Backlog grooming view
+Bulk operations (assign, move, update)
+Issue linking (blocks, relates to, duplicates)
+Epic and story hierarchies
+Sub-tasks support
+Team Collaboration:
+
+@mentions in comments
+Real-time notifications (WebSocket support)
+Activity feed/audit log
+Team assignments and groups (Platform Team, Developers, QA, etc.)
+Watchers on issues
+Reporting & Analytics:
+
+Sprint reports (burndown, velocity)
+Issue aging reports
+Team capacity planning
+Custom dashboards
+Export to CSV/Excel
+User Management:
+
+User registration with email verification
+Password reset flow (email token-based)
+Admin panel for user management
+Profile customization (avatar, bio, timezone)
+User permissions and role management
+Additional Requirements
+Internationalization: Support for multiple languages
+Accessibility: WCAG 2.1 AA compliance
+Performance: Page load under 2 seconds, API response under 200ms
+Testing: Unit tests (Jest), E2E tests (Playwright/Cypress), min 80% coverage
+Documentation: API docs (Swagger), user guides, admin guides
+Backup: Automated PostgreSQL backups with point-in-time recovery
+Audit Logging: Track all changes to issues, comments, and user actions

@@ -1,0 +1,134 @@
+# Default values for GodJira Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  namespace: godjira
+  domain: godjira.example.com
+
+# API Backend configuration
+api:
+  name: api
+  replicaCount: 2
+  image:
+    repository: godjira/api
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 3000
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  env:
+    NODE_ENV: production
+    PORT: "3000"
+    FRONTEND_URL: "https://godjira.example.com"
+  
+  secrets:
+    # Generate secure secrets: openssl rand -base64 32
+    jwtSecret: "change-this-to-a-secure-random-string-min-32-chars"
+    jwtRefreshSecret: "change-this-to-another-secure-random-string"
+  
+  livenessProbe:
+    enabled: true
+    path: /api/v1/health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+  readinessProbe:
+    enabled: true
+    path: /api/v1/health
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+# PostgreSQL Database configuration
+postgresql:
+  enabled: true
+  name: postgres
+  image:
+    repository: postgres
+    tag: 15-alpine
+  
+  service:
+    port: 5432
+  
+  auth:
+    database: godjira
+    username: godjira
+    password: godjira123  # Change in production!
+  
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""  # Use default storage class
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+  
+  hosts:
+    - host: api.godjira.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: api
+          port: 3000
+  
+  tls:
+    - secretName: godjira-tls-cert
+      hosts:
+        - godjira.example.com
+        - api.godjira.example.com
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      path: /api/v1/metrics
+
+# cert-manager configuration
+certManager:
+  enabled: true
+  email: admin@example.com  # Change to your email
+  issuer: letsencrypt-prod  # or letsencrypt-staging for testing
+
+# Autoscaling (optional)
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Node affinity for multi-architecture support (ARM64 + AMD64)
+nodeAffinity:
+  enabled: true
+  architectures:
+    - amd64
+    - arm64
