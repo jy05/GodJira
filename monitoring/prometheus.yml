@@ -1,0 +1,40 @@
+# Prometheus configuration for GodJira monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'godjira'
+    environment: 'production'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # GodJira API metrics (when running in Docker)
+  - job_name: 'godjira-api'
+    metrics_path: '/api/v1/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:3000']
+        labels:
+          service: 'api'
+          component: 'backend'
+
+  # PostgreSQL metrics (optional - requires postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'database'
+    # Uncomment if you add postgres-exporter to docker-compose.yml
+    # relabel_configs:
+    #   - source_labels: [__address__]
+    #     target_label: instance
+    #     replacement: 'godjira-postgres'
+
+# Alerting rules (optional)
+# rule_files:
+#   - 'alerts.yml'

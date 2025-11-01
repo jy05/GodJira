@@ -9,6 +9,8 @@ import { SprintsModule } from './sprints/sprints.module';
 import { IssuesModule } from './issues/issues.module';
 import { CommentsModule } from './comments/comments.module';
 import { WorkLogsModule } from './worklogs/worklogs.module';
+import { HealthModule } from './health/health.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { WorkLogsModule } from './worklogs/worklogs.module';
     IssuesModule,
     CommentsModule,
     WorkLogsModule,
+    HealthModule,
+    MetricsModule,
   ],
   controllers: [],
   providers: [],
