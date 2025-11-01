@@ -3,7 +3,6 @@ import {
   HealthCheck,
   HealthCheckService,
   HttpHealthIndicator,
-  PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -14,7 +13,6 @@ export class HealthController {
   constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
-    private prismaHealth: PrismaHealthIndicator,
     private prisma: PrismaService,
   ) {}
 
@@ -29,9 +27,16 @@ export class HealthController {
     status: 503,
     description: 'Service is unhealthy',
   })
-  check() {
+  async check() {
     return this.health.check([
-      () => this.prismaHealth.pingCheck('database', this.prisma),
+      async () => {
+        await this.prisma.$queryRaw`SELECT 1`;
+        return {
+          database: {
+            status: 'up',
+          },
+        };
+      },
     ]);
   }
 }
