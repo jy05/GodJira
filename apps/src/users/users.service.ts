@@ -282,4 +282,264 @@ export class UsersService {
       );
     }
   }
+
+  // ==========================================
+  // ADMIN-ONLY METHODS
+  // ==========================================
+
+  /**
+   * Admin: Create user with any role
+   */
+  async adminCreateUser(data: {
+    email: string;
+    password: string;
+    name: string;
+    jobTitle?: string;
+    department?: string;
+    role?: string;
+    isActive?: boolean;
+    isEmailVerified?: boolean;
+  }) {
+    // Check if user exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
+
+    // Hash password
+    const bcryptRounds = this.configService.get<number>('BCRYPT_ROUNDS') || 12;
+    const hashedPassword = await bcrypt.hash(data.password, bcryptRounds);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: data.email,
+        password: hashedPassword,
+        name: data.name,
+        jobTitle: data.jobTitle,
+        department: data.department,
+        role: data.role as any || 'USER',
+        isActive: data.isActive !== undefined ? data.isActive : true,
+        isEmailVerified: data.isEmailVerified !== undefined ? data.isEmailVerified : false,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        bio: true,
+        jobTitle: true,
+        department: true,
+        role: true,
+        avatar: true,
+        isActive: true,
+        isEmailVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return user;
+  }
+
+  /**
+   * Admin: Update user with extended permissions
+   */
+  async adminUpdateUser(id: string, data: any) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Admin can update role, isActive, isEmailVerified, and reset failed attempts
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...(data.name && { name: data.name }),
+        ...(data.bio !== undefined && { bio: data.bio }),
+        ...(data.jobTitle !== undefined && { jobTitle: data.jobTitle }),
+        ...(data.department !== undefined && { department: data.department }),
+        ...(data.role && { role: data.role as any }),
+        ...(data.isActive !== undefined && { isActive: data.isActive }),
+        ...(data.isEmailVerified !== undefined && { isEmailVerified: data.isEmailVerified }),
+        ...(data.failedLoginAttempts !== undefined && { 
+          failedLoginAttempts: data.failedLoginAttempts,
+          ...(data.failedLoginAttempts === 0 && { lockedUntil: null })
+        }),
+        ...(data.avatar && { avatar: data.avatar }),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        bio: true,
+        jobTitle: true,
+        department: true,
+        role: true,
+        avatar: true,
+        isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: true,
+        lockedUntil: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return updatedUser;
+  }
+
+  /**
+   * Admin: Permanently delete user
+   */
+  async adminDeleteUser(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.prisma.user.delete({
+      where: { id },
+    });
+
+    return { message: 'User permanently deleted' };
+  }
+
+  /**
+   * Admin: Get user statistics
+   */
+  async getUserStats(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Count activities manually
+    const [
+      issuesCreated,
+      issuesAssigned,
+      commentsPosted,
+      workLogsCount,
+      watchingIssues,
+      teamMemberships,
+      workLogs,
+    ] = await Promise.all([
+      this.prisma.issue.count({ where: { creatorId: id } }),
+      this.prisma.issue.count({ where: { assigneeId: id } }),
+      this.prisma.comment.count({ where: { authorId: id } }),
+      this.prisma.workLog.count({ where: { userId: id } }),
+      this.prisma.watcher.count({ where: { userId: id } }),
+      this.prisma.teamMember.count({ where: { userId: id } }),
+      this.prisma.workLog.findMany({
+        where: { userId: id },
+        select: { timeSpent: true },
+      }),
+    ]);
+
+    const totalTimeLogged = workLogs.reduce((sum, log) => sum + log.timeSpent, 0);
+
+    return {
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      issuesCreated,
+      issuesAssigned,
+      commentsPosted,
+      workLogsCount,
+      totalTimeLogged, // in minutes
+      watchingIssues,
+      teamMemberships,
+    };
+  }
+
+  /**
+   * Admin: Get all users with full details including sensitive info
+   */
+  async adminFindAll(params?: { 
+    skip?: number; 
+    take?: number; 
+    search?: string;
+    role?: string;
+    isActive?: boolean;
+  }) {
+    const { skip = 0, take = 50, search, role, isActive } = params || {};
+
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { email: { contains: search, mode: 'insensitive' as const } },
+        { department: { contains: search, mode: 'insensitive' as const } },
+      ];
+    }
+
+    if (role) {
+      where.role = role;
+    }
+
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        skip,
+        take,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          bio: true,
+          jobTitle: true,
+          department: true,
+          role: true,
+          avatar: true,
+          isActive: true,
+          isEmailVerified: true,
+          failedLoginAttempts: true,
+          lockedUntil: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      users,
+      pagination: {
+        total,
+        skip,
+        take,
+        pages: Math.ceil(total / take),
+      },
+    };
+  }
 }
+

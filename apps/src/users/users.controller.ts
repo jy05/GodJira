@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Body,
   Patch,
   Param,
@@ -13,6 +14,8 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto, ChangePasswordDto } from './dto';
+import { AdminCreateUserDto } from './dto/admin-create-user.dto';
+import { AdminUpdateUserDto } from './dto/admin-update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -138,4 +141,83 @@ export class UsersController {
   reactivate(@Param('id') id: string) {
     return this.usersService.reactivate(id);
   }
+
+  // ==========================================
+  // ADMIN ENDPOINTS
+  // ==========================================
+
+  @Post('admin/create')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any)
+  @ApiOperation({ summary: 'Admin: Create user with any role' })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+  })
+  adminCreateUser(@Body() adminCreateUserDto: AdminCreateUserDto) {
+    return this.usersService.adminCreateUser(adminCreateUserDto);
+  }
+
+  @Get('admin/list')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any)
+  @ApiOperation({ summary: 'Admin: Get all users with full details' })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'take', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'role', required: false, enum: ['ADMIN', 'MANAGER', 'USER'] })
+  @ApiQuery({ name: 'isActive', required: false, type: Boolean })
+  adminFindAll(
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('isActive') isActive?: string,
+  ) {
+    return this.usersService.adminFindAll({
+      skip: skip ? parseInt(skip) : undefined,
+      take: take ? parseInt(take) : undefined,
+      search,
+      role,
+      isActive: isActive !== undefined ? isActive === 'true' : undefined,
+    });
+  }
+
+  @Get('admin/:id/stats')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any, 'MANAGER' as any)
+  @ApiOperation({ summary: 'Admin: Get user statistics' })
+  getUserStats(@Param('id') id: string) {
+    return this.usersService.getUserStats(id);
+  }
+
+  @Patch('admin/:id')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any)
+  @ApiOperation({ summary: 'Admin: Update user with extended permissions' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+  })
+  adminUpdate(@Param('id') id: string, @Body() adminUpdateUserDto: AdminUpdateUserDto) {
+    return this.usersService.adminUpdateUser(id, adminUpdateUserDto);
+  }
+
+  @Delete('admin/:id')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin: Permanently delete user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User permanently deleted',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Insufficient permissions',
+  })
+  adminDelete(@Param('id') id: string) {
+    return this.usersService.adminDeleteUser(id);
+  }
 }
+

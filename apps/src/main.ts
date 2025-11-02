@@ -52,6 +52,8 @@ async function bootstrap() {
     .addTag('worklogs', 'Work log tracking')
     .addTag('issue-links', 'Issue linking and relationships')
     .addTag('audit', 'Audit logs and activity feed')
+    .addTag('watchers', 'Issue watchers and notifications')
+    .addTag('teams', 'Team management and collaboration')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

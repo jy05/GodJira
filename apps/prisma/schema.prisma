@@ -133,6 +133,8 @@ model User {
   assignedIssues   Issue[]      @relation("IssueAssignee")
   comments         Comment[]
   workLogs         WorkLog[]
+  watchers         Watcher[]
+  teamMemberships  TeamMember[]
   
   @@index([email])
   @@map("users")
@@ -158,6 +160,7 @@ model Project {
   sprints     Sprint[]
   issues      Issue[]
   tasks       Task[]
+  teams       TeamProject[]
   
   @@index([key])
   @@index([ownerId])
@@ -240,6 +243,7 @@ model Issue {
   linksFrom   IssueLink[]    @relation("LinkFrom")
   linksTo     IssueLink[]    @relation("LinkTo")
   auditLogs   AuditLog[]
+  watchers    Watcher[]
   
   @@index([key])
   @@index([projectId])
@@ -390,4 +394,91 @@ model AuditLog {
   @@index([issueId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ===========================
+// WATCHER MODEL
+// ===========================
+
+model Watcher {
+  id        String   @id @default(uuid()) @db.Uuid
+  
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  issueId   String   @db.Uuid
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, issueId]) // User can watch an issue only once
+  @@index([userId])
+  @@index([issueId])
+  @@map("watchers")
+}
+
+// ===========================
+// TEAM MODEL
+// ===========================
+
+model Team {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique // e.g., "Platform Team", "Developers", "QA"
+  description String?  @db.Text
+  
+  // Team members
+  members     TeamMember[]
+  
+  // Projects this team works on
+  projects    TeamProject[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([name])
+  @@map("teams")
+}
+
+// ===========================
+// TEAM MEMBER MODEL
+// ===========================
+
+model TeamMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  
+  teamId    String   @db.Uuid
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role      String   @default("MEMBER") // LEAD, MEMBER
+  
+  joinedAt  DateTime @default(now())
+  
+  @@unique([teamId, userId]) // User can be in a team only once
+  @@index([teamId])
+  @@index([userId])
+  @@map("team_members")
+}
+
+// ===========================
+// TEAM PROJECT MODEL
+// ===========================
+
+model TeamProject {
+  id        String   @id @default(uuid()) @db.Uuid
+  
+  teamId    String   @db.Uuid
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  projectId String   @db.Uuid
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  assignedAt DateTime @default(now())
+  
+  @@unique([teamId, projectId]) // Team can be assigned to project only once
+  @@index([teamId])
+  @@index([projectId])
+  @@map("team_projects")
 }

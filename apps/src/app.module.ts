@@ -14,6 +14,8 @@ import { MetricsModule } from './metrics/metrics.module';
 import { EmailModule } from './email/email.module';
 import { AuditModule } from './audit/audit.module';
 import { IssueLinksModule } from './issue-links/issue-links.module';
+import { WatchersModule } from './watchers/watchers.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { IssueLinksModule } from './issue-links/issue-links.module';
     MetricsModule,
     AuditModule,
     IssueLinksModule,
+    WatchersModule,
+    TeamsModule,
   ],
   controllers: [],
   providers: [],
