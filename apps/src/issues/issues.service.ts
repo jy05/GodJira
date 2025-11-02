@@ -78,12 +78,19 @@ export class IssuesService {
 
     const issue = await this.prisma.issue.create({
       data: {
-        ...rest,
         key,
         projectId,
-        sprintId,
+        sprintId: sprintId || null,
         creatorId,
-        assigneeId,
+        assigneeId: assigneeId || null,
+        title: rest.title,
+        description: rest.description,
+        type: rest.type as any,
+        status: rest.status as any,
+        priority: rest.priority as any,
+        storyPoints: rest.storyPoints,
+        labels: rest.labels || [],
+        attachments: rest.attachments || [],
       },
       include: {
         project: {
@@ -447,9 +454,16 @@ export class IssuesService {
     const updatedIssue = await this.prisma.issue.update({
       where: { id },
       data: {
-        ...rest,
-        sprintId,
-        assigneeId,
+        ...(sprintId !== undefined && { sprintId }),
+        ...(assigneeId !== undefined && { assigneeId }),
+        ...(rest.title && { title: rest.title }),
+        ...(rest.description !== undefined && { description: rest.description }),
+        ...(rest.type && { type: rest.type as any }),
+        ...(rest.status && { status: rest.status as any }),
+        ...(rest.priority && { priority: rest.priority as any }),
+        ...(rest.storyPoints !== undefined && { storyPoints: rest.storyPoints }),
+        ...(rest.labels && { labels: rest.labels }),
+        ...(rest.attachments && { attachments: rest.attachments }),
       },
       include: {
         project: {

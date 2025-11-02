@@ -11,8 +11,8 @@ async function bootstrap() {
 
   // Security middleware
   app.use(helmet());
-  app.use(compression());
-  app.use(cookieParser());
+  app.use(compression.default());
+  app.use(cookieParser.default());
 
   // CORS configuration
   app.enableCors({
