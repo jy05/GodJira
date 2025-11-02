@@ -148,6 +148,7 @@ model User {
   watchers         Watcher[]
   teamMemberships  TeamMember[]
   notifications    Notification[]
+  attachments      Attachment[]
   
   @@index([email])
   @@map("users")
@@ -223,9 +224,6 @@ model Issue {
   // Story points (Fibonacci scale: 1, 2, 3, 5, 8, 13, 21)
   storyPoints Int?
   
-  // Attachments stored as base64 in database (screenshots, documents)
-  attachments String[]       @default([]) @db.Text
-  
   // Labels/tags for categorization (e.g., "Platform Team", "Developers")
   labels      String[]       @default([])
   
@@ -257,6 +255,7 @@ model Issue {
   linksTo     IssueLink[]    @relation("LinkTo")
   auditLogs   AuditLog[]
   watchers    Watcher[]
+  attachments Attachment[]
   
   @@index([key])
   @@index([projectId])
@@ -536,4 +535,38 @@ model Notification {
   @@index([type])
   @@map("notifications")
 }
+
+// ===========================
+// ATTACHMENT MODEL
+// ===========================
+
+model Attachment {
+  id          String   @id @default(uuid()) @db.Uuid
+  filename    String
+  originalName String
+  mimetype    String
+  size        Int      // File size in bytes
+  
+  // Base64 encoded file data
+  // Format: data:image/png;base64,iVBORw0KGgoAAAANS...
+  data        String   @db.Text
+  
+  // Thumbnail for images (optional)
+  thumbnail   String?  @db.Text
+  
+  // Related issue
+  issueId     String   @db.Uuid
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  
+  // Uploader
+  uploadedBy  String   @db.Uuid
+  uploader    User     @relation(fields: [uploadedBy], references: [id])
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([issueId])
+  @@index([uploadedBy])
+  @@map("attachments")
+}
+
 

@@ -102,14 +102,4 @@ export class CreateIssueDto {
   @IsString({ each: true })
   @IsOptional()
   labels?: string[];
-
-  @ApiProperty({
-    example: ['data:image/png;base64,iVBORw0KGgo...'],
-    description: 'Attachments as base64 data URLs',
-    required: false,
-  })
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  attachments?: string[];
 }

@@ -90,7 +90,6 @@ export class IssuesService {
         priority: rest.priority as any,
         storyPoints: rest.storyPoints,
         labels: rest.labels || [],
-        attachments: rest.attachments || [],
       },
       include: {
         project: {
@@ -463,7 +462,6 @@ export class IssuesService {
         ...(rest.priority && { priority: rest.priority as any }),
         ...(rest.storyPoints !== undefined && { storyPoints: rest.storyPoints }),
         ...(rest.labels && { labels: rest.labels }),
-        ...(rest.attachments && { attachments: rest.attachments }),
       },
       include: {
         project: {

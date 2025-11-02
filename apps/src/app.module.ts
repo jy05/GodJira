@@ -18,6 +18,7 @@ import { WatchersModule } from './watchers/watchers.module';
 import { TeamsModule } from './teams/teams.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     TeamsModule,
     NotificationsModule,
     AnalyticsModule,
+    AttachmentsModule,
   ],
   controllers: [],
   providers: [],

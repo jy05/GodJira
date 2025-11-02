@@ -10,8 +10,12 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto, ChangePasswordDto } from './dto';
 import { AdminCreateUserDto } from './dto/admin-create-user.dto';
@@ -20,6 +24,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  avatarFileFilter,
+  MAX_AVATAR_SIZE,
+  validateFileSize,
+  bufferToBase64DataUrl,
+} from '../common/utils/file-upload.utils';
 
 @ApiTags('users')
 @Controller('users')
@@ -80,6 +90,56 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(userId, updateUserDto);
+  }
+
+  @Post('me/avatar')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      fileFilter: avatarFileFilter,
+      limits: {
+        fileSize: MAX_AVATAR_SIZE,
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload avatar image' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file (JPEG, PNG, GIF, WebP, max 10MB)',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Avatar uploaded successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid file or file size exceeds limit',
+  })
+  async uploadAvatar(
+    @CurrentUser('userId') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Validate file size (redundant but explicit)
+    validateFileSize(file, MAX_AVATAR_SIZE);
+
+    // Convert to base64 data URL
+    const avatarDataUrl = bufferToBase64DataUrl(file.buffer, file.mimetype);
+
+    // Update user avatar
+    return this.usersService.update(userId, { avatar: avatarDataUrl });
   }
 
   @Patch('me/password')
