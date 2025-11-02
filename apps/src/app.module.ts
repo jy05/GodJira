@@ -19,6 +19,7 @@ import { TeamsModule } from './teams/teams.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { ExportModule } from './export/export.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
     NotificationsModule,
     AnalyticsModule,
     AttachmentsModule,
+    ExportModule,
   ],
   controllers: [],
   providers: [],
