@@ -11,6 +11,9 @@ import { CommentsModule } from './comments/comments.module';
 import { WorkLogsModule } from './worklogs/worklogs.module';
 import { HealthModule } from './health/health.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { EmailModule } from './email/email.module';
+import { AuditModule } from './audit/audit.module';
+import { IssueLinksModule } from './issue-links/issue-links.module';
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { MetricsModule } from './metrics/metrics.module';
       },
     ]),
     PrismaModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     ProjectsModule,
@@ -34,6 +38,8 @@ import { MetricsModule } from './metrics/metrics.module';
     WorkLogsModule,
     HealthModule,
     MetricsModule,
+    AuditModule,
+    IssueLinksModule,
   ],
   controllers: [],
   providers: [],

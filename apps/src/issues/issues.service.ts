@@ -618,4 +618,300 @@ export class IssuesService {
 
     return updatedIssue;
   }
+
+  /**
+   * Bulk update multiple issues
+   */
+  async bulkUpdate(
+    bulkUpdateDto: {
+      issueIds: string[];
+      assigneeId?: string;
+      status?: string;
+      sprintId?: string;
+      priority?: string;
+      addLabels?: string[];
+      removeLabels?: string[];
+    },
+    userId: string,
+  ) {
+    const { issueIds, assigneeId, status, sprintId, priority, addLabels, removeLabels } = bulkUpdateDto;
+
+    // Validate all issues exist
+    const issues = await this.prisma.issue.findMany({
+      where: { id: { in: issueIds } },
+      include: { project: true },
+    });
+
+    if (issues.length !== issueIds.length) {
+      throw new BadRequestException('One or more issues not found');
+    }
+
+    // Validate assignee if provided
+    if (assigneeId) {
+      const assignee = await this.prisma.user.findUnique({
+        where: { id: assigneeId },
+      });
+
+      if (!assignee) {
+        throw new NotFoundException('Assignee not found');
+      }
+    }
+
+    // Validate sprint if provided
+    if (sprintId) {
+      const sprint = await this.prisma.sprint.findUnique({
+        where: { id: sprintId },
+        include: { project: true },
+      });
+
+      if (!sprint) {
+        throw new NotFoundException('Sprint not found');
+      }
+
+      // Verify all issues belong to same project as sprint
+      const invalidIssues = issues.filter((issue) => issue.projectId !== sprint.projectId);
+      if (invalidIssues.length > 0) {
+        throw new BadRequestException('All issues must belong to the same project as the sprint');
+      }
+    }
+
+    // Build update data
+    const updateData: any = {};
+    if (assigneeId !== undefined) updateData.assigneeId = assigneeId;
+    if (status) updateData.status = status;
+    if (sprintId !== undefined) updateData.sprintId = sprintId;
+    if (priority) updateData.priority = priority;
+
+    // Update all issues
+    const updatePromises = issues.map(async (issue) => {
+      const data = { ...updateData };
+
+      // Handle label operations
+      if (addLabels || removeLabels) {
+        let newLabels = [...issue.labels];
+
+        if (addLabels) {
+          newLabels = [...new Set([...newLabels, ...addLabels])];
+        }
+
+        if (removeLabels) {
+          newLabels = newLabels.filter((label) => !removeLabels.includes(label));
+        }
+
+        data.labels = newLabels;
+      }
+
+      return this.prisma.issue.update({
+        where: { id: issue.id },
+        data,
+      });
+    });
+
+    const updatedIssues = await Promise.all(updatePromises);
+
+    return {
+      message: `Successfully updated ${updatedIssues.length} issue(s)`,
+      updatedCount: updatedIssues.length,
+      issues: updatedIssues,
+    };
+  }
+
+  /**
+   * Create a sub-task for an issue
+   */
+  async createSubTask(
+    parentIssueId: string,
+    subTaskData: {
+      title: string;
+      description?: string;
+      assigneeId?: string;
+    },
+    creatorId: string,
+  ) {
+    // Validate parent issue exists
+    const parentIssue = await this.prisma.issue.findUnique({
+      where: { id: parentIssueId },
+      include: { project: true },
+    });
+
+    if (!parentIssue) {
+      throw new NotFoundException('Parent issue not found');
+    }
+
+    // Validate assignee if provided
+    if (subTaskData.assigneeId) {
+      const assignee = await this.prisma.user.findUnique({
+        where: { id: subTaskData.assigneeId },
+      });
+
+      if (!assignee) {
+        throw new NotFoundException('Assignee not found');
+      }
+    }
+
+    // Generate unique issue key for sub-task
+    const key = await this.generateIssueKey(parentIssue.projectId);
+
+    // Create sub-task
+    const subTask = await this.prisma.issue.create({
+      data: {
+        title: subTaskData.title,
+        description: subTaskData.description,
+        key,
+        type: 'TASK', // Sub-tasks are always type TASK
+        status: 'TODO',
+        priority: parentIssue.priority,
+        projectId: parentIssue.projectId,
+        parentIssueId: parentIssueId,
+        creatorId,
+        assigneeId: subTaskData.assigneeId,
+      },
+      include: {
+        parentIssue: {
+          select: {
+            id: true,
+            key: true,
+            title: true,
+          },
+        },
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    return subTask;
+  }
+
+  /**
+   * Get all sub-tasks for an issue
+   */
+  async getSubTasks(issueId: string) {
+    const issue = await this.prisma.issue.findUnique({
+      where: { id: issueId },
+    });
+
+    if (!issue) {
+      throw new NotFoundException('Issue not found');
+    }
+
+    const subTasks = await this.prisma.issue.findMany({
+      where: { parentIssueId: issueId },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return subTasks;
+  }
+
+  /**
+   * Convert issue to sub-task
+   */
+  async convertToSubTask(issueId: string, parentIssueId: string) {
+    // Validate both issues exist
+    const [issue, parentIssue] = await Promise.all([
+      this.prisma.issue.findUnique({ where: { id: issueId } }),
+      this.prisma.issue.findUnique({ where: { id: parentIssueId } }),
+    ]);
+
+    if (!issue) {
+      throw new NotFoundException('Issue not found');
+    }
+
+    if (!parentIssue) {
+      throw new NotFoundException('Parent issue not found');
+    }
+
+    // Cannot convert to itself
+    if (issueId === parentIssueId) {
+      throw new BadRequestException('Cannot convert issue to sub-task of itself');
+    }
+
+    // Cannot convert if issue already has sub-tasks
+    const existingSubTasks = await this.prisma.issue.count({
+      where: { parentIssueId: issueId },
+    });
+
+    if (existingSubTasks > 0) {
+      throw new BadRequestException('Cannot convert issue with existing sub-tasks');
+    }
+
+    // Must be in same project
+    if (issue.projectId !== parentIssue.projectId) {
+      throw new BadRequestException('Issues must be in the same project');
+    }
+
+    // Update issue to become a sub-task
+    const updatedIssue = await this.prisma.issue.update({
+      where: { id: issueId },
+      data: {
+        parentIssueId,
+        type: 'TASK',
+      },
+      include: {
+        parentIssue: {
+          select: {
+            id: true,
+            key: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    return updatedIssue;
+  }
+
+  /**
+   * Promote sub-task to regular issue
+   */
+  async promoteToIssue(subTaskId: string) {
+    const subTask = await this.prisma.issue.findUnique({
+      where: { id: subTaskId },
+    });
+
+    if (!subTask) {
+      throw new NotFoundException('Sub-task not found');
+    }
+
+    if (!subTask.parentIssueId) {
+      throw new BadRequestException('Issue is not a sub-task');
+    }
+
+    // Remove parent relationship
+    const promotedIssue = await this.prisma.issue.update({
+      where: { id: subTaskId },
+      data: {
+        parentIssueId: null,
+      },
+    });
+
+    return promotedIssue;
+  }
 }

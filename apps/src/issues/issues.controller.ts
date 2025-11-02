@@ -164,4 +164,67 @@ export class IssuesController {
   remove(@Param('id') id: string) {
     return this.issuesService.remove(id);
   }
+
+  @Post('bulk-update')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk update multiple issues' })
+  @ApiResponse({
+    status: 200,
+    description: 'Issues updated successfully',
+  })
+  bulkUpdate(
+    @Body() bulkUpdateDto: any, // Would import BulkUpdateIssuesDto
+    @CurrentUser('userId') userId: string,
+  ) {
+    return this.issuesService.bulkUpdate(bulkUpdateDto, userId);
+  }
+
+  @Post(':parentIssueId/sub-tasks')
+  @ApiOperation({ summary: 'Create a sub-task for an issue' })
+  @ApiResponse({
+    status: 201,
+    description: 'Sub-task created successfully',
+  })
+  createSubTask(
+    @Param('parentIssueId') parentIssueId: string,
+    @Body() subTaskData: any,
+    @CurrentUser('userId') userId: string,
+  ) {
+    return this.issuesService.createSubTask(parentIssueId, subTaskData, userId);
+  }
+
+  @Get(':issueId/sub-tasks')
+  @ApiOperation({ summary: 'Get all sub-tasks for an issue' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sub-tasks retrieved successfully',
+  })
+  getSubTasks(@Param('issueId') issueId: string) {
+    return this.issuesService.getSubTasks(issueId);
+  }
+
+  @Patch(':issueId/convert-to-subtask')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Convert issue to sub-task' })
+  @ApiResponse({
+    status: 200,
+    description: 'Issue converted to sub-task successfully',
+  })
+  convertToSubTask(
+    @Param('issueId') issueId: string,
+    @Body('parentIssueId') parentIssueId: string,
+  ) {
+    return this.issuesService.convertToSubTask(issueId, parentIssueId);
+  }
+
+  @Patch(':subTaskId/promote')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Promote sub-task to regular issue' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sub-task promoted successfully',
+  })
+  promoteToIssue(@Param('subTaskId') subTaskId: string) {
+    return this.issuesService.promoteToIssue(subTaskId);
+  }
 }

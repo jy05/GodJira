@@ -67,6 +67,25 @@ enum TaskPriority {
   HIGH
 }
 
+enum IssueLinkType {
+  BLOCKS
+  BLOCKED_BY
+  RELATES_TO
+  DUPLICATES
+  DUPLICATED_BY
+  PARENT_OF
+  CHILD_OF
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+  ASSIGN
+  COMMENT
+}
+
 // ===========================
 // USER MODEL
 // ===========================
@@ -86,6 +105,11 @@ model User {
   avatar    String?  @db.Text
   
   isActive  Boolean  @default(true)
+  
+  // Email verification
+  isEmailVerified      Boolean   @default(false)
+  emailVerificationToken String? @db.Text
+  emailVerificationExpiry DateTime?
   
   // Password reset functionality
   resetToken          String?   @db.Text
@@ -202,12 +226,20 @@ model Issue {
   assigneeId  String?        @db.Uuid
   assignee    User?          @relation("IssueAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   
+  // Parent issue for sub-tasks and epic hierarchies
+  parentIssueId String?      @db.Uuid
+  parentIssue   Issue?       @relation("IssueHierarchy", fields: [parentIssueId], references: [id], onDelete: Cascade)
+  subIssues     Issue[]      @relation("IssueHierarchy")
+  
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   
   // Relationships
   comments    Comment[]
   workLogs    WorkLog[]
+  linksFrom   IssueLink[]    @relation("LinkFrom")
+  linksTo     IssueLink[]    @relation("LinkTo")
+  auditLogs   AuditLog[]
   
   @@index([key])
   @@index([projectId])
@@ -216,6 +248,7 @@ model Issue {
   @@index([priority])
   @@index([creatorId])
   @@index([assigneeId])
+  @@index([parentIssueId])
   @@map("issues")
 }
 
@@ -303,4 +336,58 @@ model Task {
   @@index([creatorId])
   @@index([assigneeId])
   @@map("tasks")
+}
+
+// ===========================
+// ISSUE LINK MODEL
+// ===========================
+
+model IssueLink {
+  id        String        @id @default(uuid()) @db.Uuid
+  linkType  IssueLinkType
+  
+  fromIssueId String      @db.Uuid
+  fromIssue   Issue       @relation("LinkFrom", fields: [fromIssueId], references: [id], onDelete: Cascade)
+  
+  toIssueId   String      @db.Uuid
+  toIssue     Issue       @relation("LinkTo", fields: [toIssueId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([fromIssueId])
+  @@index([toIssueId])
+  @@index([linkType])
+  @@map("issue_links")
+}
+
+// ===========================
+// AUDIT LOG MODEL
+// ===========================
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  action      AuditAction
+  entityType  String      // "Issue", "Project", "Sprint", "User", etc.
+  entityId    String      @db.Uuid
+  
+  // Optional: specific issue reference for filtering
+  issueId     String?     @db.Uuid
+  issue       Issue?      @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  
+  userId      String      @db.Uuid
+  userName    String      // Denormalized for audit trail permanence
+  
+  // Changes made (JSON string of old/new values)
+  changes     String      @db.Text
+  
+  ipAddress   String?
+  userAgent   String?     @db.Text
+  
+  createdAt   DateTime    @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([issueId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
