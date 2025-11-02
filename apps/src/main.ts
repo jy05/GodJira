@@ -55,6 +55,7 @@ async function bootstrap() {
     .addTag('watchers', 'Issue watchers and notifications')
     .addTag('teams', 'Team management and collaboration')
     .addTag('notifications', 'Real-time notifications via WebSocket')
+    .addTag('analytics', 'Reports, charts, and analytics')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -17,6 +17,7 @@ import { IssueLinksModule } from './issue-links/issue-links.module';
 import { WatchersModule } from './watchers/watchers.module';
 import { TeamsModule } from './teams/teams.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     WatchersModule,
     TeamsModule,
     NotificationsModule,
+    AnalyticsModule,
   ],
   controllers: [],
   providers: [],
