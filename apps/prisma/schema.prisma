@@ -86,6 +86,18 @@ enum AuditAction {
   COMMENT
 }
 
+enum NotificationType {
+  ISSUE_ASSIGNED
+  ISSUE_UPDATED
+  ISSUE_COMMENTED
+  ISSUE_MENTIONED
+  ISSUE_STATUS_CHANGED
+  SPRINT_STARTED
+  SPRINT_COMPLETED
+  TEAM_ADDED
+  WATCHER_ADDED
+}
+
 // ===========================
 // USER MODEL
 // ===========================
@@ -135,6 +147,7 @@ model User {
   workLogs         WorkLog[]
   watchers         Watcher[]
   teamMemberships  TeamMember[]
+  notifications    Notification[]
   
   @@index([email])
   @@map("users")
@@ -482,3 +495,45 @@ model TeamProject {
   @@index([projectId])
   @@map("team_projects")
 }
+
+// ===========================
+// NOTIFICATION MODEL
+// ===========================
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  
+  // Target user who receives the notification
+  userId    String           @db.Uuid
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Actor who triggered the notification (optional)
+  actorId   String?          @db.Uuid
+  actorName String?          // Denormalized for display
+  
+  // Related entities (optional)
+  issueId   String?          @db.Uuid
+  issueKey  String?          // Denormalized for display
+  
+  projectId String?          @db.Uuid
+  sprintId  String?          @db.Uuid
+  commentId String?          @db.Uuid
+  
+  // Metadata
+  metadata  Json?            @db.JsonB // Additional data as JSON
+  
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  
+  createdAt DateTime         @default(now())
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([type])
+  @@map("notifications")
+}
+
