@@ -9,6 +9,7 @@ import {
   bufferToBase64DataUrl,
   validateFileSize,
   getExtensionFromMimeType,
+  generateThumbnail,
 } from '../common/utils/file-upload.utils';
 
 @Injectable()
@@ -17,6 +18,8 @@ export class AttachmentsService {
 
   /**
    * Upload a file attachment to an issue
+   * Automatically generates thumbnails for image files (200x200px)
+   * Thumbnails maintain aspect ratio and are stored as base64 data URLs
    */
   async create(
     issueId: string,
@@ -35,6 +38,9 @@ export class AttachmentsService {
     // Convert buffer to base64 data URL
     const dataUrl = bufferToBase64DataUrl(file.buffer, file.mimetype);
 
+    // Generate thumbnail for images (200x200)
+    const thumbnail = await generateThumbnail(file.buffer, file.mimetype, 200, 200);
+
     // Generate filename if not provided
     const extension = getExtensionFromMimeType(file.mimetype);
     const filename = file.originalname || `attachment${extension}`;
@@ -47,6 +53,7 @@ export class AttachmentsService {
         mimetype: file.mimetype,
         size: file.size,
         data: dataUrl,
+        thumbnail: thumbnail || null,
         issueId,
         uploadedBy: userId,
       },

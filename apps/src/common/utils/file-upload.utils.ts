@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { extname } from 'path';
 import { Request } from 'express';
+import sharp from 'sharp';
 
 /**
  * File upload configuration and validation utilities
@@ -185,16 +186,39 @@ export function getExtensionFromMimeType(mimetype: string): string {
 }
 
 /**
- * Generate thumbnail for images (simplified - returns resized base64)
- * In production, use sharp or similar library
+ * Generate thumbnail for images using sharp
+ * Resizes the image while maintaining aspect ratio
+ * @param buffer - Image buffer
+ * @param mimetype - Image MIME type
+ * @param maxWidth - Maximum width (default: 200px)
+ * @param maxHeight - Maximum height (default: 200px)
+ * @returns Base64 data URL of the thumbnail
  */
-export function generateThumbnail(
-  base64Image: string,
+export async function generateThumbnail(
+  buffer: Buffer,
+  mimetype: string,
   maxWidth: number = 200,
   maxHeight: number = 200,
-): string {
-  // For now, return the original image
-  // In production, implement proper image resizing with sharp
-  // Example: sharp(buffer).resize(maxWidth, maxHeight).toBuffer()
-  return base64Image;
+): Promise<string> {
+  try {
+    // Only generate thumbnails for images
+    if (!ALLOWED_IMAGE_TYPES.includes(mimetype)) {
+      return ''; // Return empty string for non-images
+    }
+
+    // Resize image while maintaining aspect ratio
+    const thumbnailBuffer = await sharp(buffer)
+      .resize(maxWidth, maxHeight, {
+        fit: 'inside', // Maintain aspect ratio
+        withoutEnlargement: true, // Don't upscale small images
+      })
+      .toBuffer();
+
+    // Convert to base64 data URL
+    return bufferToBase64DataUrl(thumbnailBuffer, mimetype);
+  } catch (error) {
+    console.error('Error generating thumbnail:', error);
+    // Return empty string if thumbnail generation fails
+    return '';
+  }
 }
