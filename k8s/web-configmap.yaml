@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: godjira-web-config
+  namespace: godjira
+  labels:
+    app: godjira-web
+    component: frontend
+data:
+  # Vite environment variables (must start with VITE_)
+  # These are injected at build time, not runtime
+  # For runtime configuration, these values should match build-time values
+  VITE_API_BASE_URL: "http://godjira-api-service:3000"
+  VITE_WS_URL: "http://godjira-api-service:3000"

@@ -50,6 +50,44 @@ api:
     initialDelaySeconds: 10
     periodSeconds: 5
 
+# Web Frontend configuration
+web:
+  enabled: true
+  name: web
+  replicaCount: 2
+  image:
+    repository: godjira/web
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 80
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  env:
+    VITE_API_BASE_URL: "http://godjira-api-service:3000"
+    VITE_WS_URL: "http://godjira-api-service:3000"
+  
+  livenessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 30
+  
+  readinessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
 # PostgreSQL Database configuration
 postgresql:
   enabled: true

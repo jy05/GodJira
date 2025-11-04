@@ -32,7 +32,38 @@ spec:
         - api.godjira.example.com
       secretName: godjira-tls-cert
   rules:
-    # API Backend
+    # Main application domain (frontend + backend routing)
+    - host: godjira.example.com
+      http:
+        paths:
+          # Frontend - serves React SPA (must be last to catch all routes)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: godjira-web-service
+                port:
+                  number: 80
+          
+          # Backend API - handles /api/* requests
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: godjira-api-service
+                port:
+                  number: 3000
+          
+          # WebSocket - handles /socket.io/* connections
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: godjira-api-service
+                port:
+                  number: 3000
+    
+    # API subdomain (optional - direct API access)
     - host: api.godjira.example.com
       http:
         paths:
@@ -40,18 +71,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: api
+                name: godjira-api-service
                 port:
                   number: 3000
-    
-    # Frontend (to be added later)
-    - host: godjira.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: web
-                port:
-                  number: 80

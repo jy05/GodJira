@@ -1,0 +1,106 @@
+{{- if .Values.web.enabled }}
+---
+# ConfigMap for Web Environment Variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "godjira.fullname" . }}-web-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "godjira.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+data:
+  VITE_API_BASE_URL: {{ .Values.web.env.VITE_API_BASE_URL | quote }}
+  VITE_WS_URL: {{ .Values.web.env.VITE_WS_URL | quote }}
+
+---
+# Deployment for Web Frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "godjira.fullname" . }}-web
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "godjira.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "godjira.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "godjira.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: frontend
+    spec:
+      containers:
+      - name: web
+        image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: {{ include "godjira.fullname" . }}-web-config
+        resources:
+          {{- toYaml .Values.web.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+      securityContext:
+        fsGroup: 101
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
+---
+# Service for Web Frontend
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "godjira.fullname" . }}-web-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "godjira.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  type: {{ .Values.web.service.type }}
+  selector:
+    {{- include "godjira.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.web.service.port }}
+    targetPort: 80
+  sessionAffinity: None
+{{- end }}
