@@ -179,8 +179,7 @@ export class UsersService {
     }
 
     // Hash new password
-    const bcryptRounds = this.configService.get<number>('BCRYPT_ROUNDS') || 12;
-    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, bcryptRounds);
+    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
 
     // Update password and password history
     const updatedPasswordHistory = [...user.passwordHistory, hashedPassword].slice(-historySize);
@@ -310,8 +309,7 @@ export class UsersService {
     }
 
     // Hash password
-    const bcryptRounds = this.configService.get<number>('BCRYPT_ROUNDS') || 12;
-    const hashedPassword = await bcrypt.hash(data.password, bcryptRounds);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this.prisma.user.create({
       data: {

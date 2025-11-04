@@ -51,9 +51,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-this-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-this-in-production}
       
-      # Email (optional for development)
-      SMTP_HOST: ${SMTP_HOST:-smtp.mailtrap.io}
-      SMTP_PORT: ${SMTP_PORT:-2525}
+      # Email (Mailhog for development - catch all emails)
+      SMTP_HOST: ${SMTP_HOST:-mailhog-dev}
+      SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-noreply@godjira.dev}

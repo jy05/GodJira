@@ -36,9 +36,8 @@ export class AuthService {
       throw new ConflictException('User with this email already exists');
     }
 
-    // Hash password with bcrypt (12 rounds for NIST compliance)
-    const bcryptRounds = this.configService.get<number>('BCRYPT_ROUNDS') || 12;
-    const hashedPassword = await bcrypt.hash(password, bcryptRounds);
+    // Hash password with bcrypt (10 rounds for bcryptjs compatibility)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
     const user = await this.prisma.user.create({
@@ -288,8 +287,7 @@ export class AuthService {
     await this.validatePasswordHistory(user.id, newPassword);
 
     // Hash new password
-    const bcryptRounds = this.configService.get<number>('BCRYPT_ROUNDS') || 12;
-    const hashedPassword = await bcrypt.hash(newPassword, bcryptRounds);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password and clear reset token
     const historySize = this.configService.get<number>('PASSWORD_HISTORY_SIZE') || 5;
