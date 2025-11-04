@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "🔧 Rebuilding native modules for Alpine Linux..."
+echo "🔧 Installing bcrypt with native bindings for Alpine Linux..."
 cd /app
-pnpm rebuild bcrypt
+pnpm add bcrypt@5.1.1 --force
 
-echo "✅ Native modules rebuilt successfully"
+echo "✅ Native modules installed successfully"
 
 echo "🚀 Starting NestJS in development mode..."
 cd /app/apps
