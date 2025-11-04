@@ -1,0 +1,168 @@
+# Docker Compose - Development Environment
+# This file is optimized for local development with hot-reload and debugging support
+# For production deployment, use docker-compose.yml or Kubernetes manifests
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Development
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: godjira-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-godjira}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-godjira_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-godjira_dev}
+      # Enable connection logging for debugging
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      # Optional: Custom PostgreSQL configuration
+      # - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-godjira}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - godjira-dev-network
+
+  # NestJS API - Development (Hot Reload)
+  api-dev:
+    build:
+      context: .
+      dockerfile: apps/Dockerfile.dev
+      args:
+        NODE_ENV: development
+    container_name: godjira-api-dev
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-godjira}:${POSTGRES_PASSWORD:-godjira_dev_password}@postgres-dev:5432/${POSTGRES_DB:-godjira_dev}?schema=public
+      
+      # Node Environment
+      NODE_ENV: development
+      PORT: 3000
+      
+      # JWT Secrets (CHANGE IN PRODUCTION!)
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-this-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-this-in-production}
+      
+      # Email (optional for development)
+      SMTP_HOST: ${SMTP_HOST:-smtp.mailtrap.io}
+      SMTP_PORT: ${SMTP_PORT:-2525}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@godjira.dev}
+      
+      # File Upload
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-20971520}
+      UPLOAD_PATH: /app/uploads
+      
+      # CORS
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      
+      # Logging
+      LOG_LEVEL: debug
+    ports:
+      - "${API_PORT:-3000}:3000"
+      # Debug port for Node.js inspector
+      - "${DEBUG_PORT:-9229}:9229"
+    volumes:
+      # Mount source code for hot-reload
+      - ./apps:/app/apps:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./package.json:/app/package.json:ro
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml:ro
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml:ro
+      - ./turbo.json:/app/turbo.json:ro
+      
+      # Persistent uploads directory
+      - uploads_dev:/app/uploads
+      
+      # Exclude node_modules from sync (performance)
+      - /app/apps/node_modules
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    networks:
+      - godjira-dev-network
+    command: pnpm --filter @godjira/api dev
+    # Enable debugging
+    # Uncomment to enable Node.js inspector for debugging
+    # command: pnpm --filter @godjira/api start:debug
+
+  # PgAdmin - Database Management UI (Development)
+  pgadmin-dev:
+    image: dpage/pgadmin4:latest
+    container_name: godjira-pgadmin-dev
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@godjira.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+      # Auto-configure PostgreSQL connection
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      - postgres-dev
+    networks:
+      - godjira-dev-network
+
+  # Redis - Session Storage & Caching (Optional)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: godjira-redis-dev
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_dev_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - godjira-dev-network
+    command: redis-server --appendonly yes
+
+  # Mailhog - Email Testing (captures emails without sending)
+  mailhog-dev:
+    image: mailhog/mailhog:latest
+    container_name: godjira-mailhog-dev
+    restart: unless-stopped
+    ports:
+      # SMTP server
+      - "${MAILHOG_SMTP_PORT:-1025}:1025"
+      # Web UI
+      - "${MAILHOG_UI_PORT:-8025}:8025"
+    networks:
+      - godjira-dev-network
+
+networks:
+  godjira-dev-network:
+    driver: bridge
+    name: godjira-dev-network
+
+volumes:
+  postgres_dev_data:
+    driver: local
+    name: godjira_postgres_dev_data
+  pgadmin_dev_data:
+    driver: local
+    name: godjira_pgadmin_dev_data
+  redis_dev_data:
+    driver: local
+    name: godjira_redis_dev_data
+  uploads_dev:
+    driver: local
+    name: godjira_uploads_dev
+

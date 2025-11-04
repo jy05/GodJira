@@ -1,0 +1,51 @@
+# Development Dockerfile for GodJira API
+# This Dockerfile is optimized for local development with hot-reload support
+# It does NOT use multi-stage builds for faster iteration
+
+FROM node:20-alpine
+
+# Install pnpm globally
+RUN npm install -g pnpm@9
+
+# Install development tools
+RUN apk add --no-cache \
+    git \
+    curl \
+    bash \
+    # Required for native modules (bcrypt, sharp, etc.)
+    python3 \
+    make \
+    g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy workspace configuration
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+
+# Copy all workspace packages (monorepo)
+COPY apps ./apps
+
+# Install ALL dependencies (including devDependencies)
+RUN pnpm install --frozen-lockfile
+
+# Generate Prisma Client
+WORKDIR /app/apps
+RUN pnpm prisma generate
+
+# Create uploads directory
+RUN mkdir -p /app/uploads && chmod 755 /app/uploads
+
+# Expose API port
+EXPOSE 3000
+
+# Expose debug port for Node.js inspector
+EXPOSE 9229
+
+# Set working directory to API
+WORKDIR /app/apps
+
+# Default command: start in watch mode (hot-reload)
+# This will be overridden by docker-compose.dev.yml
+CMD ["pnpm", "dev"]
+

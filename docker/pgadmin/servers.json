@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "GodJira Development",
+      "Group": "Servers",
+      "Host": "postgres-dev",
+      "Port": 5432,
+      "MaintenanceDB": "godjira_dev",
+      "Username": "godjira",
+      "SSLMode": "prefer",
+      "Comment": "Auto-configured GodJira development database"
+    }
+  }
+}
