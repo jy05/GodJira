@@ -1,8 +1,11 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
+import { RoleBasedRoute } from './components/RoleBasedRoute';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -11,6 +14,8 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { UsersPage } from './pages/UsersPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -26,10 +31,12 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HashRouter>
-        <AuthProvider>
-          <Routes>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Toaster position="top-right" richColors closeButton />
+        <HashRouter>
+          <AuthProvider>
+            <Routes>
             {/* Public routes */}
             <Route
               path="/login"
@@ -60,6 +67,24 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <RoleBasedRoute allowedRoles={['ADMIN', 'MANAGER']}>
+                    <UsersPage />
+                  </RoleBasedRoute>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -70,6 +95,7 @@ function App() {
         </AuthProvider>
       </HashRouter>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

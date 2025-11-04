@@ -131,7 +131,31 @@ apiClient.interceptors.response.use(
 
     // Handle 429 Too Many Requests
     if (error.response?.status === 429) {
-      console.warn('Rate limit exceeded. Please try again later.');
+      const retryAfter = error.response.headers?.['retry-after'];
+      const retryAfterHeader = error.response.headers?.['x-ratelimit-retry-after'];
+      const remaining = error.response.headers?.['x-ratelimit-remaining'];
+      
+      let message = 'Rate limit exceeded.';
+      
+      if (retryAfter || retryAfterHeader) {
+        const seconds = retryAfter || retryAfterHeader;
+        message += ` Please wait ${seconds} seconds before trying again.`;
+      } else {
+        message += ' Please try again in a few minutes.';
+      }
+      
+      if (remaining !== undefined) {
+        message += ` (${remaining} requests remaining)`;
+      }
+      
+      console.warn('Rate limit exceeded:', message);
+      
+      // Attach rate limit info to error for UI to display
+      (error as any).rateLimitInfo = {
+        retryAfter: retryAfter || retryAfterHeader,
+        remaining,
+        message,
+      };
     }
 
     return Promise.reject(error);

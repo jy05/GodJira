@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import type { LoginRequest } from '@/types';
 import { AxiosError } from 'axios';
@@ -9,8 +10,8 @@ interface LoginFormData extends LoginRequest {}
 
 export const LoginPage = () => {
   const { login } = useAuth();
-  const [error, setError] = useState<string>('');
   const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState<number>(0);
   const {
     register,
     handleSubmit,
@@ -19,28 +20,38 @@ export const LoginPage = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setError('');
       setIsLocked(false);
+      setLockoutTime(0);
       await login(data);
+      toast.success('Login successful!');
     } catch (err) {
       const axiosError = err as AxiosError<any>;
       
       // Handle account lockout
       if (axiosError.response?.data?.message?.includes('locked')) {
+        const lockoutMinutes = axiosError.response?.data?.lockoutMinutes || 15;
         setIsLocked(true);
-        setError('Account is locked due to too many failed login attempts. Please try again in 15 minutes.');
+        setLockoutTime(lockoutMinutes);
+        toast.error(
+          `Account locked due to too many failed attempts. Try again in ${lockoutMinutes} minutes.`,
+          { duration: 10000 }
+        );
       } 
       // Handle invalid credentials
       else if (axiosError.response?.status === 401) {
-        setError('Invalid email or password. Please try again.');
+        toast.error('Invalid email or password. Please try again.');
       }
       // Handle rate limiting
       else if (axiosError.response?.status === 429) {
-        setError('Too many requests. Please try again later.');
+        const retryAfter = axiosError.response?.headers?.['retry-after'];
+        const message = retryAfter
+          ? `Too many requests. Please wait ${retryAfter} seconds before trying again.`
+          : 'Too many requests. Please try again later.';
+        toast.error(message, { duration: 10000 });
       }
       // Generic error
       else {
-        setError(axiosError.response?.data?.message || 'An error occurred during login.');
+        toast.error(axiosError.response?.data?.message || 'An error occurred during login.');
       }
     }
   };
@@ -62,15 +73,25 @@ export const LoginPage = () => {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {error && (
-            <div
-              className={`rounded-md p-4 ${
-                isLocked ? 'bg-red-50 border border-red-200' : 'bg-red-50'
-              }`}
-            >
+          {/* Lockout warning banner */}
+          {isLocked && lockoutTime > 0 && (
+            <div className="rounded-md p-4 bg-yellow-50 border border-yellow-200">
               <div className="flex">
+                <svg
+                  className="h-5 w-5 text-yellow-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Account Locked - Please wait {lockoutTime} minutes before trying again
+                  </h3>
                 </div>
               </div>
             </div>
