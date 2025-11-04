@@ -14,12 +14,14 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'
 export const AvatarUpload = ({ currentAvatar }: AvatarUploadProps) => {
   const { refreshUser } = useAuth();
   const [preview, setPreview] = useState<string | undefined>(currentAvatar);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadMutation = useMutation({
-    mutationFn: (base64: string) => userApi.updateAvatar(base64),
+    mutationFn: (file: File) => userApi.updateAvatar(file),
     onSuccess: () => {
       refreshUser();
+      setSelectedFile(null);
       toast.success('Avatar updated successfully!');
     },
     onError: (err: any) => {
@@ -45,11 +47,13 @@ export const AvatarUpload = ({ currentAvatar }: AvatarUploadProps) => {
       return;
     }
 
-    // Read and convert to base64
+    // Store file for upload
+    setSelectedFile(file);
+
+    // Create preview URL
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result as string;
-      setPreview(base64String);
+      setPreview(reader.result as string);
     };
     reader.onerror = () => {
       toast.error('Failed to read file');
@@ -58,14 +62,17 @@ export const AvatarUpload = ({ currentAvatar }: AvatarUploadProps) => {
   };
 
   const handleUpload = () => {
-    if (preview && preview !== currentAvatar) {
-      uploadMutation.mutate(preview);
+    if (selectedFile) {
+      uploadMutation.mutate(selectedFile);
     }
   };
 
   const handleRemove = () => {
+    // Create empty file to signal removal
+    const emptyFile = new File([], 'empty', { type: 'application/octet-stream' });
     setPreview(undefined);
-    uploadMutation.mutate('');
+    setSelectedFile(null);
+    uploadMutation.mutate(emptyFile);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -73,12 +80,13 @@ export const AvatarUpload = ({ currentAvatar }: AvatarUploadProps) => {
 
   const handleCancel = () => {
     setPreview(currentAvatar);
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const hasChanges = preview !== currentAvatar;
+  const hasChanges = selectedFile !== null;
 
   return (
     <div className="space-y-4">

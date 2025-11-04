@@ -69,6 +69,8 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   search?: string;
+  role?: UserRole;
+  isActive?: boolean;
 }
 
 export interface PaginatedResponse<T> {

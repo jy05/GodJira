@@ -25,15 +25,34 @@ export const userApi = {
     return data;
   },
 
-  // Update avatar (base64 string)
-  updateAvatar: async (avatar: string): Promise<User> => {
-    const { data } = await apiClient.patch('/users/me/avatar', { avatar });
+  // Update avatar (multipart/form-data file upload)
+  updateAvatar: async (file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    const { data } = await apiClient.post('/users/me/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return data;
   },
 
   // Get list of all users (admin/manager only)
   getUsers: async (params?: PaginationParams): Promise<PaginatedResponse<User>> => {
-    const { data} = await apiClient.get('/users', { params });
+    // Convert page/limit to skip/take for backend compatibility
+    const skip = params?.page && params?.limit ? (params.page - 1) * params.limit : undefined;
+    const take = params?.limit;
+    
+    const { data} = await apiClient.get('/users', { 
+      params: {
+        skip,
+        take,
+        search: params?.search,
+        role: params?.role,
+        isActive: params?.isActive,
+      }
+    });
     return data;
   },
 
@@ -45,18 +64,18 @@ export const userApi = {
 
   // Update user role (admin/manager only)
   updateUserRole: async (id: string, roleData: UpdateUserRoleData): Promise<User> => {
-    const { data } = await apiClient.patch(`/users/${id}/role`, roleData);
+    const { data } = await apiClient.patch(`/admin/${id}`, roleData);
     return data;
   },
 
   // Deactivate user (admin only)
   deactivateUser: async (id: string): Promise<void> => {
-    await apiClient.delete(`/users/${id}`);
+    await apiClient.delete(`/users/${id}/deactivate`);
   },
 
   // Reactivate user (admin only)
   reactivateUser: async (id: string): Promise<User> => {
-    const { data } = await apiClient.post(`/users/${id}/reactivate`);
+    const { data } = await apiClient.patch(`/users/${id}/reactivate`);
     return data;
   },
 };

@@ -29,12 +29,19 @@ COPY apps ./apps
 # Install ALL dependencies (including devDependencies)
 RUN pnpm install --frozen-lockfile
 
+# Rebuild native modules for Alpine Linux (fixes bcrypt issue)
+RUN cd /app && pnpm rebuild bcrypt
+
 # Generate Prisma Client
 WORKDIR /app/apps
 RUN pnpm prisma generate
 
 # Create uploads directory
 RUN mkdir -p /app/uploads && chmod 755 /app/uploads
+
+# Copy entrypoint script
+COPY apps/docker-entrypoint-dev.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Expose API port
 EXPOSE 3000
@@ -44,6 +51,9 @@ EXPOSE 9229
 
 # Set working directory to API
 WORKDIR /app/apps
+
+# Use entrypoint script to rebuild native modules on startup
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Default command: start in watch mode (hot-reload)
 # This will be overridden by docker-compose.dev.yml

@@ -79,9 +79,8 @@ services:
       # Persistent uploads directory
       - uploads_dev:/app/uploads
       
-      # Exclude node_modules from sync (performance)
-      - /app/node_modules
-      - /app/apps/node_modules
+      # DO NOT exclude node_modules - we need bcrypt native bindings
+      # Hot reload works fine with node_modules in the image
     depends_on:
       postgres-dev:
         condition: service_healthy
