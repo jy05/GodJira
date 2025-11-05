@@ -85,7 +85,9 @@ export const UsersPage = () => {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 
@@ -137,6 +139,35 @@ export const UsersPage = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to create user');
+    },
+  });
+
+  // Update user mutation
+  const updateUserMutation = useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: any }) =>
+      userApi.updateUser(userId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setShowEditModal(false);
+      setSelectedUser(null);
+      toast.success('User updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update user');
+    },
+  });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: string) => userApi.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setShowDeleteModal(false);
+      setSelectedUser(null);
+      toast.success('User deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete user');
     },
   });
 
@@ -327,6 +358,14 @@ export const UsersPage = () => {
                           onUpdateRole={(role) =>
                             updateRoleMutation.mutate({ userId: user.id, role })
                           }
+                          onEdit={() => {
+                            setSelectedUser(user);
+                            setShowEditModal(true);
+                          }}
+                          onDelete={() => {
+                            setSelectedUser(user);
+                            setShowDeleteModal(true);
+                          }}
                           onDeactivate={() => deactivateMutation.mutate(user.id)}
                           onReactivate={() => reactivateMutation.mutate(user.id)}
                           onResetPassword={() => {
@@ -441,6 +480,8 @@ interface UserRowProps {
   user: User;
   currentUser: User;
   onUpdateRole: (role: UserRole) => void;
+  onEdit: () => void;
+  onDelete: () => void;
   onDeactivate: () => void;
   onReactivate: () => void;
   onResetPassword: () => void;
@@ -451,6 +492,8 @@ const UserRow = ({
   user,
   currentUser,
   onUpdateRole,
+  onEdit,
+  onDelete,
   onDeactivate,
   onReactivate,
   onResetPassword,
@@ -577,6 +620,14 @@ const UserRow = ({
         {!isCurrentUser && currentUser.role === 'ADMIN' && (
           <div className="flex justify-end gap-3">
             <button
+              onClick={onEdit}
+              disabled={isUpdating}
+              className="text-indigo-600 hover:text-indigo-900 disabled:opacity-50"
+              title="Edit User"
+            >
+              Edit
+            </button>
+            <button
               onClick={onResetPassword}
               disabled={isUpdating}
               className="text-blue-600 hover:text-blue-900 disabled:opacity-50"
@@ -589,11 +640,19 @@ const UserRow = ({
               disabled={isUpdating}
               className={`${
                 user.isActive
-                  ? 'text-red-600 hover:text-red-900'
+                  ? 'text-orange-600 hover:text-orange-900'
                   : 'text-green-600 hover:text-green-900'
               } disabled:opacity-50`}
             >
               {user.isActive ? 'Deactivate' : 'Reactivate'}
+            </button>
+            <button
+              onClick={onDelete}
+              disabled={isUpdating}
+              className="text-red-600 hover:text-red-900 disabled:opacity-50"
+              title="Delete User"
+            >
+              Delete
             </button>
           </div>
         )}

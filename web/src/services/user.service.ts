@@ -12,6 +12,17 @@ export interface UpdateUserRoleData {
   role: 'ADMIN' | 'MANAGER' | 'USER';
 }
 
+export interface UpdateUserData {
+  email?: string;
+  name?: string;
+  bio?: string;
+  jobTitle?: string;
+  department?: string;
+  role?: 'ADMIN' | 'MANAGER' | 'USER';
+  isActive?: boolean;
+  isEmailVerified?: boolean;
+}
+
 export interface CreateUserData {
   email: string;
   password: string;
@@ -81,6 +92,17 @@ export const userApi = {
   updateUserRole: async (id: string, roleData: UpdateUserRoleData): Promise<User> => {
     const { data } = await apiClient.patch(`/users/admin/${id}`, roleData);
     return data;
+  },
+
+  // Update user details (admin only)
+  updateUser: async (id: string, userData: UpdateUserData): Promise<User> => {
+    const { data } = await apiClient.patch(`/users/admin/${id}`, userData);
+    return data;
+  },
+
+  // Delete user permanently (admin only)
+  deleteUser: async (id: string): Promise<void> => {
+    await apiClient.delete(`/users/admin/${id}`);
   },
 
   // Deactivate user (admin only)

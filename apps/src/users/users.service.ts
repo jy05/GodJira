@@ -304,6 +304,9 @@ export class UsersService {
     isActive?: boolean;
     isEmailVerified?: boolean;
   }) {
+    // Log the incoming data for debugging
+    console.log('adminCreateUser received data:', JSON.stringify(data, null, 2));
+    
     // Check if user exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email },
@@ -358,10 +361,22 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Admin can update role, isActive, isEmailVerified, and reset failed attempts
+    // If email is being changed, check if new email already exists
+    if (data.email && data.email !== user.email) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: data.email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('Email already in use');
+      }
+    }
+
+    // Admin can update role, isActive, isEmailVerified, email, and reset failed attempts
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
+        ...(data.email && { email: data.email }),
         ...(data.name && { name: data.name }),
         ...(data.bio !== undefined && { bio: data.bio }),
         ...(data.jobTitle !== undefined && { jobTitle: data.jobTitle }),

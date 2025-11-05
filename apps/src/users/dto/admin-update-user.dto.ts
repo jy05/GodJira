@@ -1,8 +1,17 @@
-import { IsEnum, IsOptional, IsBoolean } from 'class-validator';
+import { IsEnum, IsOptional, IsBoolean, IsEmail, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UpdateUserDto } from './update-user.dto';
 
 export class AdminUpdateUserDto extends UpdateUserDto {
+  @ApiProperty({
+    example: 'john.doe@example.com',
+    description: 'User email address',
+    required: false,
+  })
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
   @ApiProperty({
     example: 'ADMIN',
     enum: ['ADMIN', 'MANAGER', 'USER'],
