@@ -24,6 +24,9 @@ export const ProjectsPage = () => {
     queryFn: () => projectApi.getProjects({ search }),
   });
 
+  // Ensure projects is always an array
+  const projectsList = Array.isArray(projects) ? projects : [];
+
   // Create project mutation
   const createMutation = useMutation({
     mutationFn: (data: CreateProjectRequest) => projectApi.createProject(data),
@@ -123,7 +126,7 @@ export const ProjectsPage = () => {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
               <p className="mt-2 text-sm text-gray-500">Loading projects...</p>
             </div>
-          ) : !projects || projects.length === 0 ? (
+          ) : projectsList.length === 0 ? (
             <div className="text-center py-12">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
@@ -153,7 +156,7 @@ export const ProjectsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => (
+              {projectsList.map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}

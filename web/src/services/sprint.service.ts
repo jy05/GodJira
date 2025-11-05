@@ -15,8 +15,16 @@ export const sprintApi = {
     projectId?: string;
     status?: SprintStatus;
   }): Promise<Sprint[]> {
-    const { data } = await apiClient.get('/sprints', { params });
-    return data;
+    // Filter out undefined values
+    const queryParams: any = {};
+    if (params?.projectId) queryParams.projectId = params.projectId;
+    if (params?.status) queryParams.status = params.status;
+    if (params?.skip !== undefined) queryParams.skip = params.skip;
+    if (params?.take !== undefined) queryParams.take = params.take;
+    
+    const { data } = await apiClient.get('/sprints', { params: queryParams });
+    // Backend returns { data: sprints[], meta: {...} }
+    return data.data || data;
   },
 
   // Get single sprint by ID

@@ -48,12 +48,20 @@ export class SprintsController {
     description: 'Sprints retrieved successfully',
   })
   findAll(
-    @Query('skip') skip?: number,
-    @Query('take') take?: number,
+    @Query('skip') skip?: string | number,
+    @Query('take') take?: string | number,
     @Query('projectId') projectId?: string,
     @Query('status') status?: string,
   ) {
-    return this.sprintsService.findAll({ skip, take, projectId, status });
+    // Convert string query params to numbers if provided
+    const skipNum = skip !== undefined ? parseInt(String(skip), 10) : undefined;
+    const takeNum = take !== undefined ? parseInt(String(take), 10) : undefined;
+    
+    const params: any = { projectId, status };
+    if (skipNum !== undefined && !isNaN(skipNum)) params.skip = skipNum;
+    if (takeNum !== undefined && !isNaN(takeNum)) params.take = takeNum;
+    
+    return this.sprintsService.findAll(params);
   }
 
   @Get(':id')

@@ -52,12 +52,20 @@ export class ProjectsController {
     description: 'Projects retrieved successfully',
   })
   findAll(
-    @Query('skip') skip?: number,
-    @Query('take') take?: number,
+    @Query('skip') skip?: string | number,
+    @Query('take') take?: string | number,
     @Query('search') search?: string,
     @Query('ownerId') ownerId?: string,
   ) {
-    return this.projectsService.findAll({ skip, take, search, ownerId });
+    // Convert string query params to numbers if provided
+    const skipNum = skip !== undefined ? parseInt(String(skip), 10) : undefined;
+    const takeNum = take !== undefined ? parseInt(String(take), 10) : undefined;
+    
+    const params: any = { search, ownerId };
+    if (skipNum !== undefined && !isNaN(skipNum)) params.skip = skipNum;
+    if (takeNum !== undefined && !isNaN(takeNum)) params.take = takeNum;
+    
+    return this.projectsService.findAll(params);
   }
 
   @Get('key/:key')

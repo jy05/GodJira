@@ -14,8 +14,25 @@ export const projectApi = {
     search?: string;
     ownerId?: string;
   }): Promise<Project[]> {
-    const { data } = await apiClient.get('/projects', { params });
-    return data;
+    // Build query params, only including defined values
+    const queryParams: Record<string, any> = {};
+    
+    if (params?.search !== undefined && params.search !== '') {
+      queryParams.search = params.search;
+    }
+    if (params?.ownerId !== undefined) {
+      queryParams.ownerId = params.ownerId;
+    }
+    if (typeof params?.skip === 'number') {
+      queryParams.skip = params.skip;
+    }
+    if (typeof params?.take === 'number') {
+      queryParams.take = params.take;
+    }
+    
+    const { data } = await apiClient.get('/projects', { params: queryParams });
+    // Backend returns { data: projects[], meta: {...} }
+    return data.data || data;
   },
 
   // Get single project by ID
