@@ -93,6 +93,54 @@ Write-Host "Please restart your computer to complete the installation"
 
 ## Dependencies
 
+- Node.js 20 or higher
+- pnpm 9 or higher
+- PostgreSQL 15 or higher (containerized)
+
+### Linux (Ubuntu/Debian)
+
+```bash
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install pnpm
+npm install -g pnpm
+
+# Verify installations
+node --version
+pnpm --version
+```
+
+### macOS
+
+```bash
+# Install Node.js 20
+brew install node@20
+brew link node@20
+
+# Install pnpm
+npm install -g pnpm
+
+# Verify installations
+node --version
+pnpm --version
+```
+
+### Windows (PowerShell - Run as Administrator)
+
+```powershell
+# Install Node.js 20
+choco install -y nodejs-lts
+
+# Install pnpm
+npm install -g pnpm
+
+# Verify installations
+node --version
+pnpm --version
+```
+
 ## Installation
 
 ### Linux
