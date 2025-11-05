@@ -24,12 +24,12 @@ export const DashboardPage = () => {
             <div className="card hover:shadow-lg transition-shadow">
               <h3 className="text-lg font-medium text-gray-900">Issues</h3>
               <p className="mt-2 text-sm text-gray-500">
-                Track and manage issues (Coming in Phase 4)
+                Track and manage issues across all projects
               </p>
               <div className="mt-4">
-                <span className="text-sm text-gray-400">
-                  Coming soon
-                </span>
+                <Link to="/issues" className="text-sm font-medium text-primary-600 hover:text-primary-500">
+                  View all issues →
+                </Link>
               </div>
             </div>
 

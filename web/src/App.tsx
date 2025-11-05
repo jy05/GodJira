@@ -20,6 +20,7 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { SprintsPage } from './pages/SprintsPage';
 import { SprintDetailPage } from './pages/SprintDetailPage';
+import { AllIssuesPage } from './pages/AllIssuesPage';
 import IssuesPage from './pages/IssuesPage';
 import IssueDetailPage from './pages/IssueDetailPage';
 import KanbanBoardPage from './pages/KanbanBoardPage';
@@ -121,6 +122,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SprintDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/issues"
+              element={
+                <ProtectedRoute>
+                  <AllIssuesPage />
                 </ProtectedRoute>
               }
             />
