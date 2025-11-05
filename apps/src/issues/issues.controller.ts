@@ -69,9 +69,11 @@ export class IssuesController {
     @Query('creatorId') creatorId?: string,
     @Query('search') search?: string,
   ) {
-    return this.issuesService.findAll({
-      skip,
-      take,
+    // Parse skip/take with validation to avoid NaN errors
+    const skipNum = skip !== undefined ? parseInt(String(skip), 10) : undefined;
+    const takeNum = take !== undefined ? parseInt(String(take), 10) : undefined;
+
+    const params: any = {
       projectId,
       sprintId,
       status,
@@ -80,7 +82,17 @@ export class IssuesController {
       assigneeId,
       creatorId,
       search,
-    });
+    };
+
+    // Only add numeric params if they are valid numbers
+    if (skipNum !== undefined && !isNaN(skipNum)) {
+      params.skip = skipNum;
+    }
+    if (takeNum !== undefined && !isNaN(takeNum)) {
+      params.take = takeNum;
+    }
+
+    return this.issuesService.findAll(params);
   }
 
   @Get('key/:key')

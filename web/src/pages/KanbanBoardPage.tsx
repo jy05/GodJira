@@ -67,8 +67,13 @@ export default function KanbanBoardPage() {
     mutationFn: ({ id, status }: { id: string; status: IssueStatus }) =>
       issueApi.changeStatus(id, status),
     onSuccess: () => {
+      // Invalidate and refetch all issue queries
       queryClient.invalidateQueries({ queryKey: ['issues'] });
       queryClient.invalidateQueries({ queryKey: ['project-summary'] });
+      queryClient.refetchQueries({ 
+        queryKey: ['issues', projectId],
+        exact: false 
+      });
     },
   });
 

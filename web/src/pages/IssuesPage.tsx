@@ -90,11 +90,19 @@ export default function IssuesPage() {
   // Create issue mutation
   const createMutation = useMutation({
     mutationFn: issueApi.createIssue,
-    onSuccess: () => {
+    onSuccess: (newIssue) => {
+      // Invalidate all queries that start with 'issues' to refresh all issue lists
       queryClient.invalidateQueries({ queryKey: ['issues'] });
       queryClient.invalidateQueries({ queryKey: ['project-summary'] });
+      // Refetch the current page's issues immediately
+      queryClient.refetchQueries({ 
+        queryKey: ['issues', projectId],
+        exact: false 
+      });
       setIsCreateModalOpen(false);
       reset();
+      // Show success message
+      alert(`Issue ${newIssue.key} created successfully!`);
     },
     onError: (error: any) => {
       console.error('Failed to create issue:', error);

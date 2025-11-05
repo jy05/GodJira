@@ -1,4 +1,4 @@
-import axios from 'axios';
+import apiClient from '@/lib/api-client';
 import {
   Issue,
   CreateIssueRequest,
@@ -6,24 +6,6 @@ import {
   IssueFilters,
   IssueStatus,
 } from '../types';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 export const issueApi = {
   // Get all issues with filters
@@ -43,55 +25,55 @@ export const issueApi = {
       if (filters.search !== undefined) params.search = filters.search;
     }
 
-    const { data } = await api.get('/issues', { params });
+    const { data } = await apiClient.get('/issues', { params });
     // Handle paginated response structure
     return data.data || data;
   },
 
   // Get single issue by ID
   async getIssue(id: string): Promise<Issue> {
-    const { data } = await api.get(`/issues/${id}`);
+    const { data } = await apiClient.get(`/issues/${id}`);
     return data;
   },
 
   // Get issue by key (e.g., "WEB-123")
   async getIssueByKey(key: string): Promise<Issue> {
-    const { data } = await api.get(`/issues/key/${key}`);
+    const { data } = await apiClient.get(`/issues/key/${key}`);
     return data;
   },
 
   // Create new issue
   async createIssue(issue: CreateIssueRequest): Promise<Issue> {
-    const { data } = await api.post('/issues', issue);
+    const { data } = await apiClient.post('/issues', issue);
     return data;
   },
 
   // Update issue
   async updateIssue(id: string, updates: UpdateIssueRequest): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${id}`, updates);
+    const { data } = await apiClient.patch(`/issues/${id}`, updates);
     return data;
   },
 
   // Delete issue
   async deleteIssue(id: string): Promise<void> {
-    await api.delete(`/issues/${id}`);
+    await apiClient.delete(`/issues/${id}`);
   },
 
   // Assign issue to user
   async assignIssue(id: string, assigneeId: string | null): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${id}/assign`, { assigneeId });
+    const { data } = await apiClient.patch(`/issues/${id}/assign`, { assigneeId });
     return data;
   },
 
   // Change issue status
   async changeStatus(id: string, status: IssueStatus): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${id}/status`, { status });
+    const { data } = await apiClient.patch(`/issues/${id}/status`, { status });
     return data;
   },
 
   // Move issue to sprint
   async moveToSprint(id: string, sprintId: string | null): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${id}/sprint`, { sprintId });
+    const { data } = await apiClient.patch(`/issues/${id}/sprint`, { sprintId });
     return data;
   },
 
@@ -100,7 +82,7 @@ export const issueApi = {
     parentIssueId: string,
     subTask: CreateIssueRequest
   ): Promise<Issue> {
-    const { data } = await api.post(
+    const { data } = await apiClient.post(
       `/issues/${parentIssueId}/sub-tasks`,
       subTask
     );
@@ -109,13 +91,13 @@ export const issueApi = {
 
   // Get sub-tasks of an issue
   async getSubTasks(issueId: string): Promise<Issue[]> {
-    const { data } = await api.get(`/issues/${issueId}/sub-tasks`);
+    const { data } = await apiClient.get(`/issues/${issueId}/sub-tasks`);
     return data;
   },
 
   // Convert issue to sub-task
   async convertToSubTask(issueId: string, parentIssueId: string): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${issueId}/convert-to-subtask`, {
+    const { data } = await apiClient.patch(`/issues/${issueId}/convert-to-subtask`, {
       parentIssueId,
     });
     return data;
@@ -123,7 +105,7 @@ export const issueApi = {
 
   // Promote sub-task to regular issue
   async promoteToIssue(subTaskId: string): Promise<Issue> {
-    const { data } = await api.patch(`/issues/${subTaskId}/promote`);
+    const { data } = await apiClient.patch(`/issues/${subTaskId}/promote`);
     return data;
   },
 
@@ -132,6 +114,6 @@ export const issueApi = {
     issueIds: string[],
     updates: UpdateIssueRequest
   ): Promise<void> {
-    await api.post('/issues/bulk-update', { issueIds, updates });
+    await apiClient.post('/issues/bulk-update', { issueIds, updates });
   },
 };
