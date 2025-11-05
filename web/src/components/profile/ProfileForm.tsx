@@ -6,6 +6,7 @@ import { userApi } from '@/services/user.service';
 import authService from '@/services/auth.service';
 import type { User } from '@/types';
 import { useState } from 'react';
+import { COMMON_TIMEZONES } from '@/lib/timezone';
 
 interface ProfileFormProps {
   user: User;
@@ -17,6 +18,7 @@ interface ProfileFormData {
   bio?: string;
   jobTitle?: string;
   department?: string;
+  timezone?: string;
 }
 
 export const ProfileForm = ({ user }: ProfileFormProps) => {
@@ -34,6 +36,7 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
       bio: user.bio || '',
       jobTitle: user.jobTitle || '',
       department: user.department || '',
+      timezone: user.timezone || 'America/Chicago',
     },
   });
 
@@ -181,6 +184,27 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
         {errors.bio && (
           <p className="mt-1 text-sm text-red-600">{errors.bio.message}</p>
         )}
+      </div>
+
+      {/* Timezone */}
+      <div>
+        <label htmlFor="timezone" className="block text-sm font-medium text-gray-700">
+          Preferred Timezone
+        </label>
+        <select
+          id="timezone"
+          {...register('timezone')}
+          className="input mt-1"
+        >
+          {COMMON_TIMEZONES.map((tz) => (
+            <option key={tz.value} value={tz.value}>
+              {tz.label}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-sm text-gray-500">
+          All dates and times will be displayed in your preferred timezone.
+        </p>
       </div>
 
       {/* Role (read-only) */}

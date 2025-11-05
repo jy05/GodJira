@@ -3,12 +3,14 @@ import apiClient from '@/lib/api-client';
 export interface SystemSettings {
   id: string;
   registrationEnabled: boolean;
+  systemTimezone: string;
   updatedAt: string;
   updatedBy: string;
 }
 
 export interface UpdateSettingsDto {
-  registrationEnabled: boolean;
+  registrationEnabled?: boolean;
+  systemTimezone?: string;
 }
 
 export const settingsApi = {

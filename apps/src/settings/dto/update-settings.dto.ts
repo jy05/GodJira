@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateSettingsDto {
@@ -10,4 +10,13 @@ export class UpdateSettingsDto {
   @IsBoolean()
   @IsOptional()
   registrationEnabled?: boolean;
+
+  @ApiProperty({
+    example: 'America/Chicago',
+    description: 'System timezone (IANA timezone identifier)',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  systemTimezone?: string;
 }

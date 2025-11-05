@@ -7,6 +7,9 @@ import * as compression from 'compression';
 import helmet from 'helmet';
 
 async function bootstrap() {
+  // Set the default timezone to CST (America/Chicago)
+  process.env.TZ = 'America/Chicago';
+  
   const app = await NestFactory.create(AppModule);
 
   // Security middleware

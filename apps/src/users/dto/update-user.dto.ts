@@ -46,4 +46,13 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   avatar?: string;
+
+  @ApiProperty({
+    example: 'America/New_York',
+    description: 'User preferred timezone (IANA timezone identifier)',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  timezone?: string;
 }

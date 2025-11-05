@@ -375,6 +375,11 @@ export default function IssuesPage() {
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
                     {issue.key}
+                    {issue.parentIssueId && (
+                      <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded bg-indigo-100 text-indigo-800">
+                        SUB-TASK
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {issue.title}

@@ -279,9 +279,16 @@ export default function KanbanBoardPage() {
                         >
                           {/* Issue Key and Type */}
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-medium text-blue-600">
-                              {issue.key}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-medium text-blue-600">
+                                {issue.key}
+                              </span>
+                              {issue.parentIssueId && (
+                                <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-indigo-100 text-indigo-800">
+                                  SUB
+                                </span>
+                              )}
+                            </div>
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded ${getIssueTypeBadgeColor(
                                 issue.type

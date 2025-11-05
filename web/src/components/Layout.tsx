@@ -14,7 +14,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Projects', href: '/projects' },
-    { name: 'Issues', href: '/issues' },
+    { name: 'Boards', href: '/boards' },
     { name: 'Reports', href: '/reports' },
   ];
 

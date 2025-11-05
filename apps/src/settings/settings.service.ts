@@ -16,6 +16,7 @@ export class SettingsService {
       settings = await this.prisma.systemSettings.create({
         data: {
           registrationEnabled: true,
+          systemTimezone: 'America/Chicago',
         },
       });
     }
@@ -26,7 +27,7 @@ export class SettingsService {
   /**
    * Update system settings (admin only)
    */
-  async updateSettings(userId: string, data: { registrationEnabled?: boolean }) {
+  async updateSettings(userId: string, data: { registrationEnabled?: boolean; systemTimezone?: string }) {
     const settings = await this.getSettings();
     
     return this.prisma.systemSettings.update({

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
@@ -18,6 +18,7 @@ export const AllIssuesPage = () => {
   const [statusFilter, setStatusFilter] = useState<IssueStatus | ''>('');
   const [priorityFilter, setPriorityFilter] = useState<IssuePriority | ''>('');
   const [projectFilter, setProjectFilter] = useState('');
+  const [expandedIssues, setExpandedIssues] = useState<Set<string>>(new Set());
 
   // Fetch all issues
   const { data: issues = [], isLoading } = useQuery({
@@ -37,6 +38,38 @@ export const AllIssuesPage = () => {
     queryKey: ['projects'],
     queryFn: () => projectApi.getProjects(),
   });
+
+  // Group issues hierarchically
+  const { parentIssues, subTasksByParent } = useMemo(() => {
+    const parents: any[] = [];
+    const subTasks: Record<string, any[]> = {};
+
+    issues.forEach((issue: any) => {
+      if (issue.parentIssueId) {
+        // This is a sub-task
+        if (!subTasks[issue.parentIssueId]) {
+          subTasks[issue.parentIssueId] = [];
+        }
+        subTasks[issue.parentIssueId].push(issue);
+      } else {
+        // This is a parent issue
+        parents.push(issue);
+      }
+    });
+
+    return { parentIssues: parents, subTasksByParent: subTasks };
+  }, [issues]);
+
+  const toggleExpand = (issueId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newExpanded = new Set(expandedIssues);
+    if (newExpanded.has(issueId)) {
+      newExpanded.delete(issueId);
+    } else {
+      newExpanded.add(issueId);
+    }
+    setExpandedIssues(newExpanded);
+  };
 
   const getIssueTypeBadgeColor = (type: IssueType) => {
     switch (type) {
@@ -235,56 +268,198 @@ export const AllIssuesPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {issues.map((issue) => (
-                    <tr
-                      key={issue.id}
-                      className="hover:bg-gray-50 cursor-pointer"
-                      onClick={() => navigate(`/issues/${issue.id}`)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                        {issue.key}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {issue.title}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {issue.project?.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueTypeBadgeColor(
-                            issue.type
-                          )}`}
+                  {parentIssues.map((issue) => {
+                    const subTasks = subTasksByParent[issue.id] || [];
+                    const isExpanded = expandedIssues.has(issue.id);
+                    const hasSubTasks = subTasks.length > 0;
+
+                    return (
+                      <>
+                        {/* Parent Issue Row */}
+                        <tr
+                          key={issue.id}
+                          className="hover:bg-gray-50"
                         >
-                          {issue.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueStatusBadgeColor(
-                            issue.status
-                          )}`}
-                        >
-                          {issue.status.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityBadgeColor(
-                            issue.priority
-                          )}`}
-                        >
-                          {issue.priority}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {issue.assignee?.name || 'Unassigned'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {issue.storyPoints || '-'}
-                      </td>
-                    </tr>
-                  ))}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                            <div className="flex items-center gap-2">
+                              {hasSubTasks && (
+                                <button
+                                  onClick={(e) => toggleExpand(issue.id, e)}
+                                  className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                  {isExpanded ? (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  )}
+                                </button>
+                              )}
+                              <span 
+                                className="cursor-pointer hover:underline"
+                                onClick={() => navigate(`/issues/${issue.id}`)}
+                              >
+                                {issue.key}
+                              </span>
+                              {hasSubTasks && (
+                                <span className="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600">
+                                  {subTasks.length} sub-task{subTasks.length !== 1 ? 's' : ''}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td 
+                            className="px-6 py-4 text-sm text-gray-900 cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            {issue.title}
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            {issue.project?.name}
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            <span
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueTypeBadgeColor(
+                                issue.type
+                              )}`}
+                            >
+                              {issue.type}
+                            </span>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            <span
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueStatusBadgeColor(
+                                issue.status
+                              )}`}
+                            >
+                              {issue.status.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            <span
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityBadgeColor(
+                                issue.priority
+                              )}`}
+                            >
+                              {issue.priority}
+                            </span>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            {issue.assignee?.name || 'Unassigned'}
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                            onClick={() => navigate(`/issues/${issue.id}`)}
+                          >
+                            {issue.storyPoints || '-'}
+                          </td>
+                        </tr>
+
+                        {/* Sub-task Rows (shown when expanded) */}
+                        {isExpanded && subTasks.map((subTask: any) => (
+                          <tr
+                            key={subTask.id}
+                            className="bg-gray-50 hover:bg-gray-100"
+                          >
+                            <td className="px-6 py-3 whitespace-nowrap text-sm">
+                              <div className="flex items-center gap-2 pl-6">
+                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <span 
+                                  className="font-medium text-blue-600 cursor-pointer hover:underline"
+                                  onClick={() => navigate(`/issues/${subTask.id}`)}
+                                >
+                                  {subTask.key}
+                                </span>
+                                <span className="px-2 py-0.5 text-xs font-medium rounded bg-indigo-100 text-indigo-800">
+                                  SUB-TASK
+                                </span>
+                              </div>
+                            </td>
+                            <td 
+                              className="px-6 py-3 text-sm text-gray-900 cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              {subTask.title}
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap text-sm text-gray-500 cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              {subTask.project?.name}
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              <span
+                                className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueTypeBadgeColor(
+                                  subTask.type
+                                )}`}
+                              >
+                                {subTask.type}
+                              </span>
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              <span
+                                className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueStatusBadgeColor(
+                                  subTask.status
+                                )}`}
+                              >
+                                {subTask.status.replace('_', ' ')}
+                              </span>
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              <span
+                                className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityBadgeColor(
+                                  subTask.priority
+                                )}`}
+                              >
+                                {subTask.priority}
+                              </span>
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              {subTask.assignee?.name || 'Unassigned'}
+                            </td>
+                            <td 
+                              className="px-6 py-3 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                              onClick={() => navigate(`/issues/${subTask.id}`)}
+                            >
+                              {subTask.storyPoints || '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

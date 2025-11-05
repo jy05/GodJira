@@ -37,6 +37,7 @@ enum IssueType {
 }
 
 enum IssueStatus {
+  UNASSIGNED
   BACKLOG
   TODO
   IN_PROGRESS
@@ -115,6 +116,10 @@ model User {
   // Avatar stored as base64 data URL
   // Format: data:image/png;base64,iVBORw0KGgoAAAANS...
   avatar    String?  @db.Text
+  
+  // User's preferred timezone (e.g., "America/New_York", "Europe/London")
+  // Defaults to system timezone if not set
+  timezone  String?  @default("America/Chicago")
   
   isActive  Boolean  @default(true)
   
@@ -579,6 +584,10 @@ model SystemSettings {
   
   // Registration settings
   registrationEnabled     Boolean  @default(true)
+  
+  // System timezone setting (IANA timezone identifier)
+  // Default: America/Chicago (CST/CDT)
+  systemTimezone          String   @default("America/Chicago")
   
   // Future settings can be added here
   // maintenanceMode       Boolean  @default(false)

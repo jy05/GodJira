@@ -10,6 +10,7 @@ export interface User {
   department?: string;
   role: UserRole;
   avatar?: string; // base64 data URL
+  timezone?: string; // IANA timezone identifier
   isActive: boolean;
   isEmailVerified: boolean;
   createdAt: string;
@@ -214,6 +215,7 @@ export interface VelocityReport {
 export type IssueType = 'TASK' | 'BUG' | 'STORY' | 'EPIC' | 'SPIKE';
 
 export type IssueStatus =
+  | 'UNASSIGNED'
   | 'BACKLOG'
   | 'TODO'
   | 'IN_PROGRESS'

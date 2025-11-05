@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Layout } from '@/components/Layout';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -13,14 +14,19 @@ import {
 import { issueApi } from '../services/issue.service';
 import { sprintApi } from '../services/sprint.service';
 import { userApi } from '../services/user.service';
+import { commentApi } from '../services/comment.service';
 
 export default function IssueDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user: currentUser } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingSubTask, setIsCreatingSubTask] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   // Fetch issue details
   const { data: issue, isLoading } = useQuery({
@@ -33,6 +39,13 @@ export default function IssueDetailPage() {
   const { data: subTasks = [] } = useQuery({
     queryKey: ['sub-tasks', id],
     queryFn: () => issueApi.getSubTasks(id!),
+    enabled: !!id,
+  });
+
+  // Fetch comments
+  const { data: comments = [] } = useQuery({
+    queryKey: ['comments', id],
+    queryFn: () => commentApi.getIssueComments(id!),
     enabled: !!id,
   });
 
@@ -101,6 +114,35 @@ export default function IssueDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['issue', id] });
       queryClient.invalidateQueries({ queryKey: ['issues'] });
+    },
+  });
+
+  // Create comment mutation
+  const createCommentMutation = useMutation({
+    mutationFn: (content: string) =>
+      commentApi.createComment({ content, issueId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', id] });
+      setNewComment('');
+    },
+  });
+
+  // Delete comment mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => commentApi.deleteComment(commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', id] });
+    },
+  });
+
+  // Update comment mutation
+  const updateCommentMutation = useMutation({
+    mutationFn: ({ commentId, content }: { commentId: string; content: string }) =>
+      commentApi.updateComment(commentId, { content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', id] });
+      setEditingCommentId(null);
+      setEditCommentContent('');
     },
   });
 
@@ -241,6 +283,8 @@ export default function IssueDetailPage() {
 
   const getIssueStatusBadgeColor = (status: IssueStatus) => {
     switch (status) {
+      case 'UNASSIGNED':
+        return 'bg-gray-200 text-gray-700';
       case 'BACKLOG':
         return 'bg-gray-100 text-gray-800';
       case 'TODO':
@@ -258,6 +302,31 @@ export default function IssueDetailPage() {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      createCommentMutation.mutate(newComment);
+    }
+  };
+
+  const handleEditComment = (commentId: string, content: string) => {
+    setEditingCommentId(commentId);
+    setEditCommentContent(content);
+  };
+
+  const handleSaveCommentEdit = () => {
+    if (editCommentContent.trim() && editingCommentId) {
+      updateCommentMutation.mutate({
+        commentId: editingCommentId,
+        content: editCommentContent,
+      });
+    }
+  };
+
+  const handleCancelCommentEdit = () => {
+    setEditingCommentId(null);
+    setEditCommentContent('');
   };
 
   const getPriorityBadgeColor = (priority: IssuePriority) => {
@@ -314,6 +383,11 @@ export default function IssueDetailPage() {
           </div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-gray-900">{issue.key}</h1>
+            {issue.parentIssueId && (
+              <span className="px-3 py-1 text-sm font-medium rounded-full bg-indigo-100 text-indigo-800">
+                SUB-TASK
+              </span>
+            )}
             <span
               className={`px-3 py-1 text-sm font-medium rounded-full ${getIssueTypeBadgeColor(
                 issue.type
@@ -465,136 +539,268 @@ export default function IssueDetailPage() {
             )}
           </div>
 
-          {/* Sub-tasks */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">
-                Sub-tasks ({subTasks.length})
-              </h3>
-              {!issue.parentIssueId && (
+          {/* Sub-tasks - Only show for parent issues, not for sub-tasks */}
+          {!issue.parentIssueId && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">
+                  Sub-tasks ({subTasks.length})
+                </h3>
                 <button
                   onClick={() => setIsCreatingSubTask(true)}
                   className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                   Add Sub-task
                 </button>
+              </div>
+
+              {isCreatingSubTask && (
+                <form
+                  onSubmit={subTaskHandleSubmit(onCreateSubTask)}
+                  className="mb-4 p-4 border rounded-md space-y-3"
+                >
+                  <div>
+                    <input
+                      {...subTaskRegister('title', {
+                        required: 'Title is required',
+                      })}
+                      placeholder="Sub-task title"
+                      className="w-full px-3 py-2 border rounded-md"
+                    />
+                    {subTaskErrors.title && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {subTaskErrors.title.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <select
+                      {...subTaskRegister('type')}
+                      className="px-3 py-2 border rounded-md text-sm"
+                    >
+                      <option value="TASK">Task</option>
+                      <option value="BUG">Bug</option>
+                    </select>
+
+                    <select
+                      {...subTaskRegister('priority')}
+                      className="px-3 py-2 border rounded-md text-sm"
+                    >
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                    </select>
+
+                    <select
+                      {...subTaskRegister('assigneeId')}
+                      disabled={usersLoading || users.length === 0}
+                      className="px-3 py-2 border rounded-md text-sm disabled:bg-gray-100"
+                    >
+                      <option value="">Unassigned</option>
+                      {users.map((user: any) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingSubTask(false);
+                        subTaskReset();
+                      }}
+                      className="px-3 py-1 text-sm text-gray-700 border rounded-md hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={createSubTaskMutation.isPending}
+                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {createSubTaskMutation.isPending ? 'Creating...' : 'Create'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {subTasks.length === 0 ? (
+                <p className="text-gray-500 text-sm">No sub-tasks yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {subTasks.map((subTask) => (
+                    <div
+                      key={subTask.id}
+                      className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-blue-600">
+                          {subTask.key}
+                        </span>
+                        <span className="text-sm">{subTask.title}</span>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${getIssueStatusBadgeColor(
+                            subTask.status
+                          )}`}
+                        >
+                          {subTask.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => navigate(`/issues/${subTask.id}`)}
+                          className="text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handlePromote(subTask.id)}
+                          className="text-sm text-gray-600 hover:text-gray-800"
+                        >
+                          Promote
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
+          )}
 
-            {isCreatingSubTask && (
-              <form
-                onSubmit={subTaskHandleSubmit(onCreateSubTask)}
-                className="mb-4 p-4 border rounded-md space-y-3"
-              >
-                <div>
-                  <input
-                    {...subTaskRegister('title', {
-                      required: 'Title is required',
-                    })}
-                    placeholder="Sub-task title"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  {subTaskErrors.title && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {subTaskErrors.title.message}
-                    </p>
-                  )}
-                </div>
+          {/* Comments Section */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">
+              Comments ({comments.length})
+            </h3>
 
-                <div className="grid grid-cols-3 gap-3">
-                  <select
-                    {...subTaskRegister('type')}
-                    className="px-3 py-2 border rounded-md text-sm"
-                  >
-                    <option value="TASK">Task</option>
-                    <option value="BUG">Bug</option>
-                  </select>
-
-                  <select
-                    {...subTaskRegister('priority')}
-                    className="px-3 py-2 border rounded-md text-sm"
-                  >
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                  </select>
-
-                  <select
-                    {...subTaskRegister('assigneeId')}
-                    disabled={usersLoading || users.length === 0}
-                    className="px-3 py-2 border rounded-md text-sm disabled:bg-gray-100"
-                  >
-                    <option value="">Unassigned</option>
-                    {users.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCreatingSubTask(false);
-                      subTaskReset();
-                    }}
-                    className="px-3 py-1 text-sm text-gray-700 border rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={createSubTaskMutation.isPending}
-                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {createSubTaskMutation.isPending ? 'Creating...' : 'Create'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {subTasks.length === 0 ? (
-              <p className="text-gray-500 text-sm">No sub-tasks yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {subTasks.map((subTask) => (
-                  <div
-                    key={subTask.id}
-                    className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-blue-600">
-                        {subTask.key}
-                      </span>
-                      <span className="text-sm">{subTask.title}</span>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded-full ${getIssueStatusBadgeColor(
-                          subTask.status
-                        )}`}
-                      >
-                        {subTask.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => navigate(`/issues/${subTask.id}`)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handlePromote(subTask.id)}
-                        className="text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        Promote
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Add Comment Form */}
+            <div className="mb-6">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Add a comment..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={3}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.ctrlKey) {
+                    handleAddComment();
+                  }
+                }}
+              />
+              <div className="mt-2 flex justify-between items-center">
+                <span className="text-xs text-gray-500">
+                  Press Ctrl+Enter to submit
+                </span>
+                <button
+                  onClick={handleAddComment}
+                  disabled={!newComment.trim() || createCommentMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {createCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
+                </button>
               </div>
-            )}
+            </div>
+
+            {/* Comments List */}
+            <div className="space-y-4">
+              {comments.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No comments yet. Be the first to comment!
+                </div>
+              ) : (
+                comments.map((comment: any) => (
+                  <div
+                    key={comment.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+                          {comment.author.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-sm">
+                            {comment.author.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(comment.createdAt).toLocaleString()}
+                            {comment.createdAt !== comment.updatedAt && (
+                              <span className="ml-1 px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded text-[10px] font-medium">
+                                edited {new Date(comment.updatedAt).toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {currentUser?.id === comment.authorId && (
+                        <div className="flex gap-2">
+                          {editingCommentId !== comment.id && (
+                            <>
+                              <button
+                                onClick={() => handleEditComment(comment.id, comment.content)}
+                                className="text-blue-600 hover:text-blue-700 text-sm"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this comment?')) {
+                                    deleteCommentMutation.mutate(comment.id);
+                                  }
+                                }}
+                                className="text-red-600 hover:text-red-700 text-sm"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {editingCommentId === comment.id ? (
+                      <div className="pl-11 space-y-2">
+                        <textarea
+                          value={editCommentContent}
+                          onChange={(e) => setEditCommentContent(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          rows={3}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && e.ctrlKey) {
+                              handleSaveCommentEdit();
+                            } else if (e.key === 'Escape') {
+                              handleCancelCommentEdit();
+                            }
+                          }}
+                        />
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={handleCancelCommentEdit}
+                            className="px-3 py-1 text-sm text-gray-700 border rounded-md hover:bg-gray-50"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveCommentEdit}
+                            disabled={!editCommentContent.trim() || updateCommentMutation.isPending}
+                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                          >
+                            {updateCommentMutation.isPending ? 'Saving...' : 'Save'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-700 whitespace-pre-wrap pl-11">
+                        {comment.content}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           {/* Parent Issue Link */}
