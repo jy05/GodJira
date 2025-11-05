@@ -460,6 +460,32 @@ export const UsersPage = () => {
         />
       )}
 
+      {/* Edit User Modal */}
+      {showEditModal && selectedUser && (
+        <EditUserModal
+          user={selectedUser}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedUser(null);
+          }}
+          onSubmit={(data) => updateUserMutation.mutate({ userId: selectedUser.id, data })}
+          isLoading={updateUserMutation.isPending}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedUser && (
+        <DeleteUserModal
+          user={selectedUser}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setSelectedUser(null);
+          }}
+          onConfirm={() => deleteUserMutation.mutate(selectedUser.id)}
+          isLoading={deleteUserMutation.isPending}
+        />
+      )}
+
       {/* Reset Password Modal */}
       {showPasswordModal && selectedUser && (
         <ResetPasswordModal
@@ -802,6 +828,181 @@ const CreateUserModal = ({ onClose, onSubmit, isLoading }: CreateUserModalProps)
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+};
+
+// Edit User Modal Component
+interface EditUserModalProps {
+  user: User;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  isLoading: boolean;
+}
+
+const EditUserModal = ({ user, onClose, onSubmit, isLoading }: EditUserModalProps) => {
+  const [formData, setFormData] = useState({
+    email: user.email,
+    name: user.name,
+    jobTitle: user.jobTitle || '',
+    department: user.department || '',
+    role: user.role,
+    isActive: user.isActive,
+    isEmailVerified: user.isEmailVerified,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4">Edit User</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label">Name</label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Email</label>
+            <input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Job Title</label>
+            <input
+              type="text"
+              value={formData.jobTitle}
+              onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Department</label>
+            <input
+              type="text"
+              value={formData.department}
+              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Role</label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
+              className="input"
+            >
+              <option value="USER">User</option>
+              <option value="MANAGER">Manager</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={formData.isActive}
+              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <label htmlFor="editIsActive" className="text-sm text-gray-700">
+              Active
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="editIsEmailVerified"
+              checked={formData.isEmailVerified}
+              onChange={(e) => setFormData({ ...formData, isEmailVerified: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <label htmlFor="editIsEmailVerified" className="text-sm text-gray-700">
+              Email Verified
+            </label>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="btn btn-secondary flex-1"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn btn-primary flex-1"
+            >
+              {isLoading ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Delete User Modal Component
+interface DeleteUserModalProps {
+  user: User;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}
+
+const DeleteUserModal = ({ user, onClose, onConfirm, isLoading }: DeleteUserModalProps) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold mb-4 text-red-600">Delete User</h2>
+        <p className="text-gray-700 mb-2">
+          Are you sure you want to permanently delete <strong>{user.name}</strong> ({user.email})?
+        </p>
+        <p className="text-sm text-gray-600 mb-6">
+          This action cannot be undone. All data associated with this user will be permanently removed.
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            className="btn btn-secondary flex-1"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="btn bg-red-600 hover:bg-red-700 text-white flex-1"
+          >
+            {isLoading ? 'Deleting...' : 'Delete User'}
+          </button>
+        </div>
       </div>
     </div>
   );
