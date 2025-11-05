@@ -84,12 +84,26 @@ export const ProjectDetailPage = () => {
                 Created on {new Date(project.createdAt).toLocaleDateString()}
               </p>
             </div>
-            <button
-              onClick={() => navigate(`/projects/${id}/sprints`)}
-              className="btn btn-primary"
-            >
-              View Sprints
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/projects/${id}/issues`)}
+                className="btn btn-primary"
+              >
+                Issues
+              </button>
+              <button
+                onClick={() => navigate(`/projects/${id}/board`)}
+                className="btn btn-primary"
+              >
+                Board
+              </button>
+              <button
+                onClick={() => navigate(`/projects/${id}/sprints`)}
+                className="btn btn-primary"
+              >
+                Sprints
+              </button>
+            </div>
           </div>
         </div>
 

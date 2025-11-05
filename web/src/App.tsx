@@ -20,6 +20,9 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { SprintsPage } from './pages/SprintsPage';
 import { SprintDetailPage } from './pages/SprintDetailPage';
+import IssuesPage from './pages/IssuesPage';
+import IssueDetailPage from './pages/IssueDetailPage';
+import KanbanBoardPage from './pages/KanbanBoardPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -118,6 +121,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SprintDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId/issues"
+              element={
+                <ProtectedRoute>
+                  <IssuesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId/board"
+              element={
+                <ProtectedRoute>
+                  <KanbanBoardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/issues/:id"
+              element={
+                <ProtectedRoute>
+                  <IssueDetailPage />
                 </ProtectedRoute>
               }
             />
