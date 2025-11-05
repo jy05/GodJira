@@ -12,6 +12,21 @@ export interface UpdateUserRoleData {
   role: 'ADMIN' | 'MANAGER' | 'USER';
 }
 
+export interface CreateUserData {
+  email: string;
+  password: string;
+  name: string;
+  jobTitle?: string;
+  department?: string;
+  role?: 'ADMIN' | 'MANAGER' | 'USER';
+  isActive?: boolean;
+  isEmailVerified?: boolean;
+}
+
+export interface AdminResetPasswordData {
+  newPassword: string;
+}
+
 export const userApi = {
   // Get current user profile
   getMe: async (): Promise<User> => {
@@ -77,5 +92,16 @@ export const userApi = {
   reactivateUser: async (id: string): Promise<User> => {
     const { data } = await apiClient.patch(`/users/${id}/reactivate`);
     return data;
+  },
+
+  // Create user (admin only)
+  createUser: async (userData: CreateUserData): Promise<User> => {
+    const { data } = await apiClient.post('/users/admin/create', userData);
+    return data;
+  },
+
+  // Admin reset user password (admin only)
+  adminResetPassword: async (id: string, passwordData: AdminResetPasswordData): Promise<void> => {
+    await apiClient.patch(`/users/admin/${id}/reset-password`, passwordData);
   },
 };

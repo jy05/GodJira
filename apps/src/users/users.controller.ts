@@ -20,6 +20,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto, ChangePasswordDto } from './dto';
 import { AdminCreateUserDto } from './dto/admin-create-user.dto';
 import { AdminUpdateUserDto } from './dto/admin-update-user.dto';
+import { AdminResetPasswordDto } from './dto/admin-reset-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -279,5 +280,24 @@ export class UsersController {
   adminDelete(@Param('id') id: string) {
     return this.usersService.adminDeleteUser(id);
   }
-}
 
+  @Patch('admin/:id/reset-password')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN' as any)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin: Reset user password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Insufficient permissions',
+  })
+  adminResetPassword(
+    @Param('id') id: string,
+    @Body() adminResetPasswordDto: AdminResetPasswordDto,
+  ) {
+    return this.usersService.adminResetPassword(id, adminResetPasswordDto);
+  }
+}

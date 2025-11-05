@@ -61,7 +61,9 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
   };
 
   const onSubmit = (data: ProfileFormData) => {
-    updateMutation.mutate(data);
+    // Exclude email from the update
+    const { email, ...updateData } = data;
+    updateMutation.mutate(updateData);
   };
 
   return (

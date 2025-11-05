@@ -6,6 +6,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto, ChangePasswordDto } from './dto';
+import { AdminCreateUserDto } from './dto/admin-create-user.dto';
+import { AdminUpdateUserDto } from './dto/admin-update-user.dto';
+import { AdminResetPasswordDto } from './dto/admin-reset-password.dto';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 
@@ -410,6 +413,34 @@ export class UsersService {
     });
 
     return { message: 'User permanently deleted' };
+  }
+
+  /**
+   * Admin: Reset user password
+   */
+  async adminResetPassword(id: string, dto: AdminResetPasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
+
+    // Update password and reset failed login attempts
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: hashedPassword,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      },
+    });
+
+    return { message: 'Password reset successfully' };
   }
 
   /**

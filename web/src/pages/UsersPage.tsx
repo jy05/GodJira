@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi } from '@/services/user.service';
 import type { User, UserRole } from '@/types';
+import type { CreateUserData, AdminResetPasswordData } from '@/services/user.service';
 
 export const UsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -11,6 +13,9 @@ export const UsersPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const limit = 20;
 
@@ -43,6 +48,37 @@ export const UsersPage = () => {
     mutationFn: (userId: string) => userApi.reactivateUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('User reactivated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to reactivate user');
+    },
+  });
+
+  // Create user mutation
+  const createUserMutation = useMutation({
+    mutationFn: (userData: CreateUserData) => userApi.createUser(userData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setShowCreateModal(false);
+      toast.success('User created successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to create user');
+    },
+  });
+
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: ({ userId, password }: { userId: string; password: AdminResetPasswordData }) =>
+      userApi.adminResetPassword(userId, password),
+    onSuccess: () => {
+      setShowPasswordModal(false);
+      setSelectedUser(null);
+      toast.success('Password reset successfully');
+    },
+    onError: () => {
+      toast.error('Failed to reset password');
     },
   });
 
@@ -78,11 +114,22 @@ export const UsersPage = () => {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Manage user accounts, roles, and permissions
-            </p>
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+              <p className="mt-2 text-sm text-gray-600">
+                Manage user accounts, roles, and permissions
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="btn btn-primary flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Create User
+            </button>
           </div>
 
           {/* Filters */}
@@ -180,6 +227,10 @@ export const UsersPage = () => {
                           }
                           onDeactivate={() => deactivateMutation.mutate(user.id)}
                           onReactivate={() => reactivateMutation.mutate(user.id)}
+                          onResetPassword={() => {
+                            setSelectedUser(user);
+                            setShowPasswordModal(true);
+                          }}
                           isUpdating={
                             updateRoleMutation.isPending ||
                             deactivateMutation.isPending ||
@@ -247,6 +298,28 @@ export const UsersPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <CreateUserModal
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={(data) => createUserMutation.mutate(data)}
+          isLoading={createUserMutation.isPending}
+        />
+      )}
+
+      {/* Reset Password Modal */}
+      {showPasswordModal && selectedUser && (
+        <ResetPasswordModal
+          user={selectedUser}
+          onClose={() => {
+            setShowPasswordModal(false);
+            setSelectedUser(null);
+          }}
+          onSubmit={(password) => resetPasswordMutation.mutate({ userId: selectedUser.id, password })}
+          isLoading={resetPasswordMutation.isPending}
+        />
+      )}
     </Layout>
   );
 };
@@ -257,6 +330,7 @@ interface UserRowProps {
   onUpdateRole: (role: UserRole) => void;
   onDeactivate: () => void;
   onReactivate: () => void;
+  onResetPassword: () => void;
   isUpdating: boolean;
 }
 
@@ -266,6 +340,7 @@ const UserRow = ({
   onUpdateRole,
   onDeactivate,
   onReactivate,
+  onResetPassword,
   isUpdating,
 }: UserRowProps) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -387,19 +462,267 @@ const UserRow = ({
       {/* Actions */}
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         {!isCurrentUser && currentUser.role === 'ADMIN' && (
-          <button
-            onClick={user.isActive ? onDeactivate : onReactivate}
-            disabled={isUpdating}
-            className={`${
-              user.isActive
-                ? 'text-red-600 hover:text-red-900'
-                : 'text-green-600 hover:text-green-900'
-            } disabled:opacity-50`}
-          >
-            {user.isActive ? 'Deactivate' : 'Reactivate'}
-          </button>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onResetPassword}
+              disabled={isUpdating}
+              className="text-blue-600 hover:text-blue-900 disabled:opacity-50"
+              title="Reset Password"
+            >
+              Reset Password
+            </button>
+            <button
+              onClick={user.isActive ? onDeactivate : onReactivate}
+              disabled={isUpdating}
+              className={`${
+                user.isActive
+                  ? 'text-red-600 hover:text-red-900'
+                  : 'text-green-600 hover:text-green-900'
+              } disabled:opacity-50`}
+            >
+              {user.isActive ? 'Deactivate' : 'Reactivate'}
+            </button>
+          </div>
         )}
       </td>
     </tr>
+  );
+};
+
+// Create User Modal Component
+interface CreateUserModalProps {
+  onClose: () => void;
+  onSubmit: (data: CreateUserData) => void;
+  isLoading: boolean;
+}
+
+const CreateUserModal = ({ onClose, onSubmit, isLoading }: CreateUserModalProps) => {
+  const [formData, setFormData] = useState<CreateUserData>({
+    email: '',
+    password: '',
+    name: '',
+    role: 'USER',
+    isActive: true,
+    isEmailVerified: false,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold mb-4">Create New User</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label">Name</label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Email</label>
+            <input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Password</label>
+            <input
+              type="password"
+              required
+              minLength={8}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="input"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+            </p>
+          </div>
+
+          <div>
+            <label className="label">Job Title (Optional)</label>
+            <input
+              type="text"
+              value={formData.jobTitle || ''}
+              onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Department (Optional)</label>
+            <input
+              type="text"
+              value={formData.department || ''}
+              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Role</label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
+              className="input"
+            >
+              <option value="USER">User</option>
+              <option value="MANAGER">Manager</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isActive"
+              checked={formData.isActive}
+              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <label htmlFor="isActive" className="text-sm text-gray-700">
+              Active
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isEmailVerified"
+              checked={formData.isEmailVerified}
+              onChange={(e) => setFormData({ ...formData, isEmailVerified: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <label htmlFor="isEmailVerified" className="text-sm text-gray-700">
+              Email Verified
+            </label>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="btn btn-secondary flex-1"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn btn-primary flex-1"
+            >
+              {isLoading ? 'Creating...' : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Reset Password Modal Component
+interface ResetPasswordModalProps {
+  user: User;
+  onClose: () => void;
+  onSubmit: (password: AdminResetPasswordData) => void;
+  isLoading: boolean;
+}
+
+const ResetPasswordModal = ({ user, onClose, onSubmit, isLoading }: ResetPasswordModalProps) => {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    onSubmit({ newPassword });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
+        <p className="text-gray-600 mb-4">
+          Reset password for <strong>{user.name}</strong> ({user.email})
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label">New Password</label>
+            <input
+              type="password"
+              required
+              minLength={8}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="input"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+            </p>
+          </div>
+
+          <div>
+            <label className="label">Confirm Password</label>
+            <input
+              type="password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="input"
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-600">{error}</p>
+          )}
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="btn btn-secondary flex-1"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn btn-primary flex-1"
+            >
+              {isLoading ? 'Resetting...' : 'Reset Password'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
