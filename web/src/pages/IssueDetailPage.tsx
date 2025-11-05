@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Layout } from '@/components/Layout';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -43,12 +44,12 @@ export default function IssueDetailPage() {
   });
 
   // Fetch users for assignee selector
-  const { data: usersResponse } = useQuery({
+  const { data: usersResponse, isLoading: usersLoading } = useQuery({
     queryKey: ['users'],
     queryFn: () => userApi.getUsers(),
   });
 
-  const users = usersResponse?.data || [];
+  const users = Array.isArray(usersResponse?.data) ? usersResponse.data : [];
 
   // Update issue mutation
   const updateMutation = useMutation({
@@ -273,25 +274,31 @@ export default function IssueDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="text-center text-gray-500">Loading issue...</div>
-      </div>
+      <Layout>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 sm:px-0 text-center text-gray-500">Loading issue...</div>
+        </div>
+      </Layout>
     );
   }
 
   if (!issue) {
     return (
-      <div className="p-6">
-        <div className="text-center text-gray-500">Issue not found</div>
-      </div>
+      <Layout>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 sm:px-0 text-center text-gray-500">Issue not found</div>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
+    <Layout>
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0">
+          {/* Header */}
+          <div className="mb-6 flex items-start justify-between">
+            <div>
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={() => navigate(`/projects/${issue.projectId}/issues`)}
@@ -630,15 +637,25 @@ export default function IssueDetailPage() {
               <select
                 value={issue.assigneeId || ''}
                 onChange={(e) => handleAssign(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
+                disabled={usersLoading || users.length === 0}
+                className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 <option value="">Unassigned</option>
+                {users.length === 0 && !usersLoading && (
+                  <option disabled>No users available</option>
+                )}
                 {users.map((user: any) => (
                   <option key={user.id} value={user.id}>
                     {user.name}
                   </option>
                 ))}
               </select>
+              {usersLoading && (
+                <p className="text-xs text-gray-500 mt-1">Loading users...</p>
+              )}
+              {!usersLoading && users.length === 0 && (
+                <p className="text-xs text-red-500 mt-1">No users found</p>
+              )}
             </div>
 
             {/* Sprint */}
@@ -708,6 +725,8 @@ export default function IssueDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

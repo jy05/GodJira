@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Layout } from '@/components/Layout';
 import {
   CreateIssueRequest,
   IssueType,
@@ -77,12 +78,14 @@ export default function IssuesPage() {
   });
 
   // Fetch users for assignee filter
-  const { data: usersResponse } = useQuery({
+  const { data: usersResponse, isLoading: usersLoading } = useQuery({
     queryKey: ['users'],
     queryFn: () => userApi.getUsers(),
   });
 
-  const users: UserBasic[] = usersResponse?.data || [];
+  const users: UserBasic[] = Array.isArray(usersResponse?.data) 
+    ? usersResponse.data 
+    : [];
 
   // Create issue mutation
   const createMutation = useMutation({
@@ -92,6 +95,10 @@ export default function IssuesPage() {
       queryClient.invalidateQueries({ queryKey: ['project-summary'] });
       setIsCreateModalOpen(false);
       reset();
+    },
+    onError: (error: any) => {
+      console.error('Failed to create issue:', error);
+      alert(`Failed to create issue: ${error?.response?.data?.message || error.message}`);
     },
   });
 
@@ -114,6 +121,7 @@ export default function IssuesPage() {
   });
 
   const onSubmit = (data: CreateIssueRequest) => {
+    console.log('Creating issue with data:', data);
     createMutation.mutate({
       ...data,
       projectId: projectId!,
@@ -183,18 +191,20 @@ export default function IssuesPage() {
   };
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {project?.name} - Issues
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage your backlog, stories, tasks, bugs, and spikes
-            </p>
-          </div>
+    <Layout>
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {project?.name} - Issues
+                </h1>
+                <p className="mt-1 text-sm text-gray-500">
+                  Manage your backlog, stories, tasks, bugs, and spikes
+                </p>
+              </div>
           <button
             onClick={() => setIsCreateModalOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -418,6 +428,16 @@ export default function IssuesPage() {
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Create Issue</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {Object.keys(errors).length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                  <p className="text-red-800 text-sm font-medium">Please fix the following errors:</p>
+                  <ul className="list-disc list-inside text-red-700 text-sm mt-1">
+                    {Object.entries(errors).map(([key, error]: [string, any]) => (
+                      <li key={key}>{key}: {error?.message || 'Required'}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -516,7 +536,8 @@ export default function IssuesPage() {
                   </label>
                   <select
                     {...register('assigneeId')}
-                    className="w-full px-3 py-2 border rounded-md"
+                    disabled={usersLoading || users.length === 0}
+                    className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
                     <option value="">Unassigned</option>
                     {users.map((user) => (
@@ -525,6 +546,12 @@ export default function IssuesPage() {
                       </option>
                     ))}
                   </select>
+                  {usersLoading && (
+                    <p className="text-xs text-gray-500 mt-1">Loading users...</p>
+                  )}
+                  {!usersLoading && users.length === 0 && (
+                    <p className="text-xs text-red-500 mt-1">No users found. Please create users first.</p>
+                  )}
                 </div>
               </div>
 
@@ -552,6 +579,8 @@ export default function IssuesPage() {
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

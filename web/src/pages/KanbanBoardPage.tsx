@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Layout } from '@/components/Layout';
 import {
   IssueStatus,
   IssueType,
@@ -148,18 +149,20 @@ export default function KanbanBoardPage() {
   };
 
   return (
-    <div className="p-6 h-screen flex flex-col">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {project?.name} - Board
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Drag issues between columns to update their status
-            </p>
-          </div>
+    <Layout>
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0 h-screen flex flex-col">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {project?.name} - Board
+                </h1>
+                <p className="mt-1 text-sm text-gray-500">
+                  Drag issues between columns to update their status
+                </p>
+              </div>
           <button
             onClick={() => navigate(`/projects/${projectId}/issues`)}
             className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
@@ -329,6 +332,8 @@ export default function KanbanBoardPage() {
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

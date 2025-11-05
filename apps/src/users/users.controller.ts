@@ -53,7 +53,17 @@ export class UsersController {
     @Query('take') take?: number,
     @Query('search') search?: string,
   ) {
-    return this.usersService.findAll({ skip, take, search });
+    // Parse string query params to numbers
+    const skipNum = skip !== undefined ? parseInt(String(skip), 10) : undefined;
+    const takeNum = take !== undefined ? parseInt(String(take), 10) : undefined;
+    
+    // Only include parsed numbers if valid
+    const params: { skip?: number; take?: number; search?: string } = {};
+    if (skipNum !== undefined && !isNaN(skipNum)) params.skip = skipNum;
+    if (takeNum !== undefined && !isNaN(takeNum)) params.take = takeNum;
+    if (search) params.search = search;
+    
+    return this.usersService.findAll(params);
   }
 
   @Get('me')
