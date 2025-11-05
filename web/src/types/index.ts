@@ -207,3 +207,97 @@ export interface VelocityReport {
   totalSprints: number;
 }
 
+// ===========================
+// ISSUE TYPES (Phase 4)
+// ===========================
+
+export type IssueType = 'TASK' | 'BUG' | 'STORY' | 'EPIC' | 'SPIKE';
+
+export type IssueStatus =
+  | 'BACKLOG'
+  | 'TODO'
+  | 'IN_PROGRESS'
+  | 'IN_REVIEW'
+  | 'BLOCKED'
+  | 'DONE'
+  | 'CLOSED';
+
+export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' | 'CRITICAL';
+
+export interface Issue {
+  id: string;
+  key: string; // e.g., "WEB-123"
+  title: string;
+  description: string | null;
+  type: IssueType;
+  status: IssueStatus;
+  priority: IssuePriority;
+  storyPoints: number | null;
+  labels: string[];
+  projectId: string;
+  project?: {
+    id: string;
+    key: string;
+    name: string;
+  };
+  sprintId: string | null;
+  sprint?: {
+    id: string;
+    name: string;
+    status: SprintStatus;
+  };
+  creatorId: string;
+  creator?: User;
+  assigneeId: string | null;
+  assignee?: User | null;
+  parentIssueId: string | null;
+  parentIssue?: Issue | null;
+  subIssues?: Issue[];
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    comments: number;
+    subIssues: number;
+    watchers: number;
+  };
+}
+
+export interface CreateIssueRequest {
+  title: string;
+  description?: string;
+  type: IssueType;
+  priority?: IssuePriority;
+  storyPoints?: number;
+  labels?: string[];
+  projectId: string;
+  sprintId?: string | null;
+  assigneeId?: string | null;
+  parentIssueId?: string | null;
+}
+
+export interface UpdateIssueRequest {
+  title?: string;
+  description?: string;
+  type?: IssueType;
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  storyPoints?: number;
+  labels?: string[];
+  sprintId?: string | null;
+  assigneeId?: string | null;
+}
+
+export interface IssueFilters {
+  skip?: number;
+  take?: number;
+  projectId?: string;
+  sprintId?: string | null;
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  type?: IssueType;
+  assigneeId?: string;
+  creatorId?: string;
+  search?: string;
+}
+
+
