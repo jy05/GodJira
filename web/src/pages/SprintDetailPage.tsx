@@ -161,9 +161,11 @@ export const SprintDetailPage = () => {
                   <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
                     <div className="text-center">
                       <p className="text-sm text-gray-600 mb-2">Burndown Visualization</p>
-                      <p className="text-xs text-gray-500">
-                        {burndown.summary.completedStoryPoints} / {burndown.summary.totalStoryPoints} points completed
-                      </p>
+                      {burndown.summary && (
+                        <p className="text-xs text-gray-500">
+                          {burndown.summary.completedStoryPoints} / {burndown.summary.totalStoryPoints} points completed
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500 mt-2">
                         Chart visualization requires charting library (Chart.js/Recharts)
                       </p>
