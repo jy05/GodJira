@@ -47,6 +47,7 @@ export class UsersService {
           role: true,
           avatar: true,
           isActive: true,
+          isEmailVerified: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -83,6 +84,7 @@ export class UsersService {
         role: true,
         avatar: true,
         isActive: true,
+        isEmailVerified: true,
         createdAt: true,
         updatedAt: true,
         _count: {

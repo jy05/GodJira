@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import authService from '@/services/auth.service';
+import { useAuth } from '@/contexts/AuthContext';
 import { AxiosError } from 'axios';
 
 export const VerifyEmailPage = () => {
@@ -8,6 +9,7 @@ export const VerifyEmailPage = () => {
   const token = searchParams.get('token');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string>('');
+  const { refreshUser, user } = useAuth();
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -20,6 +22,11 @@ export const VerifyEmailPage = () => {
       try {
         await authService.verifyEmail(token);
         setStatus('success');
+        
+        // If user is logged in, refresh their data to show updated verification status
+        if (user) {
+          await refreshUser();
+        }
       } catch (err) {
         const axiosError = err as AxiosError<any>;
         setStatus('error');
@@ -31,7 +38,7 @@ export const VerifyEmailPage = () => {
     };
 
     verifyEmail();
-  }, [token]);
+  }, [token, user, refreshUser]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -58,15 +65,28 @@ export const VerifyEmailPage = () => {
                   Email verified successfully!
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
-                  <p>Your email has been verified. You can now sign in to your account.</p>
+                  <p>
+                    {user 
+                      ? 'Your email has been verified. Your profile has been updated.'
+                      : 'Your email has been verified. You can now sign in to your account.'}
+                  </p>
                 </div>
                 <div className="mt-4">
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
-                  >
-                    Go to sign in
-                  </Link>
+                  {user ? (
+                    <Link
+                      to="/profile"
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                    >
+                      Go to profile
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                    >
+                      Go to sign in
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

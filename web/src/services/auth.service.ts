@@ -45,7 +45,7 @@ export const authApi = {
 
   // Get current user profile
   getProfile: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/auth/profile');
+    const response = await apiClient.get<User>('/users/me');
     return response.data;
   },
 
@@ -81,6 +81,15 @@ export const authApi = {
     );
     return response.data;
   },
+
+  // Resend verification email
+  resendVerification: async (email: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>(
+      '/auth/resend-verification',
+      { email }
+    );
+    return response.data;
+  },
 };
 
 // Simplified service for easier imports
@@ -95,6 +104,7 @@ const authService = {
   verifyEmail: (token: string) => authApi.verifyEmail({ token }),
   changePassword: (currentPassword: string, newPassword: string) => 
     authApi.changePassword({ currentPassword, newPassword }),
+  resendVerification: (email: string) => authApi.resendVerification(email),
 };
 
 export default authService;

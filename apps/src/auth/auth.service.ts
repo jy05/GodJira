@@ -8,6 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto';
@@ -19,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   /**
@@ -376,8 +378,8 @@ export class AuthService {
 
     const verificationToken = await this.generateEmailVerificationToken(user.id);
 
-    // In production, send email here
-    // await this.emailService.sendVerificationEmail(user.email, user.name, verificationToken);
+    // Send verification email
+    await this.emailService.sendVerificationEmail(user.email, user.name, verificationToken);
 
     return { message: 'Verification email has been sent.' };
   }

@@ -3,7 +3,9 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi } from '@/services/user.service';
+import authService from '@/services/auth.service';
 import type { User } from '@/types';
+import { useState } from 'react';
 
 interface ProfileFormProps {
   user: User;
@@ -19,6 +21,7 @@ interface ProfileFormData {
 
 export const ProfileForm = ({ user }: ProfileFormProps) => {
   const { refreshUser } = useAuth();
+  const [isResending, setIsResending] = useState(false);
 
   const {
     register,
@@ -45,12 +48,35 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
     },
   });
 
+  const handleResendVerification = async () => {
+    try {
+      setIsResending(true);
+      await authService.resendVerification(user.email);
+      toast.success('Verification email sent! Check your inbox (or Mailhog at localhost:8025)');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to send verification email');
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const onSubmit = (data: ProfileFormData) => {
     updateMutation.mutate(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* User ID (read-only) */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">User ID</label>
+        <div className="mt-1 text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded-md">
+          {user.id}
+        </div>
+        <p className="mt-1 text-sm text-gray-500">
+          Your unique identifier in the system.
+        </p>
+      </div>
+
       {/* Name */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -82,6 +108,27 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
           disabled
           className="input mt-1 bg-gray-50 cursor-not-allowed"
         />
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            {user.isEmailVerified ? (
+              <>
+                <span className="text-green-600 text-sm">✓ Verified</span>
+              </>
+            ) : (
+              <>
+                <span className="text-yellow-600 text-sm">✗ Not verified</span>
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={isResending}
+                  className="text-sm text-primary-600 hover:text-primary-500 font-medium disabled:opacity-50"
+                >
+                  {isResending ? 'Sending...' : 'Resend verification email'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
         <p className="mt-1 text-sm text-gray-500">
           Email cannot be changed. Contact an administrator if needed.
         </p>

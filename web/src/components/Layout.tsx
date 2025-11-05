@@ -12,15 +12,15 @@ export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Projects', href: '/projects', icon: '📁' },
-    { name: 'Issues', href: '/issues', icon: '🎯' },
-    { name: 'Reports', href: '/reports', icon: '📈' },
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Issues', href: '/issues' },
+    { name: 'Reports', href: '/reports' },
   ];
 
   // Add Users link for admins/managers
   if (canManageUsers()) {
-    navigation.push({ name: 'Users', href: '/users', icon: '👥' });
+    navigation.push({ name: 'Users', href: '/users' });
   }
 
   const isActive = (path: string) => location.pathname === path;
@@ -47,7 +47,6 @@ export const Layout = ({ children }: LayoutProps) => {
                         : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                     }`}
                   >
-                    <span className="mr-2">{item.icon}</span>
                     {item.name}
                   </Link>
                 ))}
