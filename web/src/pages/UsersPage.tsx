@@ -4,8 +4,76 @@ import { toast } from 'sonner';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi } from '@/services/user.service';
+import { settingsApi } from '@/services/settings.service';
 import type { User, UserRole } from '@/types';
 import type { CreateUserData, AdminResetPasswordData } from '@/services/user.service';
+
+// Registration Toggle Component
+const RegistrationToggle = () => {
+  const queryClient = useQueryClient();
+  const [registrationEnabled, setRegistrationEnabled] = useState(false);
+
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => settingsApi.getSettings(),
+  });
+
+  // Update local state when settings are loaded
+  if (settings && settings.registrationEnabled !== registrationEnabled && !isLoading) {
+    setRegistrationEnabled(settings.registrationEnabled);
+  }
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (enabled: boolean) => settingsApi.updateSettings({ registrationEnabled: enabled }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Settings updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update settings');
+      // Revert on error
+      setRegistrationEnabled(!registrationEnabled);
+    },
+  });
+
+  const handleToggle = async () => {
+    const newValue = !registrationEnabled;
+    setRegistrationEnabled(newValue);
+    await updateSettingsMutation.mutateAsync(newValue);
+  };
+
+  if (isLoading) {
+    return <div className="text-gray-500">Loading settings...</div>;
+  }
+
+  return (
+    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+      <div>
+        <h3 className="text-base font-medium text-gray-900">Enable User Registration</h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Allow new users to register accounts on the login page
+        </p>
+      </div>
+      
+      <button
+        onClick={handleToggle}
+        disabled={updateSettingsMutation.isPending}
+        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+          registrationEnabled ? 'bg-blue-600' : 'bg-gray-200'
+        } ${updateSettingsMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+        role="switch"
+        aria-checked={registrationEnabled}
+      >
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+            registrationEnabled ? 'translate-x-5' : 'translate-x-0'
+          }`}
+        />
+      </button>
+    </div>
+  );
+};
 
 export const UsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -16,6 +84,7 @@ export const UsersPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 
   const limit = 20;
 
@@ -113,24 +182,54 @@ export const UsersPage = () => {
     <Layout>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Header */}
-          <div className="mb-6 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-              <p className="mt-2 text-sm text-gray-600">
-                Manage user accounts, roles, and permissions
-              </p>
+          {/* Header with Tabs */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Admin Panel</h1>
+            <div className="border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('users')}
+                  className={`${
+                    activeTab === 'users'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm`}
+                >
+                  User Management
+                </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`${
+                    activeTab === 'settings'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm`}
+                >
+                  System Settings
+                </button>
+              </nav>
             </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn btn-primary flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Create User
-            </button>
           </div>
+
+          {activeTab === 'users' && (
+            <>
+              {/* Header */}
+              <div className="mb-6 flex justify-between items-center">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Manage user accounts, roles, and permissions
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Create User
+                </button>
+              </div>
 
           {/* Filters */}
           <div className="card mb-6">
@@ -296,6 +395,17 @@ export const UsersPage = () => {
               </>
             )}
           </div>
+            </>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="bg-white shadow rounded-lg">
+              <div className="px-6 py-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Registration Settings</h2>
+                <RegistrationToggle />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -79,7 +79,7 @@ export const userApi = {
 
   // Update user role (admin/manager only)
   updateUserRole: async (id: string, roleData: UpdateUserRoleData): Promise<User> => {
-    const { data } = await apiClient.patch(`/admin/${id}`, roleData);
+    const { data } = await apiClient.patch(`/users/admin/${id}`, roleData);
     return data;
   },
 

@@ -149,6 +149,7 @@ model User {
   teamMemberships  TeamMember[]
   notifications    Notification[]
   attachments      Attachment[]
+  systemSettings   SystemSettings[]
   
   @@index([email])
   @@map("users")
@@ -569,4 +570,23 @@ model Attachment {
   @@map("attachments")
 }
 
+// ===========================
+// SYSTEM SETTINGS
+// ===========================
 
+model SystemSettings {
+  id                      String   @id @default(uuid()) @db.Uuid
+  
+  // Registration settings
+  registrationEnabled     Boolean  @default(true)
+  
+  // Future settings can be added here
+  // maintenanceMode       Boolean  @default(false)
+  // maxFileSize           Int      @default(20971520)
+  
+  updatedAt               DateTime @updatedAt
+  updatedBy               String?  @db.Uuid
+  updater                 User?    @relation(fields: [updatedBy], references: [id])
+  
+  @@map("system_settings")
+}

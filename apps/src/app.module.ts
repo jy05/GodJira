@@ -20,6 +20,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { ExportModule } from './export/export.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ExportModule } from './export/export.module';
     AnalyticsModule,
     AttachmentsModule,
     ExportModule,
+    SettingsModule,
   ],
   controllers: [],
   providers: [],

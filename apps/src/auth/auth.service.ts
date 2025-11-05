@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
+import { SettingsService } from '../settings/settings.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto';
@@ -21,12 +22,19 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
+    private settingsService: SettingsService,
   ) {}
 
   /**
    * Register a new user with NIST-compliant password hashing
    */
   async register(registerDto: RegisterDto) {
+    // Check if registration is enabled
+    const isRegistrationEnabled = await this.settingsService.isRegistrationEnabled();
+    if (!isRegistrationEnabled) {
+      throw new BadRequestException('Registration is currently disabled');
+    }
+
     const { email, password, name, jobTitle, department } = registerDto;
 
     // Check if user already exists

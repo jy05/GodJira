@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { settingsApi } from '@/services/settings.service';
 import type { RegisterRequest } from '@/types';
 import { AxiosError } from 'axios';
 import { PASSWORD_RULES } from '@/config/constants';
@@ -20,6 +22,13 @@ export const RegisterPage = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>();
+
+  // Check if registration is enabled
+  const { data: registrationStatus, isLoading: isCheckingStatus } = useQuery({
+    queryKey: ['registration-status'],
+    queryFn: () => settingsApi.isRegistrationEnabled(),
+    retry: 1,
+  });
 
   const password = watch('password');
 
@@ -49,6 +58,41 @@ export const RegisterPage = () => {
       setError(axiosError.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
+
+  // Show loading state while checking registration status
+  if (isCheckingStatus) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show message if registration is disabled
+  if (registrationStatus === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div>
+            <h1 className="text-center text-4xl font-bold text-primary-600">GodJira</h1>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Registration Disabled
+            </h2>
+          </div>
+          <div className="rounded-md bg-yellow-50 p-6 border border-yellow-200">
+            <p className="text-center text-gray-700">
+              User registration is currently disabled. Please contact your administrator if you need access.
+            </p>
+          </div>
+          <div className="text-center">
+            <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
+              Back to Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
