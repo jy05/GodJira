@@ -1,4 +1,4 @@
-# GodJira
+# GodJira (WIP Not Fully Functional)
 
 GodJira is an enterprise-grade project management system inspired by Atlassian JIRA. Built with NestJS, Prisma, PostgreSQL, and React, it provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
 
