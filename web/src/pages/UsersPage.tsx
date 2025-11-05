@@ -16,6 +16,8 @@ const RegistrationToggle = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: () => settingsApi.getSettings(),
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
   });
 
   // Update local state when settings are loaded
@@ -27,6 +29,7 @@ const RegistrationToggle = () => {
     mutationFn: (enabled: boolean) => settingsApi.updateSettings({ registrationEnabled: enabled }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      queryClient.invalidateQueries({ queryKey: ['registration-status'] });
       toast.success('Settings updated successfully');
     },
     onError: () => {

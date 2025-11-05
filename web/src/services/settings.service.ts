@@ -23,7 +23,7 @@ export const settingsApi = {
   },
 
   isRegistrationEnabled: async (): Promise<boolean> => {
-    const response = await apiClient.get<{ enabled: boolean }>('/settings/registration-enabled');
-    return response.data.enabled;
+    const response = await apiClient.get<{ registrationEnabled: boolean }>('/settings/registration-enabled');
+    return response.data.registrationEnabled;
   },
 };

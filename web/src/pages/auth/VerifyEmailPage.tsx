@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import authService from '@/services/auth.service';
+import { settingsApi } from '@/services/settings.service';
 import { useAuth } from '@/contexts/AuthContext';
 import { AxiosError } from 'axios';
 
@@ -10,6 +12,16 @@ export const VerifyEmailPage = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string>('');
   const { refreshUser, user } = useAuth();
+
+  // Check if registration is enabled
+  const { data: registrationEnabled } = useQuery({
+    queryKey: ['registration-status'],
+    queryFn: () => settingsApi.isRegistrationEnabled(),
+    retry: 1,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -115,12 +127,14 @@ export const VerifyEmailPage = () => {
                   >
                     Go to sign in
                   </Link>
-                  <Link
-                    to="/register"
-                    className="text-sm font-medium text-primary-600 hover:text-primary-500"
-                  >
-                    Create new account
-                  </Link>
+                  {registrationEnabled && (
+                    <Link
+                      to="/register"
+                      className="text-sm font-medium text-primary-600 hover:text-primary-500"
+                    >
+                      Create new account
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

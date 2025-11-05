@@ -28,6 +28,9 @@ export const RegisterPage = () => {
     queryKey: ['registration-status'],
     queryFn: () => settingsApi.isRegistrationEnabled(),
     retry: 1,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const password = watch('password');

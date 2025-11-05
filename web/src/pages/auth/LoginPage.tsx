@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { settingsApi } from '@/services/settings.service';
 import type { LoginRequest } from '@/types';
 import { AxiosError } from 'axios';
 
@@ -17,6 +19,16 @@ export const LoginPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>();
+
+  // Check if registration is enabled
+  const { data: registrationEnabled, isLoading: isCheckingRegistration } = useQuery({
+    queryKey: ['registration-status'],
+    queryFn: () => settingsApi.isRegistrationEnabled(),
+    retry: 1,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -64,12 +76,14 @@ export const LoginPage = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
-              create a new account
-            </Link>
-          </p>
+          {!isCheckingRegistration && registrationEnabled && (
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Or{' '}
+              <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+                create a new account
+              </Link>
+            </p>
+          )}
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
