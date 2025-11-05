@@ -1,158 +1,313 @@
-# GodJira# GodJira# GodJira# GodJira - Enterprise JIRA Clone
+# GodJira# GodJira# GodJira# GodJira# GodJira - Enterprise JIRA Clone
 
 
 
-An enterprise-grade project management system built with modern technologies. Provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
+An enterprise-grade project management system inspired by Atlassian JIRA. Built with NestJS, Prisma, PostgreSQL, and React.
 
 
 
-## Table of ContentsGodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
+**Features:** Issue tracking, sprint management, team collaboration, real-time notifications, time tracking, file attachments, and analytics.An enterprise-grade project management system built with modern technologies. Provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
 
 
+
+## Prerequisites
+
+
+
+- Node.js 20+## Table of ContentsGodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
+
+- pnpm 8+
+
+- PostgreSQL 15+
+
+- Docker (optional)
 
 1. [Overview](#overview)
 
+## Quick Start with Docker
+
 2. [Features](#features)
 
-3. [Technology Stack](#technology-stack)## Table of ContentsGodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.> A full-stack, enterprise-grade project management system built with modern technologies and ready for Kubernetes deployment.
+```bash
 
-4. [Prerequisites](#prerequisites)
+# Clone repository3. [Technology Stack](#technology-stack)## Table of ContentsGodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.> A full-stack, enterprise-grade project management system built with modern technologies and ready for Kubernetes deployment.
 
-5. [Installation](#installation)
+git clone https://github.com/yourusername/GodJira.git
+
+cd GodJira4. [Prerequisites](#prerequisites)
+
+
+
+# Install dependencies5. [Installation](#installation)
+
+pnpm install
 
 6. [Configuration](#configuration)
 
-7. [Running the Application](#running-the-application)1. [Overview](#overview)
+# Start all services
+
+docker-compose -f docker-compose.dev.yml up -d7. [Running the Application](#running-the-application)1. [Overview](#overview)
+
+```
 
 8. [API Documentation](#api-documentation)
 
-9. [Testing](#testing)2. [Features](#features)
+**Access:**
 
-10. [Deployment](#deployment)
+- Frontend: http://localhost:51739. [Testing](#testing)2. [Features](#features)
 
-11. [Project Structure](#project-structure)3. [Technology Stack](#technology-stack)## Table of Contents**Last Updated**: November 2, 2025  
+- Backend API: http://localhost:3000
 
-12. [Contributing](#contributing)
+- API Docs: http://localhost:3000/api/docs10. [Deployment](#deployment)
 
-13. [License](#license)4. [Prerequisites](#prerequisites)
+- Mailhog: http://localhost:8025
 
-
-
-## Overview5. [Dependencies](#dependencies)
+- pgAdmin: http://localhost:5050 (admin@godjira.local / admin)11. [Project Structure](#project-structure)3. [Technology Stack](#technology-stack)## Table of Contents**Last Updated**: November 2, 2025  
 
 
 
-GodJira is a full-featured project management system inspired by Atlassian JIRA. Built with NestJS, Prisma, PostgreSQL, and React, it provides teams with powerful tools to plan, track, and manage software development projects.6. [Installation](#installation)1. [Overview](#overview)
+## Manual Setup12. [Contributing](#contributing)
 
 
+
+### 1. Install Dependencies13. [License](#license)4. [Prerequisites](#prerequisites)
+
+
+
+**Linux (Ubuntu/Debian):**
+
+```bash
+
+# Node.js## Overview5. [Dependencies](#dependencies)
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+sudo apt-get install -y nodejs
+
+
+
+# PostgreSQLGodJira is a full-featured project management system inspired by Atlassian JIRA. Built with NestJS, Prisma, PostgreSQL, and React, it provides teams with powerful tools to plan, track, and manage software development projects.6. [Installation](#installation)1. [Overview](#overview)
+
+sudo apt install postgresql postgresql-contrib
+
+sudo systemctl start postgresql
+
+```
 
 **Current Status:**   - [Linux](#linux)
 
-- Backend: Complete with 113 REST API endpoints across 16 modules
+**macOS:**
 
-- Frontend: In development with React and TypeScript   - [macOS](#macos)2. [Features](#features)---
+```bash- Backend: Complete with 113 REST API endpoints across 16 modules
 
-- Database: PostgreSQL with 16 models
+# Homebrew
 
-- Authentication: JWT-based with role-based access control   - [Windows](#windows)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"- Frontend: In development with React and TypeScript   - [macOS](#macos)2. [Features](#features)---
+
+
+
+# Node.js and PostgreSQL- Database: PostgreSQL with 16 models
+
+brew install node@20 postgresql@15
+
+brew services start postgresql@15- Authentication: JWT-based with role-based access control   - [Windows](#windows)
+
+```
 
 - Real-time: WebSocket support for live notifications
 
-- Deployment: Docker and Kubernetes ready with Helm charts7. [Configuration](#configuration)3. [Technology Stack](#technology-stack)
+**Windows:**
+
+- Download Node.js from https://nodejs.org- Deployment: Docker and Kubernetes ready with Helm charts7. [Configuration](#configuration)3. [Technology Stack](#technology-stack)
+
+- Download PostgreSQL from https://www.postgresql.org/download/windows
 
 
+
+### 2. Install pnpm
 
 ## Features8. [Running the Application](#running-the-application)
 
+```bash
 
+npm install -g pnpm
+
+```
 
 **Core Functionality:**9. [API Documentation](#api-documentation)4. [Prerequisites](#prerequisites)## 📊 Project Overview
 
+### 3. Setup Database
+
 - Issue tracking (tasks, bugs, stories, epics, spikes)
 
-- Sprint management with burndown charts10. [Testing](#testing)
+```bash
+
+# Linux/macOS- Sprint management with burndown charts10. [Testing](#testing)
+
+sudo -u postgres psql
 
 - Multi-project support
 
-- Comments with mentions11. [Deployment](#deployment)5. [Dependencies](#dependencies)
+# Windows
+
+psql -U postgres- Comments with mentions11. [Deployment](#deployment)5. [Dependencies](#dependencies)
+
+```
 
 - Time tracking and work logs
 
-- Issue relationships and linking12. [Project Structure](#project-structure)
+```sql
 
-- File attachments with thumbnails
+CREATE USER godjira WITH PASSWORD 'your_password';- Issue relationships and linking12. [Project Structure](#project-structure)
+
+CREATE DATABASE godjira_dev OWNER godjira;
+
+\q- File attachments with thumbnails
+
+```
 
 - Advanced search and filtering13. [Documentation](#documentation)6. [Installation](#installation)GodJira is a comprehensive JIRA clone with full enterprise features including real-time notifications, advanced analytics, file uploads, and export capabilities. Built with NestJS, Prisma, and PostgreSQL, it's containerized and ready for production deployment on Kubernetes.
 
+### 4. Configure Environment
+
 - CSV/Excel export
 
-- Real-time activity feeds14. [License](#license)
+```bash
 
+# Clone and install- Real-time activity feeds14. [License](#license)
 
+git clone https://github.com/yourusername/GodJira.git
+
+cd GodJira
+
+pnpm install
 
 **User Management:**   - [Linux](#linux)
 
-- Role-based access control (ADMIN, MANAGER, USER)
+# Copy environment files
 
-- Email verification---
+cp apps/.env.example apps/.env- Role-based access control (ADMIN, MANAGER, USER)
 
-- Password reset
+cp web/.env.example web/.env
 
-- User profiles with avatars   - [macOS](#macos)### ✅ **All Core Features Implemented**
+```- Email verification---
 
-- Account lockout protection
+
+
+Edit `apps/.env`:- Password reset
+
+```env
+
+DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"- User profiles with avatars   - [macOS](#macos)### ✅ **All Core Features Implemented**
+
+JWT_SECRET="your-secret-key-minimum-32-characters"
+
+JWT_REFRESH_SECRET="your-refresh-secret-minimum-32-characters"- Account lockout protection
+
+```
 
 - Team management## Overview
 
+### 5. Run Migrations
 
 
-**Notifications:**   - [Windows](#windows)
 
-- Real-time WebSocket notifications
+```bash
+
+cd apps**Notifications:**   - [Windows](#windows)
+
+pnpm prisma migrate deploy
+
+pnpm prisma generate- Real-time WebSocket notifications
+
+```
 
 - Email notificationsGodJira is a full-featured project management system inspired by Atlassian JIRA. It provides teams with powerful tools to plan, track, and manage software development projects.
 
+### 6. Start Application
+
 - In-app notification center
 
-7. [Configuration](#configuration)✅ **Authentication & Security (NIST Compliant)**  
+**Terminal 1 - Backend:**
 
-**Analytics:**
+```bash7. [Configuration](#configuration)✅ **Authentication & Security (NIST Compliant)**  
+
+cd apps
+
+pnpm dev**Analytics:**
+
+```
 
 - Sprint burndown charts### Current Status
 
-- Team velocity reports
+**Terminal 2 - Frontend:**
 
-- Issue distribution reports8. [Running the Application](#running-the-application)✅ **User Management with RBAC**  
+```bash- Team velocity reports
+
+cd web
+
+pnpm dev- Issue distribution reports8. [Running the Application](#running-the-application)✅ **User Management with RBAC**  
+
+```
 
 - User workload reports
 
-- **Backend**: Complete with 113 REST API endpoints across 16 modules
+**Access:**
 
-**Security:**
+- Frontend: http://localhost:5173- **Backend**: Complete with 113 REST API endpoints across 16 modules
 
-- JWT authentication with refresh tokens- **Frontend**: In development with React and TypeScript9. [API Documentation](#api-documentation)✅ **Project & Sprint Management**  
+- Backend: http://localhost:3000
 
-- Bcrypt password hashing (12 rounds)
-
-- Rate limiting (100 requests/minute)- **Database**: PostgreSQL with 16 models and comprehensive relationships
-
-- CORS protection
-
-- Helmet.js security headers- **Authentication**: JWT-based with role-based access control (RBAC)10. [Testing](#testing)✅ **Complete Issue Tracking System**  
-
-- Account lockout after failed login attempts
-
-- Password history enforcement- **Real-time**: WebSocket support for live notifications
+- API Docs: http://localhost:3000/api/docs**Security:**
 
 
 
-**Monitoring:**- **Deployment**: Docker and Kubernetes ready with Helm charts11. [Deployment](#deployment)✅ **Comments with @Mentions**  
+## Windows PowerShell Script- JWT authentication with refresh tokens- **Frontend**: In development with React and TypeScript9. [API Documentation](#api-documentation)✅ **Project & Sprint Management**  
 
-- Prometheus metrics
 
-- Health check endpoint
 
-- Comprehensive audit logging
+```powershell- Bcrypt password hashing (12 rounds)
+
+.\start.ps1
+
+```- Rate limiting (100 requests/minute)- **Database**: PostgreSQL with 16 models and comprehensive relationships
+
+
+
+## Default Test User- CORS protection
+
+
+
+- Email: admin@godjira.local- Helmet.js security headers- **Authentication**: JWT-based with role-based access control (RBAC)10. [Testing](#testing)✅ **Complete Issue Tracking System**  
+
+- Password: Admin123!
+
+- Role: ADMIN- Account lockout after failed login attempts
+
+
+
+## Documentation- Password history enforcement- **Real-time**: WebSocket support for live notifications
+
+
+
+- Architecture: docs/architecture.md
+
+- Docker Guide: docs/docker-dev.md
+
+- Environment Variables: docs/env.md**Monitoring:**- **Deployment**: Docker and Kubernetes ready with Helm charts11. [Deployment](#deployment)✅ **Comments with @Mentions**  
+
+- Testing: docs/PHASE1_TEST_CHECKLIST.md
+
+- Kubernetes: K8S_DEPLOYMENT.md- Prometheus metrics
+
+
+
+## License- Health check endpoint
+
+
+
+MIT License- Comprehensive audit logging
+
 
 - Database connection monitoring---12. [Project Structure](#project-structure)✅ **Time Tracking (Work Logs)**  
 
