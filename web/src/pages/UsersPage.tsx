@@ -79,6 +79,67 @@ const RegistrationToggle = () => {
   );
 };
 
+// Timezone Settings Component
+const TimezoneSettings = () => {
+  const queryClient = useQueryClient();
+  const [systemTimezone, setSystemTimezone] = useState('America/Chicago');
+
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => settingsApi.getSettings(),
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  // Update local state when settings are loaded
+  if (settings && settings.systemTimezone && settings.systemTimezone !== systemTimezone && !isLoading) {
+    setSystemTimezone(settings.systemTimezone);
+  }
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (timezone: string) => settingsApi.updateSettings({ systemTimezone: timezone }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Timezone updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update timezone');
+    },
+  });
+
+  const handleTimezoneChange = async (newTimezone: string) => {
+    setSystemTimezone(newTimezone);
+    await updateSettingsMutation.mutateAsync(newTimezone);
+  };
+
+  if (isLoading) {
+    return <div className="text-gray-500">Loading settings...</div>;
+  }
+
+  return (
+    <div className="p-4 bg-gray-50 rounded-lg">
+      <div>
+        <h3 className="text-base font-medium text-gray-900 mb-2">System Timezone</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Master timezone for the system. All timestamps are stored in this timezone. Users can set their own preferred display timezone in their profile.
+        </p>
+        <select
+          value={systemTimezone}
+          onChange={(e) => handleTimezoneChange(e.target.value)}
+          disabled={updateSettingsMutation.isPending}
+          className="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {COMMON_TIMEZONES.map((tz) => (
+            <option key={tz.value} value={tz.value}>
+              {tz.label} ({tz.value})
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+
 export const UsersPage = () => {
   const { user: currentUser } = useAuth();
   const queryClient = useQueryClient();
@@ -443,9 +504,18 @@ export const UsersPage = () => {
 
           {activeTab === 'settings' && (
             <div className="bg-white shadow rounded-lg">
-              <div className="px-6 py-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Registration Settings</h2>
-                <RegistrationToggle />
+              <div className="px-6 py-8 space-y-8">
+                {/* Registration Settings */}
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Registration Settings</h2>
+                  <RegistrationToggle />
+                </div>
+
+                {/* Timezone Settings */}
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Timezone Settings</h2>
+                  <TimezoneSettings />
+                </div>
               </div>
             </div>
           )}
