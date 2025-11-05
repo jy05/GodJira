@@ -76,10 +76,10 @@ function App() {
               }
             />
             <Route
-              path="/users"
+              path="/admin"
               element={
                 <ProtectedRoute>
-                  <RoleBasedRoute allowedRoles={['ADMIN', 'MANAGER']}>
+                  <RoleBasedRoute allowedRoles={['ADMIN']}>
                     <UsersPage />
                   </RoleBasedRoute>
                 </ProtectedRoute>

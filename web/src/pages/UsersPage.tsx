@@ -18,7 +18,7 @@ export const UsersPage = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', page, search, roleFilter],
     queryFn: () => userApi.getUsers({ page, limit, search }),
-    enabled: currentUser?.role === 'ADMIN' || currentUser?.role === 'MANAGER',
+    enabled: currentUser?.role === 'ADMIN',
   });
 
   // Update user role mutation
@@ -47,8 +47,7 @@ export const UsersPage = () => {
   });
 
   // Check if current user has permission
-  const canManageUsers =
-    currentUser?.role === 'ADMIN' || currentUser?.role === 'MANAGER';
+  const canManageUsers = currentUser?.role === 'ADMIN';
 
   if (!canManageUsers) {
     return (
@@ -58,8 +57,8 @@ export const UsersPage = () => {
             <div className="card bg-red-50 border-red-200">
               <h2 className="text-lg font-semibold text-red-800">Access Denied</h2>
               <p className="mt-2 text-sm text-red-700">
-                You don't have permission to access this page. Only administrators and
-                managers can manage users.
+                You don't have permission to access this page. Only administrators can
+                manage users.
               </p>
             </div>
           </div>

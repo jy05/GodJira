@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const { user, logout } = useAuth();
-  const { canManageUsers } = usePermissions();
+  const { isAdmin } = usePermissions();
   const location = useLocation();
 
   const navigation = [
@@ -18,9 +18,9 @@ export const Layout = ({ children }: LayoutProps) => {
     { name: 'Reports', href: '/reports' },
   ];
 
-  // Add Users link for admins/managers
-  if (canManageUsers()) {
-    navigation.push({ name: 'Users', href: '/users' });
+  // Add Admin link for admins only
+  if (isAdmin()) {
+    navigation.push({ name: 'Admin', href: '/admin' });
   }
 
   const isActive = (path: string) => location.pathname === path;
