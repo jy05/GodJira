@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from './RoleBasedRoute';
+import logo from '@/assets/logo.png';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -34,7 +35,13 @@ export const Layout = ({ children }: LayoutProps) => {
             {/* Logo & Main Nav */}
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-2xl font-bold text-primary-600">GodJira</h1>
+                <Link to="/dashboard" className="flex items-center">
+                  <img 
+                    src={logo} 
+                    alt="GodJira Logo" 
+                    className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  />
+                </Link>
               </div>
               <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
                 {navigation.map((item) => (

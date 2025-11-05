@@ -7,6 +7,7 @@ import { settingsApi } from '@/services/settings.service';
 import type { RegisterRequest } from '@/types';
 import { AxiosError } from 'axios';
 import { PASSWORD_RULES } from '@/config/constants';
+import logo from '@/assets/logo.png';
 
 interface RegisterFormData extends RegisterRequest {
   confirmPassword: string;
@@ -77,7 +78,13 @@ export const RegisterPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h1 className="text-center text-4xl font-bold text-primary-600">GodJira</h1>
+            <div className="flex justify-center">
+              <img 
+                src={logo} 
+                alt="GodJira Logo" 
+                className="h-24 w-auto"
+              />
+            </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
               Registration Disabled
             </h2>
@@ -101,7 +108,13 @@ export const RegisterPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="text-center text-4xl font-bold text-primary-600">GodJira</h1>
+          <div className="flex justify-center">
+            <img 
+              src={logo} 
+              alt="GodJira Logo" 
+              className="h-24 w-auto"
+            />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
