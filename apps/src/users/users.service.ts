@@ -362,6 +362,7 @@ export class UsersService {
     }
 
     // If email is being changed, check if new email already exists
+    let emailChanged = false;
     if (data.email && data.email !== user.email) {
       const existingUser = await this.prisma.user.findUnique({
         where: { email: data.email },
@@ -370,9 +371,12 @@ export class UsersService {
       if (existingUser) {
         throw new BadRequestException('Email already in use');
       }
+      emailChanged = true;
     }
 
     // Admin can update role, isActive, isEmailVerified, email, and reset failed attempts
+    // If email is changed and isEmailVerified is not explicitly set in the request,
+    // automatically set it to false since the new email needs verification
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
@@ -383,7 +387,11 @@ export class UsersService {
         ...(data.department !== undefined && { department: data.department }),
         ...(data.role && { role: data.role as any }),
         ...(data.isActive !== undefined && { isActive: data.isActive }),
-        ...(data.isEmailVerified !== undefined && { isEmailVerified: data.isEmailVerified }),
+        // If email changed and isEmailVerified not explicitly provided, set to false
+        // Otherwise use the provided value or don't update
+        ...(emailChanged && data.isEmailVerified === undefined 
+          ? { isEmailVerified: false }
+          : data.isEmailVerified !== undefined && { isEmailVerified: data.isEmailVerified }),
         ...(data.failedLoginAttempts !== undefined && { 
           failedLoginAttempts: data.failedLoginAttempts,
           ...(data.failedLoginAttempts === 0 && { lockedUntil: null })
