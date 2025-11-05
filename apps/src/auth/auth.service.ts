@@ -62,6 +62,16 @@ export class AuthService {
       },
     });
 
+    // Generate email verification token
+    const verificationToken = await this.generateEmailVerificationToken(user.id);
+
+    // Send verification email (async, don't block registration)
+    this.emailService.sendVerificationEmail(user.email, user.name, verificationToken)
+      .catch(err => {
+        console.error('Failed to send verification email:', err);
+        // Don't fail registration if email fails
+      });
+
     // Generate tokens
     const tokens = await this.generateTokens(user.id, user.email, user.role);
 

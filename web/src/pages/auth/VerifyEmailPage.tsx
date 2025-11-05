@@ -25,7 +25,14 @@ export const VerifyEmailPage = () => {
         
         // If user is logged in, refresh their data to show updated verification status
         if (user) {
-          await refreshUser();
+          // Wait a moment for the backend to process
+          setTimeout(async () => {
+            try {
+              await refreshUser();
+            } catch (err) {
+              console.error('Failed to refresh user after verification:', err);
+            }
+          }, 500);
         }
       } catch (err) {
         const axiosError = err as AxiosError<any>;
