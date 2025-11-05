@@ -80,3 +80,77 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+// Project types
+export interface Project {
+  id: string;
+  key: string; // 2-10 uppercase letters
+  name: string;
+  description?: string;
+  ownerId: string;
+  owner?: User;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProjectRequest {
+  key: string;
+  name: string;
+  description?: string;
+}
+
+export interface UpdateProjectRequest {
+  name?: string;
+  description?: string;
+}
+
+export interface ProjectStatistics {
+  totalIssues: number;
+  completedIssues: number;
+  activeIssues: number;
+  totalSprints: number;
+  activeSprints: number;
+  completedSprints: number;
+}
+
+// Sprint types
+export type SprintStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+
+export interface Sprint {
+  id: string;
+  name: string;
+  goal?: string;
+  startDate?: string;
+  endDate?: string;
+  status: SprintStatus;
+  projectId: string;
+  project?: Project;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSprintRequest {
+  name: string;
+  goal?: string;
+  startDate?: string;
+  endDate?: string;
+  projectId: string;
+}
+
+export interface UpdateSprintRequest {
+  name?: string;
+  goal?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface SprintStatistics {
+  totalIssues: number;
+  completedIssues: number;
+  inProgressIssues: number;
+  todoIssues: number;
+  totalStoryPoints: number;
+  completedStoryPoints: number;
+  capacity: number;
+  velocity: number;
+}

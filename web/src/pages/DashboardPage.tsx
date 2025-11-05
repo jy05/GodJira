@@ -15,7 +15,7 @@ export const DashboardPage = () => {
                 Manage your projects and sprints
               </p>
               <div className="mt-4">
-                <Link to="#" className="text-sm font-medium text-primary-600 hover:text-primary-500">
+                <Link to="/projects" className="text-sm font-medium text-primary-600 hover:text-primary-500">
                   View projects →
                 </Link>
               </div>
@@ -24,24 +24,24 @@ export const DashboardPage = () => {
             <div className="card hover:shadow-lg transition-shadow">
               <h3 className="text-lg font-medium text-gray-900">Issues</h3>
               <p className="mt-2 text-sm text-gray-500">
-                Track and manage issues
+                Track and manage issues (Coming in Phase 4)
               </p>
               <div className="mt-4">
-                <Link to="#" className="text-sm font-medium text-primary-600 hover:text-primary-500">
-                  View issues →
-                </Link>
+                <span className="text-sm text-gray-400">
+                  Coming soon
+                </span>
               </div>
             </div>
 
             <div className="card hover:shadow-lg transition-shadow">
               <h3 className="text-lg font-medium text-gray-900">Reports</h3>
               <p className="mt-2 text-sm text-gray-500">
-                Analytics and insights
+                Analytics and insights (Coming in Phase 7)
               </p>
               <div className="mt-4">
-                <Link to="#" className="text-sm font-medium text-primary-600 hover:text-primary-500">
-                  View reports →
-                </Link>
+                <span className="text-sm text-gray-400">
+                  Coming soon
+                </span>
               </div>
             </div>
           </div>

@@ -16,6 +16,9 @@ import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { UsersPage } from './pages/UsersPage';
+import { ProjectsPage } from './pages/ProjectsPage';
+import { ProjectDetailPage } from './pages/ProjectDetailPage';
+import { SprintsPage } from './pages/SprintsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -82,6 +85,30 @@ function App() {
                   <RoleBasedRoute allowedRoles={['ADMIN']}>
                     <UsersPage />
                   </RoleBasedRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <ProjectsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:id"
+              element={
+                <ProtectedRoute>
+                  <ProjectDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId/sprints"
+              element={
+                <ProtectedRoute>
+                  <SprintsPage />
                 </ProtectedRoute>
               }
             />
