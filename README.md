@@ -201,4 +201,58 @@ docker-compose -f docker-compose.dev.yml down
 
 ### macOS
 
+1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/GodJira.git
+cd GodJira
+```
+
+2. Install project dependencies
+
+```bash
+pnpm install
+```
+
+3. Configure environment variables
+
+```bash
+cp apps/.env.example apps/.env
+cp web/.env.example web/.env
+```
+
+Edit `apps/.env` with your configuration:
+
+```env
+DATABASE_URL="postgresql://godjira:password@postgres:5432/godjira_dev"
+JWT_SECRET="your-secret-key-minimum-32-characters-long"
+JWT_REFRESH_SECRET="your-refresh-secret-minimum-32-characters-long"
+```
+
+4. Start the application with Docker Compose
+
+```bash
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+5. Access the application
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+- API Documentation: http://localhost:3000/api/docs
+- Mailhog: http://localhost:8025
+- pgAdmin: http://localhost:5050
+
+6. View logs
+
+```bash
+docker-compose -f docker-compose.dev.yml logs -f
+```
+
+7. Stop the application
+
+```bash
+docker-compose -f docker-compose.dev.yml down
+```
+
 ### Windows
