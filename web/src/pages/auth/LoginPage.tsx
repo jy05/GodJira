@@ -76,7 +76,7 @@ export const LoginPage = () => {
             <img 
               src="/logo.png" 
               alt="GodJira Logo" 
-              className="h-36 w-auto"
+              className="h-45 w-auto"
             />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
