@@ -1,995 +1,1988 @@
-# GodJira# GodJira - Enterprise JIRA Clone
+# GodJira# GodJira# GodJira - Enterprise JIRA Clone
 
 
 
-GodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.> A full-stack, enterprise-grade project management system built with modern technologies and ready for Kubernetes deployment.
+GodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
 
 
 
-## Table of Contents**Last Updated**: November 2, 2025  
+## Table of ContentsGodJira is an enterprise-grade project management system built with modern technologies. It provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.> A full-stack, enterprise-grade project management system built with modern technologies and ready for Kubernetes deployment.
+
 
 
 1. [Overview](#overview)
 
-2. [Features](#features)---
+2. [Features](#features)
 
-3. [Technology Stack](#technology-stack)
+3. [Technology Stack](#technology-stack)## Table of Contents**Last Updated**: November 2, 2025  
 
-4. [Prerequisites](#prerequisites)## 📊 Project Overview
+4. [Prerequisites](#prerequisites)
 
 5. [Dependencies](#dependencies)
 
-6. [Installation](#installation)GodJira is a comprehensive JIRA clone with full enterprise features including real-time notifications, advanced analytics, file uploads, and export capabilities. Built with NestJS, Prisma, and PostgreSQL, it's containerized and ready for production deployment on Kubernetes.
+6. [Installation](#installation)1. [Overview](#overview)
 
    - [Linux](#linux)
 
-   - [macOS](#macos)### ✅ **All Core Features Implemented**
+   - [macOS](#macos)2. [Features](#features)---
 
    - [Windows](#windows)
 
+7. [Configuration](#configuration)3. [Technology Stack](#technology-stack)
+
+8. [Running the Application](#running-the-application)
+
+9. [API Documentation](#api-documentation)4. [Prerequisites](#prerequisites)## 📊 Project Overview
+
+10. [Testing](#testing)
+
+11. [Deployment](#deployment)5. [Dependencies](#dependencies)
+
+12. [Project Structure](#project-structure)
+
+13. [Documentation](#documentation)6. [Installation](#installation)GodJira is a comprehensive JIRA clone with full enterprise features including real-time notifications, advanced analytics, file uploads, and export capabilities. Built with NestJS, Prisma, and PostgreSQL, it's containerized and ready for production deployment on Kubernetes.
+
+14. [License](#license)
+
+   - [Linux](#linux)
+
+---
+
+   - [macOS](#macos)### ✅ **All Core Features Implemented**
+
+## Overview
+
+   - [Windows](#windows)
+
+GodJira is a full-featured project management system inspired by Atlassian JIRA. It provides teams with powerful tools to plan, track, and manage software development projects.
+
 7. [Configuration](#configuration)✅ **Authentication & Security (NIST Compliant)**  
+
+### Current Status
 
 8. [Running the Application](#running-the-application)✅ **User Management with RBAC**  
 
-9. [API Documentation](#api-documentation)✅ **Project & Sprint Management**  
+- **Backend**: Complete with 113 REST API endpoints across 16 modules
 
-10. [Testing](#testing)✅ **Complete Issue Tracking System**  
+- **Frontend**: In development with React and TypeScript9. [API Documentation](#api-documentation)✅ **Project & Sprint Management**  
 
-11. [Deployment](#deployment)✅ **Comments with @Mentions**  
+- **Database**: PostgreSQL with 16 models and comprehensive relationships
 
-12. [Project Structure](#project-structure)✅ **Time Tracking (Work Logs)**  
+- **Authentication**: JWT-based with role-based access control (RBAC)10. [Testing](#testing)✅ **Complete Issue Tracking System**  
 
-13. [Documentation](#documentation)✅ **Audit Logging & Activity Feeds**  
+- **Real-time**: WebSocket support for live notifications
 
-14. [License](#license)✅ **Issue Links & Relationships**  
+- **Deployment**: Docker and Kubernetes ready with Helm charts11. [Deployment](#deployment)✅ **Comments with @Mentions**  
 
-✅ **Watchers & Subscriptions**  
 
----✅ **Team Management**  
 
-✅ **Real-Time WebSocket Notifications (9 types)**  
+---12. [Project Structure](#project-structure)✅ **Time Tracking (Work Logs)**  
 
-## Overview✅ **Analytics & Reporting (Burndown Charts, Velocity)**  
 
-✅ **File Uploads (Avatars + Attachments with Thumbnails)**  
 
-GodJira is a full-featured project management system inspired by Atlassian JIRA. It provides teams with powerful tools to plan, track, and manage software development projects.✅ **Export Functionality (CSV & Excel)**  
+## Features13. [Documentation](#documentation)✅ **Audit Logging & Activity Feeds**  
 
-✅ **Email Notifications**  
 
-### Current Status✅ **Kubernetes Deployment (Manifests + Helm Charts)**  
 
-✅ **Monitoring (Prometheus + Grafana)**  
+### Core Functionality14. [License](#license)✅ **Issue Links & Relationships**  
 
-- **Backend**: Complete with 113 REST API endpoints across 16 modules✅ **Health Checks & Metrics**
 
-- **Frontend**: In development with React and TypeScript
 
-- **Database**: PostgreSQL with 16 models and comprehensive relationships---
+- **Issue Tracking**: Create and manage tasks, bugs, stories, epics, and spikes✅ **Watchers & Subscriptions**  
 
-- **Authentication**: JWT-based with role-based access control (RBAC)
+- **Sprint Management**: Plan and execute sprints with burndown charts
 
-- **Real-time**: WebSocket support for live notifications## 🚀 Tech Stack
+- **Project Organization**: Multi-project support with customizable workflows---✅ **Team Management**  
 
-- **Deployment**: Docker and Kubernetes ready with Helm charts
+- **Team Collaboration**: Comments, mentions, and watchers
 
-### Backend (100% Complete)
-
----- **NestJS 10.4** - Progressive Node.js framework
-
-- **Prisma 6.18** - Type-safe ORM with PostgreSQL 15
-
-## Features- **Socket.io 4.8** - Real-time WebSocket communication
-
-- **JWT + Passport** - Authentication with refresh tokens
-
-### Core Functionality- **Bcrypt** - NIST-compliant password hashing (12 rounds)
-
-- **Swagger/OpenAPI** - Interactive API documentation
-
-- **Issue Tracking**: Create and manage tasks, bugs, stories, epics, and spikes- **Nodemailer** - Email notifications
-
-- **Sprint Management**: Plan and execute sprints with burndown charts- **Multer** - File upload handling
-
-- **Project Organization**: Multi-project support with customizable workflows- **Sharp** - Image processing and thumbnail generation
-
-- **Team Collaboration**: Comments, mentions, and watchers- **ExcelJS + CSV-Writer** - Data export functionality
-
-- **Time Tracking**: Work log entries with reporting- **Prometheus Client** - Metrics and monitoring
+- **Time Tracking**: Work log entries with reporting✅ **Real-Time WebSocket Notifications (9 types)**  
 
 - **Issue Relationships**: Link related issues with various link types
 
-- **File Attachments**: Upload files with automatic thumbnail generation### Frontend (Coming Soon)
+- **File Attachments**: Upload files with automatic thumbnail generation## Overview✅ **Analytics & Reporting (Burndown Charts, Velocity)**  
 
-- **Advanced Search**: Filter and search issues across projects- **React 18+** with TypeScript
+- **Advanced Search**: Filter and search issues across projects
 
-- **Data Export**: Export issues and reports to CSV/Excel- **Vite** - Lightning-fast build tool
+- **Data Export**: Export issues and reports to CSV/Excel✅ **File Uploads (Avatars + Attachments with Thumbnails)**  
 
-- **Activity Feeds**: Real-time activity tracking and audit logs- **TanStack Query (React Query)** - Server state management
+- **Activity Feeds**: Real-time activity tracking and audit logs
 
-- **Socket.io Client** - Real-time updates
+GodJira is a full-featured project management system inspired by Atlassian JIRA. It provides teams with powerful tools to plan, track, and manage software development projects.✅ **Export Functionality (CSV & Excel)**  
 
-### User Management- **Tailwind CSS** - Utility-first styling
+### User Management
 
-- **React Router** - Client-side routing
+✅ **Email Notifications**  
 
-- Role-based access control (ADMIN, MANAGER, USER)- **Zustand** - State management
+- Role-based access control (ADMIN, MANAGER, USER)
 
-- Email verification and password reset
+- Email verification and password reset### Current Status✅ **Kubernetes Deployment (Manifests + Helm Charts)**  
 
-- User profiles with avatars### Infrastructure & DevOps
+- User profiles with avatars
 
-- Account lockout protection- **Docker** - Multi-stage containerization
+- Account lockout protection✅ **Monitoring (Prometheus + Grafana)**  
 
-- Team management and assignments- **Kubernetes** - Production orchestration
+- Team management and assignments
 
-- **Helm 3** - Kubernetes package management
+- **Backend**: Complete with 113 REST API endpoints across 16 modules✅ **Health Checks & Metrics**
 
-### Notifications- **PostgreSQL 15** - Relational database
+### Notifications
 
-- **Prometheus** - Metrics collection
+- **Frontend**: In development with React and TypeScript
 
-- Real-time WebSocket notifications- **Grafana** - Monitoring dashboards
+- Real-time WebSocket notifications
 
-- Email notifications with customizable templates- **Cloudflare Tunnel** - Zero-trust access (ready)
+- Email notifications with customizable templates- **Database**: PostgreSQL with 16 models and comprehensive relationships---
 
-- Notification preferences- **pnpm** - Fast, efficient package manager
+- Notification preferences
 
-- In-app notification center- **Turborepo** - High-performance monorepo build system
-
-
-
-### Analytics & Reporting---
+- In-app notification center- **Authentication**: JWT-based with role-based access control (RBAC)
 
 
 
-- Sprint burndown charts## 📋 Prerequisites
+### Analytics & Reporting- **Real-time**: WebSocket support for live notifications## 🚀 Tech Stack
+
+
+
+- Sprint burndown charts- **Deployment**: Docker and Kubernetes ready with Helm charts
 
 - Team velocity reports
 
-- Issue distribution by status, type, and priority- **Node.js** 20+ (LTS recommended)
+- Issue distribution by status, type, and priority### Backend (100% Complete)
 
-- User workload reports- **pnpm** 9+ (`npm install -g pnpm`)
+- User workload reports
 
-- Custom time-range analytics- **Docker Desktop** (for local development)
+- Custom time-range analytics---- **NestJS 10.4** - Progressive Node.js framework
 
-- **PostgreSQL 15+** (or use Docker Compose)
 
-### Security- **Kubernetes** (optional, for production deployment)
 
-- **Helm 3** (optional, for Kubernetes deployment)
+### Security- **Prisma 6.18** - Type-safe ORM with PostgreSQL 15
 
-- JWT authentication with refresh tokens
 
-- Bcrypt password hashing (12 rounds)---
 
-- Rate limiting (100 requests/minute per IP)
+- JWT authentication with refresh tokens## Features- **Socket.io 4.8** - Real-time WebSocket communication
 
-- CORS protection## 🛠️ Quick Start
+- Bcrypt password hashing (12 rounds)
 
-- Helmet.js security headers
+- Rate limiting (100 requests/minute per IP)- **JWT + Passport** - Authentication with refresh tokens
 
-- Account lockout after failed login attempts### 1. Clone and Install Dependencies
+- CORS protection
 
-- Password history enforcement
+- Helmet.js security headers### Core Functionality- **Bcrypt** - NIST-compliant password hashing (12 rounds)
 
-```powershell
+- Account lockout after failed login attempts
 
-### Monitoring# Clone the repository
+- Password history enforcement- **Swagger/OpenAPI** - Interactive API documentation
 
-git clone https://github.com/yourusername/GodJira.git
 
-- Prometheus metrics endpointcd GodJira
+
+### Monitoring- **Issue Tracking**: Create and manage tasks, bugs, stories, epics, and spikes- **Nodemailer** - Email notifications
+
+
+
+- Prometheus metrics endpoint- **Sprint Management**: Plan and execute sprints with burndown charts- **Multer** - File upload handling
 
 - Health check endpoint
 
-- Comprehensive audit logging# Install pnpm globally (if not installed)
+- Comprehensive audit logging- **Project Organization**: Multi-project support with customizable workflows- **Sharp** - Image processing and thumbnail generation
 
-- Database connection monitoringnpm install -g pnpm
+- Database connection monitoring
 
+- **Team Collaboration**: Comments, mentions, and watchers- **ExcelJS + CSV-Writer** - Data export functionality
 
+---
 
----# Install all workspace dependencies
+- **Time Tracking**: Work log entries with reporting- **Prometheus Client** - Metrics and monitoring
 
-pnpm install
+## Technology Stack
 
-## Technology Stack```
+- **Issue Relationships**: Link related issues with various link types
 
+### Backend
 
+- **File Attachments**: Upload files with automatic thumbnail generation### Frontend (Coming Soon)
 
-### Backend### 2. Environment Configuration
+- **Framework**: NestJS 10.4 (Node.js 20+)
 
+- **ORM**: Prisma 6.18- **Advanced Search**: Filter and search issues across projects- **React 18+** with TypeScript
 
+- **Database**: PostgreSQL 15
 
-- **Framework**: NestJS 10.4 (Node.js 20+)```powershell
-
-- **ORM**: Prisma 6.18# Copy environment template
-
-- **Database**: PostgreSQL 15cd apps
-
-- **Authentication**: JWT with Passport.jscopy .env.example .env
+- **Authentication**: JWT with Passport.js- **Data Export**: Export issues and reports to CSV/Excel- **Vite** - Lightning-fast build tool
 
 - **Real-time**: Socket.io 4.8
 
-- **Email**: @nestjs-modules/mailer with Handlebars# Edit .env and configure:
+- **Email**: @nestjs-modules/mailer with Handlebars- **Activity Feeds**: Real-time activity tracking and audit logs- **TanStack Query (React Query)** - Server state management
 
-- **File Processing**: Multer + Sharp# - DATABASE_URL (PostgreSQL connection string)
+- **File Processing**: Multer + Sharp
 
-- **Validation**: class-validator + class-transformer# - JWT_SECRET (random secure string)
+- **Validation**: class-validator + class-transformer- **Socket.io Client** - Real-time updates
 
-- **API Documentation**: Swagger/OpenAPI# - JWT_REFRESH_SECRET (random secure string)
+- **API Documentation**: Swagger/OpenAPI
 
-- **Monitoring**: Prometheus client# - EMAIL_* settings (for notifications)
+- **Monitoring**: Prometheus client### User Management- **Tailwind CSS** - Utility-first styling
 
-```
 
-### Frontend
 
-### 3. Start Database
+### Frontend- **React Router** - Client-side routing
 
-- **Framework**: React 18
 
-- **Build Tool**: Vite```powershell
 
-- **Language**: TypeScript 5.x# Start PostgreSQL with Docker Compose
+- **Framework**: React 18- Role-based access control (ADMIN, MANAGER, USER)- **Zustand** - State management
 
-- **Routing**: React Router v6 (hash routing)docker-compose up -d postgres
+- **Build Tool**: Vite
 
-- **State Management**: TanStack Query (React Query)
+- **Language**: TypeScript 5.x- Email verification and password reset
 
-- **UI Framework**: Tailwind CSS# Check database is running
+- **Routing**: React Router v6 (hash routing)
 
-- **WebSocket**: Socket.io clientdocker ps
+- **State Management**: TanStack Query (React Query)- User profiles with avatars### Infrastructure & DevOps
+
+- **UI Framework**: Tailwind CSS
+
+- **WebSocket**: Socket.io client- Account lockout protection- **Docker** - Multi-stage containerization
 
 - **HTTP Client**: Axios
 
-# Access PgAdmin (optional)
+- Team management and assignments- **Kubernetes** - Production orchestration
 
-### Infrastructure# URL: http://localhost:5050
+### Infrastructure
 
-# Email: admin@godjira.local
+- **Helm 3** - Kubernetes package management
 
-- **Containerization**: Docker with multi-stage builds# Password: admin123
+- **Containerization**: Docker with multi-stage builds
 
-- **Orchestration**: Kubernetes + Helm 3```
+- **Orchestration**: Kubernetes + Helm 3### Notifications- **PostgreSQL 15** - Relational database
 
 - **Package Manager**: pnpm
 
-- **Monorepo**: Turborepo### 4. Setup Database Schema
+- **Monorepo**: Turborepo- **Prometheus** - Metrics collection
 
 - **Reverse Proxy**: Nginx
 
-- **Monitoring**: Prometheus + Grafana```powershell
-
-# Navigate to backend directory
-
----cd apps
+- **Monitoring**: Prometheus + Grafana- Real-time WebSocket notifications- **Grafana** - Monitoring dashboards
 
 
 
-## Prerequisites# Generate Prisma client
+---- Email notifications with customizable templates- **Cloudflare Tunnel** - Zero-trust access (ready)
 
-pnpm prisma:generate
 
-Ensure you have the following installed on your system:
 
-# Run database migrations
+## Prerequisites- Notification preferences- **pnpm** - Fast, efficient package manager
 
-- **Node.js**: Version 20 or higherpnpm prisma:migrate
+
+
+Ensure you have the following installed on your system:- In-app notification center- **Turborepo** - High-performance monorepo build system
+
+
+
+- **Node.js**: Version 20 or higher
 
 - **pnpm**: Version 8 or higher
 
-- **PostgreSQL**: Version 15 or higher# (Optional) Seed database with sample data
+- **PostgreSQL**: Version 15 or higher### Analytics & Reporting---
 
-- **Docker**: Version 20 or higher (optional, for containerized development)pnpm prisma:seed
+- **Docker**: Version 20 or higher (optional, for containerized development)
 
 - **Docker Compose**: Version 2 or higher (optional)
 
-- **Git**: Latest version# (Optional) Open Prisma Studio to view data
+- **Git**: Latest version
 
-pnpm prisma:studio
+- Sprint burndown charts## 📋 Prerequisites
 
----# Access at: http://localhost:5555
+---
 
-```
+- Team velocity reports
 
 ## Dependencies
 
-### 5. Start Backend API
+- Issue distribution by status, type, and priority- **Node.js** 20+ (LTS recommended)
 
 ### Backend Dependencies
 
-```powershell
+- User workload reports- **pnpm** 9+ (`npm install -g pnpm`)
 
-```json# Development mode with hot reload
+```json
 
-{cd apps
+{- Custom time-range analytics- **Docker Desktop** (for local development)
 
-  "@nestjs/common": "^10.4.10",pnpm dev
+  "@nestjs/common": "^10.4.10",
 
-  "@nestjs/core": "^10.4.10",
+  "@nestjs/core": "^10.4.10",- **PostgreSQL 15+** (or use Docker Compose)
 
-  "@nestjs/platform-express": "^10.4.10",# Or use the root start script
+  "@nestjs/platform-express": "^10.4.10",
 
-  "@nestjs/platform-socket.io": "^10.4.10",cd ..
+  "@nestjs/platform-socket.io": "^10.4.10",### Security- **Kubernetes** (optional, for production deployment)
 
-  "@nestjs/swagger": "^8.0.5",./start.ps1
+  "@nestjs/swagger": "^8.0.5",
 
-  "@nestjs/websockets": "^10.4.10",
+  "@nestjs/websockets": "^10.4.10",- **Helm 3** (optional, for Kubernetes deployment)
 
-  "@prisma/client": "^6.18.0",# API will be available at:
+  "@prisma/client": "^6.18.0",
 
-  "bcrypt": "^5.1.1",# - API: http://localhost:3000
+  "bcrypt": "^5.1.1",- JWT authentication with refresh tokens
 
-  "class-validator": "^0.14.1",# - Swagger Docs: http://localhost:3000/api/docs
+  "class-validator": "^0.14.1",
 
-  "passport-jwt": "^4.0.1",# - Health Check: http://localhost:3000/api/v1/health
+  "passport-jwt": "^4.0.1",- Bcrypt password hashing (12 rounds)---
 
-  "socket.io": "^4.8.1"# - Metrics: http://localhost:3000/api/v1/metrics
+  "socket.io": "^4.8.1"
 
-}```
+}- Rate limiting (100 requests/minute per IP)
 
 ```
 
-### 6. Test the API
+- CORS protection## 🛠️ Quick Start
 
 ### Frontend Dependencies
 
-Open Swagger documentation in your browser:
+- Helmet.js security headers
 
-```json```
+```json
 
-{http://localhost:3000/api/docs
+{- Account lockout after failed login attempts### 1. Clone and Install Dependencies
 
-  "react": "^18.3.1",```
+  "react": "^18.3.1",
 
-  "react-dom": "^18.3.1",
+  "react-dom": "^18.3.1",- Password history enforcement
 
-  "react-router-dom": "^6.28.0",Or test with curl:
+  "react-router-dom": "^6.28.0",
 
   "@tanstack/react-query": "^5.62.10",```powershell
 
-  "tailwindcss": "^3.4.15",# Health check
+  "tailwindcss": "^3.4.15",
 
-  "vite": "^6.0.1"curl http://localhost:3000/api/v1/health
+  "vite": "^6.0.1"### Monitoring# Clone the repository
 
 }
 
-```# Register a new user
+```git clone https://github.com/yourusername/GodJira.git
 
-curl -X POST http://localhost:3000/api/v1/auth/register `
 
----  -H "Content-Type: application/json" `
 
-  -d '{"email":"admin@example.com","password":"SecurePass123!","name":"Admin User"}'
+---- Prometheus metrics endpointcd GodJira
 
-## Installation
 
-# Login
 
-### Linuxcurl -X POST http://localhost:3000/api/v1/auth/login `
+## Installation- Health check endpoint
 
-  -H "Content-Type: application/json" `
 
-#### Ubuntu / Debian  -d '{"email":"admin@example.com","password":"SecurePass123!"}'
+
+### Linux- Comprehensive audit logging# Install pnpm globally (if not installed)
+
+
+
+#### Ubuntu / Debian- Database connection monitoringnpm install -g pnpm
+
+
+
+1. **Install Node.js**
+
+
+
+   Using NodeSource repository (recommended):---# Install all workspace dependencies
+
+   ```bash
+
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -pnpm install
+
+   sudo apt-get install -y nodejs
+
+   ```## Technology Stack```
+
+
+
+   Or using nvm (Node Version Manager):
+
+   ```bash
+
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash### Backend### 2. Environment Configuration
+
+   source ~/.bashrc
+
+   nvm install 20
+
+   nvm use 20
+
+   ```- **Framework**: NestJS 10.4 (Node.js 20+)```powershell
+
+
+
+2. **Install pnpm**- **ORM**: Prisma 6.18# Copy environment template
+
+
+
+   ```bash- **Database**: PostgreSQL 15cd apps
+
+   npm install -g pnpm
+
+   ```- **Authentication**: JWT with Passport.jscopy .env.example .env
+
+
+
+3. **Install PostgreSQL**- **Real-time**: Socket.io 4.8
+
+
+
+   ```bash- **Email**: @nestjs-modules/mailer with Handlebars# Edit .env and configure:
+
+   sudo apt update
+
+   sudo apt install postgresql postgresql-contrib- **File Processing**: Multer + Sharp# - DATABASE_URL (PostgreSQL connection string)
+
+   sudo systemctl start postgresql
+
+   sudo systemctl enable postgresql- **Validation**: class-validator + class-transformer# - JWT_SECRET (random secure string)
+
+   ```
+
+- **API Documentation**: Swagger/OpenAPI# - JWT_REFRESH_SECRET (random secure string)
+
+4. **Configure PostgreSQL**
+
+- **Monitoring**: Prometheus client# - EMAIL_* settings (for notifications)
+
+   ```bash
+
+   sudo -u postgres psql```
+
+   ```
+
+### Frontend
+
+   In PostgreSQL shell:
+
+   ```sql### 3. Start Database
+
+   CREATE USER godjira WITH PASSWORD 'your_password';
+
+   CREATE DATABASE godjira_dev OWNER godjira;- **Framework**: React 18
+
+   \q
+
+   ```- **Build Tool**: Vite```powershell
+
+
+
+5. **Install Docker (Optional)**- **Language**: TypeScript 5.x# Start PostgreSQL with Docker Compose
+
+
+
+   ```bash- **Routing**: React Router v6 (hash routing)docker-compose up -d postgres
+
+   sudo apt update
+
+   sudo apt install apt-transport-https ca-certificates curl software-properties-common- **State Management**: TanStack Query (React Query)
+
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null- **UI Framework**: Tailwind CSS# Check database is running
+
+   sudo apt update
+
+   sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin- **WebSocket**: Socket.io clientdocker ps
+
+   sudo usermod -aG docker $USER
+
+   newgrp docker- **HTTP Client**: Axios
+
+   ```
+
+# Access PgAdmin (optional)
+
+6. **Clone and Setup Project**
+
+### Infrastructure# URL: http://localhost:5050
+
+   ```bash
+
+   git clone https://github.com/yourusername/GodJira.git# Email: admin@godjira.local
+
+   cd GodJira
+
+   pnpm install- **Containerization**: Docker with multi-stage builds# Password: admin123
+
+   cp apps/.env.example apps/.env
+
+   cp web/.env.example web/.env- **Orchestration**: Kubernetes + Helm 3```
+
+   ```
+
+- **Package Manager**: pnpm
+
+7. **Configure Environment Variables**
+
+- **Monorepo**: Turborepo### 4. Setup Database Schema
+
+   Edit `apps/.env` with your database credentials:
+
+   ```env- **Reverse Proxy**: Nginx
+
+   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"
+
+   JWT_SECRET="your-secret-key-min-32-characters"- **Monitoring**: Prometheus + Grafana```powershell
+
+   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"
+
+   ```# Navigate to backend directory
+
+
+
+8. **Run Database Migrations**---cd apps
+
+
+
+   ```bash
+
+   cd apps
+
+   pnpm prisma migrate deploy## Prerequisites# Generate Prisma client
+
+   pnpm prisma generate
+
+   ```pnpm prisma:generate
+
+
+
+#### Fedora / RHEL / CentOSEnsure you have the following installed on your system:
+
+
+
+1. **Install Node.js**# Run database migrations
+
+
+
+   ```bash- **Node.js**: Version 20 or higherpnpm prisma:migrate
+
+   sudo dnf module install nodejs:20
+
+   ```- **pnpm**: Version 8 or higher
+
+
+
+   Or using nvm:- **PostgreSQL**: Version 15 or higher# (Optional) Seed database with sample data
+
+   ```bash
+
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash- **Docker**: Version 20 or higher (optional, for containerized development)pnpm prisma:seed
+
+   source ~/.bashrc
+
+   nvm install 20- **Docker Compose**: Version 2 or higher (optional)
+
+   ```
+
+- **Git**: Latest version# (Optional) Open Prisma Studio to view data
+
+2. **Install pnpm**
+
+pnpm prisma:studio
+
+   ```bash
+
+   npm install -g pnpm---# Access at: http://localhost:5555
+
+   ```
+
+```
+
+3. **Install PostgreSQL**
+
+## Dependencies
+
+   ```bash
+
+   sudo dnf install postgresql-server postgresql-contrib### 5. Start Backend API
+
+   sudo postgresql-setup --initdb
+
+   sudo systemctl start postgresql### Backend Dependencies
+
+   sudo systemctl enable postgresql
+
+   ``````powershell
+
+
+
+4. **Configure PostgreSQL**```json# Development mode with hot reload
+
+
+
+   Edit `/var/lib/pgsql/data/pg_hba.conf` and change authentication method:{cd apps
+
+   ```
+
+   local   all             all                                     md5  "@nestjs/common": "^10.4.10",pnpm dev
+
+   host    all             all             127.0.0.1/32            md5
+
+   ```  "@nestjs/core": "^10.4.10",
+
+
+
+   Restart PostgreSQL:  "@nestjs/platform-express": "^10.4.10",# Or use the root start script
+
+   ```bash
+
+   sudo systemctl restart postgresql  "@nestjs/platform-socket.io": "^10.4.10",cd ..
+
+   ```
+
+  "@nestjs/swagger": "^8.0.5",./start.ps1
+
+   Create database:
+
+   ```bash  "@nestjs/websockets": "^10.4.10",
+
+   sudo -u postgres psql
+
+   ```  "@prisma/client": "^6.18.0",# API will be available at:
+
+
+
+   In PostgreSQL shell:  "bcrypt": "^5.1.1",# - API: http://localhost:3000
+
+   ```sql
+
+   CREATE USER godjira WITH PASSWORD 'your_password';  "class-validator": "^0.14.1",# - Swagger Docs: http://localhost:3000/api/docs
+
+   CREATE DATABASE godjira_dev OWNER godjira;
+
+   \q  "passport-jwt": "^4.0.1",# - Health Check: http://localhost:3000/api/v1/health
+
+   ```
+
+  "socket.io": "^4.8.1"# - Metrics: http://localhost:3000/api/v1/metrics
+
+5. **Follow steps 5-8 from Ubuntu/Debian section above**
+
+}```
+
+#### Arch Linux
 
 ```
 
 1. **Install Node.js**
 
----
+### 6. Test the API
 
-   Using NodeSource repository (recommended):
+   ```bash
 
-   ```bash## 📁 Project Structure
-
-   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-
-   sudo apt-get install -y nodejs```
-
-   ```GodJira/
-
-├── apps/
-
-   Or using nvm (Node Version Manager):│   ├── src/
-
-   ```bash│   │   ├── auth/              # ✅ JWT authentication & strategies
-
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash│   │   ├── users/             # ✅ User management with RBAC
-
-   source ~/.bashrc│   │   ├── projects/          # ✅ Project CRUD & statistics
-
-   nvm install 20│   │   ├── sprints/           # ✅ Sprint lifecycle management
-
-   nvm use 20│   │   ├── issues/            # ✅ Issue tracking with sub-tasks
-
-   ```│   │   ├── comments/          # ✅ Comments with @mentions
-
-│   │   ├── worklogs/          # ✅ Time tracking
-
-2. **Install pnpm**│   │   ├── audit/             # ✅ Audit logs & activity feeds
-
-│   │   ├── issue-links/       # ✅ Issue relationships
-
-   ```bash│   │   ├── watchers/          # ✅ Issue subscriptions
-
-   npm install -g pnpm│   │   ├── teams/             # ✅ Team management
-
-   ```│   │   ├── notifications/     # ✅ Real-time WebSocket notifications
-
-│   │   ├── analytics/         # ✅ Burndown charts & velocity tracking
-
-3. **Install PostgreSQL**│   │   ├── attachments/       # ✅ File attachments with thumbnails
-
-│   │   ├── export/            # ✅ CSV/Excel export
-
-   ```bash│   │   ├── email/             # ✅ Email service
-
-   sudo apt update│   │   ├── health/            # ✅ Health checks
-
-   sudo apt install postgresql postgresql-contrib│   │   ├── metrics/           # ✅ Prometheus metrics
-
-   sudo systemctl start postgresql│   │   ├── prisma/            # ✅ Database service
-
-   sudo systemctl enable postgresql│   │   ├── common/            # ✅ Shared utilities
-
-   ```│   │   ├── app.module.ts      # Application root module
-
-│   │   └── main.ts            # Application entry point
-
-4. **Configure PostgreSQL**│   ├── prisma/
-
-│   │   ├── schema.prisma      # Complete database schema (16 models)
-
-   ```bash│   │   └── migrations/        # Database migrations
-
-   sudo -u postgres psql│   ├── Dockerfile             # Multi-stage production build
-
-   ```│   └── package.json           # Backend dependencies
-
-├── helm/
-
-   In PostgreSQL shell:│   └── godjira/               # ✅ Kubernetes Helm charts
-
-   ```sql│       ├── Chart.yaml
-
-   CREATE USER godjira WITH PASSWORD 'your_password';│       ├── values.yaml
-
-   CREATE DATABASE godjira_dev OWNER godjira;│       └── templates/
-
-   \q├── k8s/                       # ✅ Kubernetes raw manifests
-
-   ```│   ├── namespace.yaml
-
-│   ├── postgres-statefulset.yaml
-
-5. **Install Docker (Optional)**│   ├── api-deployment.yaml
-
-│   ├── ingress.yaml
-
-   ```bash│   ├── cert-manager-issuer.yaml
-
-   sudo apt update│   └── prometheus-servicemonitor.yaml
-
-   sudo apt install apt-transport-https ca-certificates curl software-properties-common├── monitoring/                # ✅ Prometheus & Grafana config
-
-   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg│   ├── prometheus.yml
-
-   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null│   └── grafana/
-
-   sudo apt update├── docker-compose.yml         # Local development services
-
-   sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin├── pnpm-workspace.yaml        # Workspace configuration
-
-   sudo usermod -aG docker $USER├── turbo.json                 # Turborepo build config
-
-   newgrp docker├── K8S_DEPLOYMENT.md          # Kubernetes deployment guide
-
-   ```├── CHECKLIST.md               # Comprehensive feature checklist
-
-└── README.md                  # This file
-
-6. **Clone and Setup Project**```
-
-
-
-   ```bash---
-
-   git clone https://github.com/yourusername/GodJira.git
-
-   cd GodJira## 🗄️ Database Schema (16 Models)
-
-   pnpm install
-
-   cp apps/.env.example apps/.env### Core Models
-
-   cp web/.env.example web/.env
-
-   ```#### **User Model**
-
-Authentication, roles, avatars, account security
-
-7. **Configure Environment Variables**```typescript
-
-- id: UUID
-
-   Edit `apps/.env` with your database credentials:- email: String (unique)
-
-   ```env- password: String (bcrypt hashed, 12 rounds)
-
-   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"- name: String
-
-   JWT_SECRET="your-secret-key-min-32-characters"- bio?: String
-
-   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"- jobTitle?: String
-
-   ```- department?: String
-
-- role: UserRole (ADMIN | MANAGER | USER)
-
-8. **Run Database Migrations**- avatar?: String (base64 data URL)
-
-- isActive: Boolean
-
-   ```bash- isEmailVerified: Boolean
-
-   cd apps- passwordHistory: String[] (prevent reuse)
-
-   pnpm prisma migrate deploy- failedLoginAttempts: Int
-
-   pnpm prisma generate- lockedUntil?: DateTime
-
-   ```- createdAt: DateTime
-
-- updatedAt: DateTime
-
-#### Fedora / RHEL / CentOS```
-
-
-
-1. **Install Node.js**#### **Project Model**
-
-Project management with unique keys
-
-   ```bash```typescript
-
-   sudo dnf module install nodejs:20- id: UUID
-
-   ```- key: String (unique, e.g., "WEB", "MOB")
-
-- name: String
-
-   Or using nvm:- description?: String
-
-   ```bash- ownerId: UUID → User
-
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash- createdAt: DateTime
-
-   source ~/.bashrc- updatedAt: DateTime
-
-   nvm install 20```
+   sudo pacman -S nodejs npm### Frontend Dependencies
 
    ```
 
-#### **Sprint Model**
+Open Swagger documentation in your browser:
 
-2. **Install pnpm**Agile sprint lifecycle
+2. **Install pnpm**
 
-```typescript
+```json```
 
-   ```bash- id: UUID
+   ```bash
 
-   npm install -g pnpm- name: String
+   npm install -g pnpm{http://localhost:3000/api/docs
 
-   ```- goal?: String
+   ```
 
-- startDate?: DateTime
+  "react": "^18.3.1",```
 
-3. **Install PostgreSQL**- endDate?: DateTime
+3. **Install PostgreSQL**
 
-- status: SprintStatus (PLANNED | ACTIVE | COMPLETED | CANCELLED)
+  "react-dom": "^18.3.1",
 
-   ```bash- projectId: UUID → Project
+   ```bash
 
-   sudo dnf install postgresql-server postgresql-contrib- createdAt: DateTime
+   sudo pacman -S postgresql  "react-router-dom": "^6.28.0",Or test with curl:
 
-   sudo postgresql-setup --initdb- updatedAt: DateTime
+   sudo -u postgres initdb -D /var/lib/postgres/data
 
-   sudo systemctl start postgresql```
+   sudo systemctl start postgresql  "@tanstack/react-query": "^5.62.10",```powershell
 
    sudo systemctl enable postgresql
 
-   ```#### **Issue Model**
-
-Complete ticket system
-
-4. **Configure PostgreSQL**```typescript
-
-- id: UUID
-
-   Edit `/var/lib/pgsql/data/pg_hba.conf` and change authentication method:- key: String (unique, e.g., "WEB-123")
-
-   ```- title: String
-
-   local   all             all                                     md5- description?: String (markdown)
-
-   host    all             all             127.0.0.1/32            md5- type: IssueType (TASK | BUG | STORY | EPIC | SPIKE)
-
-   ```- status: IssueStatus (BACKLOG | TODO | IN_PROGRESS | IN_REVIEW | BLOCKED | DONE | CLOSED)
-
-- priority: IssuePriority (LOW | MEDIUM | HIGH | URGENT | CRITICAL)
-
-   Restart PostgreSQL:- storyPoints?: Int (Fibonacci scale)
-
-   ```bash- labels: String[]
-
-   sudo systemctl restart postgresql- projectId: UUID → Project
-
-   ```- sprintId?: UUID → Sprint
-
-- creatorId: UUID → User
-
-   Create database:- assigneeId?: UUID → User
-
-   ```bash- parentIssueId?: UUID → Issue (for sub-tasks)
-
-   sudo -u postgres psql- createdAt: DateTime
-
-   ```- updatedAt: DateTime
-
-```
-
-   In PostgreSQL shell:
-
-   ```sql#### **Comment Model**
-
-   CREATE USER godjira WITH PASSWORD 'your_password';Comments with markdown support
-
-   CREATE DATABASE godjira_dev OWNER godjira;```typescript
-
-   \q- id: UUID
-
-   ```- content: String (markdown)
-
-- issueId?: UUID → Issue
-
-5. **Follow steps 5-8 from Ubuntu/Debian section above**- taskId?: UUID → Task
-
-- authorId: UUID → User
-
-#### Arch Linux- createdAt: DateTime
-
-- updatedAt: DateTime
-
-1. **Install Node.js**```
+   ```  "tailwindcss": "^3.4.15",# Health check
 
 
 
-   ```bash#### **WorkLog Model**
+4. **Configure PostgreSQL**  "vite": "^6.0.1"curl http://localhost:3000/api/v1/health
 
-   sudo pacman -S nodejs npmTime tracking per issue
 
-   ``````typescript
 
-- id: UUID
-
-2. **Install pnpm**- description: String
-
-- timeSpent: Int (minutes)
-
-   ```bash- logDate: DateTime
-
-   npm install -g pnpm- issueId: UUID → Issue
-
-   ```- userId: UUID → User
-
-- createdAt: DateTime
-
-3. **Install PostgreSQL**- updatedAt: DateTime
-
-```
-
-   ```bash
-
-   sudo pacman -S postgresql#### **IssueLink Model**
-
-   sudo -u postgres initdb -D /var/lib/postgres/dataIssue relationships
-
-   sudo systemctl start postgresql```typescript
-
-   sudo systemctl enable postgresql- id: UUID
-
-   ```- linkType: IssueLinkType (BLOCKS | BLOCKED_BY | RELATES_TO | DUPLICATES | DUPLICATED_BY | PARENT_OF | CHILD_OF)
-
-- fromIssueId: UUID → Issue
-
-4. **Configure PostgreSQL**- toIssueId: UUID → Issue
-
-- createdAt: DateTime
-
-   ```bash```
+   ```bash}
 
    sudo -u postgres psql
 
-   ```#### **Watcher Model**
+   ``````# Register a new user
 
-Issue subscription system
 
-   In PostgreSQL shell:```typescript
 
-   ```sql- id: UUID
+   In PostgreSQL shell:curl -X POST http://localhost:3000/api/v1/auth/register `
 
-   CREATE USER godjira WITH PASSWORD 'your_password';- userId: UUID → User
+   ```sql
 
-   CREATE DATABASE godjira_dev OWNER godjira;- issueId: UUID → Issue
-
-   \q- createdAt: DateTime
-
-   ```- UNIQUE(userId, issueId)
-
-```
-
-5. **Follow steps 5-8 from Ubuntu/Debian section above**
-
-#### **Team Model**
-
----Team management
-
-```typescript
-
-### macOS- id: UUID
-
-- name: String (unique, e.g., "Platform Team", "Developers")
-
-#### Intel and Apple Silicon Macs- description?: String
-
-- createdAt: DateTime
-
-1. **Install Xcode Command Line Tools**- updatedAt: DateTime
-
-```
-
-   ```bash
-
-   xcode-select --install#### **TeamMember Model**
-
-   ```Team membership with roles
-
-```typescript
-
-2. **Install Homebrew**- id: UUID
-
-- teamId: UUID → Team
-
-   ```bash- userId: UUID → User
-
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"- role: String (LEAD | MEMBER)
-
-   ```- joinedAt: DateTime
-
-- UNIQUE(teamId, userId)
-
-   For Apple Silicon, add Homebrew to PATH:```
-
-   ```bash
-
-   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile#### **TeamProject Model**
-
-   eval "$(/opt/homebrew/bin/brew shellenv)"Team-project associations
-
-   ``````typescript
-
-- id: UUID
-
-3. **Install Node.js**- teamId: UUID → Team
-
-- projectId: UUID → Project
-
-   Using Homebrew (recommended):- assignedAt: DateTime
-
-   ```bash- UNIQUE(teamId, projectId)
-
-   brew install node@20```
-
-   brew link node@20
-
-   ```#### **Notification Model**
-
-Real-time notifications
-
-   Or using nvm:```typescript
-
-   ```bash- id: UUID
-
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash- type: NotificationType (9 types)
-
-   source ~/.zshrc- title: String
-
-   nvm install 20- message: String
-
-   nvm use 20- userId: UUID → User
-
-   ```- actorId?: UUID
-
-- actorName?: String
-
-4. **Install pnpm**- issueId?: UUID
-
-- issueKey?: String
-
-   ```bash- projectId?: UUID
-
-   npm install -g pnpm- sprintId?: UUID
-
-   ```- commentId?: UUID
-
-- metadata?: JSON
-
-5. **Install PostgreSQL**- isRead: Boolean
-
-- readAt?: DateTime
-
-   **Option A: Using Homebrew**- createdAt: DateTime
-
-   ```bash```
-
-   brew install postgresql@15
-
-   brew services start postgresql@15**Notification Types**:
-
-   ```- `ISSUE_ASSIGNED` - Issue assignment notifications
-
-- `ISSUE_UPDATED` - Issue update notifications
-
-   **Option B: Using Postgres.app** (GUI application)- `ISSUE_COMMENTED` - New comment notifications
-
-   - `ISSUE_MENTIONED` - @mention notifications
-
-   Download from [postgresapp.com](https://postgresapp.com/) and drag to Applications folder. Start Postgres.app and add to PATH:- `ISSUE_STATUS_CHANGED` - Status change notifications
-
-   ```bash- `SPRINT_STARTED` - Sprint start notifications
-
-   echo 'export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"' >> ~/.zshrc- `SPRINT_COMPLETED` - Sprint completion notifications
-
-   source ~/.zshrc- `TEAM_ADDED` - Team membership notifications
-
-   ```- `WATCHER_ADDED` - Watcher confirmation notifications
-
-
-
-   **Option C: Using Docker Desktop**#### **Attachment Model**
-
-   File attachments with thumbnails
-
-   Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and skip to Docker setup below.```typescript
-
-- id: UUID
-
-6. **Configure PostgreSQL**- filename: String
-
-- originalName: String
-
-   If using Homebrew or Postgres.app:- mimetype: String
-
-   ```bash- size: Int (bytes)
-
-   psql postgres- data: String (base64 data URL)
-
-   ```- thumbnail?: String (base64, 200x200)
-
-- issueId: UUID → Issue
-
-   In PostgreSQL shell:- uploadedBy: UUID → User
-
-   ```sql- createdAt: DateTime
-
-   CREATE USER godjira WITH PASSWORD 'your_password';```
+   CREATE USER godjira WITH PASSWORD 'your_password';---  -H "Content-Type: application/json" `
 
    CREATE DATABASE godjira_dev OWNER godjira;
 
-   \q#### **AuditLog Model**
+   \q  -d '{"email":"admin@example.com","password":"SecurePass123!","name":"Admin User"}'
 
-   ```Complete audit trail for compliance
+   ```
 
-```typescript
+## Installation
 
-7. **Install Docker (Optional)**- id: UUID
+5. **Follow steps 5-8 from Ubuntu/Debian section above**
 
-- action: AuditAction (CREATE | UPDATE | DELETE | STATUS_CHANGE | ASSIGN | COMMENT)
+# Login
 
-   Download Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and install.- entityType: String
+---
 
-- entityId: UUID
+### Linuxcurl -X POST http://localhost:3000/api/v1/auth/login `
 
-   For Apple Silicon, ensure "Use Rosetta for x86/amd64 emulation" is enabled in Docker Desktop settings if needed.- issueId?: UUID → Issue
+### macOS
 
-- userId: UUID
+  -H "Content-Type: application/json" `
 
-8. **Clone and Setup Project**- userName: String
+#### Intel and Apple Silicon Macs
 
-- changes: String (JSON)
+#### Ubuntu / Debian  -d '{"email":"admin@example.com","password":"SecurePass123!"}'
 
-   ```bash- ipAddress?: String
+1. **Install Xcode Command Line Tools**
 
-   git clone https://github.com/yourusername/GodJira.git- userAgent?: String
+```
 
-   cd GodJira- createdAt: DateTime
+   ```bash
 
-   pnpm install```
+   xcode-select --install1. **Install Node.js**
+
+   ```
+
+---
+
+2. **Install Homebrew**
+
+   Using NodeSource repository (recommended):
+
+   ```bash
+
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"   ```bash## 📁 Project Structure
+
+   ```
+
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+   For Apple Silicon, add Homebrew to PATH:
+
+   ```bash   sudo apt-get install -y nodejs```
+
+   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+
+   eval "$(/opt/homebrew/bin/brew shellenv)"   ```GodJira/
+
+   ```
+
+├── apps/
+
+3. **Install Node.js**
+
+   Or using nvm (Node Version Manager):│   ├── src/
+
+   Using Homebrew (recommended):
+
+   ```bash   ```bash│   │   ├── auth/              # ✅ JWT authentication & strategies
+
+   brew install node@20
+
+   brew link node@20   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash│   │   ├── users/             # ✅ User management with RBAC
+
+   ```
+
+   source ~/.bashrc│   │   ├── projects/          # ✅ Project CRUD & statistics
+
+   Or using nvm:
+
+   ```bash   nvm install 20│   │   ├── sprints/           # ✅ Sprint lifecycle management
+
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+   source ~/.zshrc   nvm use 20│   │   ├── issues/            # ✅ Issue tracking with sub-tasks
+
+   nvm install 20
+
+   nvm use 20   ```│   │   ├── comments/          # ✅ Comments with @mentions
+
+   ```
+
+│   │   ├── worklogs/          # ✅ Time tracking
+
+4. **Install pnpm**
+
+2. **Install pnpm**│   │   ├── audit/             # ✅ Audit logs & activity feeds
+
+   ```bash
+
+   npm install -g pnpm│   │   ├── issue-links/       # ✅ Issue relationships
+
+   ```
+
+   ```bash│   │   ├── watchers/          # ✅ Issue subscriptions
+
+5. **Install PostgreSQL**
+
+   npm install -g pnpm│   │   ├── teams/             # ✅ Team management
+
+   **Option A: Using Homebrew**
+
+   ```bash   ```│   │   ├── notifications/     # ✅ Real-time WebSocket notifications
+
+   brew install postgresql@15
+
+   brew services start postgresql@15│   │   ├── analytics/         # ✅ Burndown charts & velocity tracking
+
+   ```
+
+3. **Install PostgreSQL**│   │   ├── attachments/       # ✅ File attachments with thumbnails
+
+   **Option B: Using Postgres.app** (GUI application)
+
+   │   │   ├── export/            # ✅ CSV/Excel export
+
+   Download from [postgresapp.com](https://postgresapp.com/) and drag to Applications folder. Start Postgres.app and add to PATH:
+
+   ```bash   ```bash│   │   ├── email/             # ✅ Email service
+
+   echo 'export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"' >> ~/.zshrc
+
+   source ~/.zshrc   sudo apt update│   │   ├── health/            # ✅ Health checks
+
+   ```
+
+   sudo apt install postgresql postgresql-contrib│   │   ├── metrics/           # ✅ Prometheus metrics
+
+   **Option C: Using Docker Desktop**
+
+      sudo systemctl start postgresql│   │   ├── prisma/            # ✅ Database service
+
+   Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and skip to Docker setup below.
+
+   sudo systemctl enable postgresql│   │   ├── common/            # ✅ Shared utilities
+
+6. **Configure PostgreSQL**
+
+   ```│   │   ├── app.module.ts      # Application root module
+
+   If using Homebrew or Postgres.app:
+
+   ```bash│   │   └── main.ts            # Application entry point
+
+   psql postgres
+
+   ```4. **Configure PostgreSQL**│   ├── prisma/
+
+
+
+   In PostgreSQL shell:│   │   ├── schema.prisma      # Complete database schema (16 models)
+
+   ```sql
+
+   CREATE USER godjira WITH PASSWORD 'your_password';   ```bash│   │   └── migrations/        # Database migrations
+
+   CREATE DATABASE godjira_dev OWNER godjira;
+
+   \q   sudo -u postgres psql│   ├── Dockerfile             # Multi-stage production build
+
+   ```
+
+   ```│   └── package.json           # Backend dependencies
+
+7. **Install Docker (Optional)**
+
+├── helm/
+
+   Download Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and install.
+
+   In PostgreSQL shell:│   └── godjira/               # ✅ Kubernetes Helm charts
+
+   For Apple Silicon, ensure "Use Rosetta for x86/amd64 emulation" is enabled in Docker Desktop settings if needed.
+
+   ```sql│       ├── Chart.yaml
+
+8. **Clone and Setup Project**
+
+   CREATE USER godjira WITH PASSWORD 'your_password';│       ├── values.yaml
+
+   ```bash
+
+   git clone https://github.com/yourusername/GodJira.git   CREATE DATABASE godjira_dev OWNER godjira;│       └── templates/
+
+   cd GodJira
+
+   pnpm install   \q├── k8s/                       # ✅ Kubernetes raw manifests
 
    cp apps/.env.example apps/.env
 
-   cp web/.env.example web/.env#### **Task Model**
+   cp web/.env.example web/.env   ```│   ├── namespace.yaml
 
-   ```Legacy task support
+   ```
 
-```typescript
+│   ├── postgres-statefulset.yaml
 
-9. **Configure Environment Variables**- id: UUID
+9. **Configure Environment Variables**
 
-- title: String
+5. **Install Docker (Optional)**│   ├── api-deployment.yaml
 
-   Edit `apps/.env` with your database credentials:- description?: String
+   Edit `apps/.env` with your database credentials:
 
-   ```env- status: TaskStatus (TODO | IN_PROGRESS | DONE | CANCELLED)
+   ```env│   ├── ingress.yaml
 
-   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"- priority: TaskPriority (LOW | MEDIUM | HIGH)
+   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"
 
-   JWT_SECRET="your-secret-key-min-32-characters"- dueDate?: DateTime
+   JWT_SECRET="your-secret-key-min-32-characters"   ```bash│   ├── cert-manager-issuer.yaml
 
-   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"- projectId: UUID → Project
+   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"
 
-   ```- creatorId: UUID → User
+   ```   sudo apt update│   └── prometheus-servicemonitor.yaml
 
-- assigneeId?: UUID → User
 
-10. **Run Database Migrations**- createdAt: DateTime
 
-- updatedAt: DateTime
+10. **Run Database Migrations**   sudo apt install apt-transport-https ca-certificates curl software-properties-common├── monitoring/                # ✅ Prometheus & Grafana config
 
-    ```bash```
+
+
+    ```bash   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg│   ├── prometheus.yml
 
     cd apps
 
-    pnpm prisma migrate deploy---
+    pnpm prisma migrate deploy   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null│   └── grafana/
 
     pnpm prisma generate
 
-    ```## 🔐 Security Features
+    ```   sudo apt update├── docker-compose.yml         # Local development services
 
 
 
-#### macOS Performance Optimization### NIST-Compliant Password Security
+#### macOS Performance Optimization   sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin├── pnpm-workspace.yaml        # Workspace configuration
 
-- ✅ Minimum 8 characters required
 
-For better Docker performance on macOS:- ✅ Must contain uppercase, lowercase, number, and special character
+
+For better Docker performance on macOS:   sudo usermod -aG docker $USER├── turbo.json                 # Turborepo build config
+
+
+
+1. **Increase Docker Resources**   newgrp docker├── K8S_DEPLOYMENT.md          # Kubernetes deployment guide
+
+   
+
+   Docker Desktop → Settings → Resources:   ```├── CHECKLIST.md               # Comprehensive feature checklist
+
+   - CPUs: 4+ cores
+
+   - Memory: 8+ GB└── README.md                  # This file
+
+   - Swap: 2 GB
+
+   - Disk: 64+ GB6. **Clone and Setup Project**```
+
+
+
+2. **Enable VirtioFS** (macOS 12.2+)
+
+   
+
+   Docker Desktop → Settings → General → Enable "VirtioFS"   ```bash---
+
+
+
+3. **Use Docker Volumes for node_modules**   git clone https://github.com/yourusername/GodJira.git
+
+   
+
+   Already configured in `docker-compose.dev.yml` for optimal performance.   cd GodJira## 🗄️ Database Schema (16 Models)
+
+
+
+---   pnpm install
+
+
+
+### Windows   cp apps/.env.example apps/.env### Core Models
+
+
+
+1. **Install Node.js**   cp web/.env.example web/.env
+
+
+
+   Download and install from [nodejs.org](https://nodejs.org/) (LTS version 20.x).   ```#### **User Model**
+
+
+
+   Verify installation:Authentication, roles, avatars, account security
+
+   ```powershell
+
+   node --version7. **Configure Environment Variables**```typescript
+
+   npm --version
+
+   ```- id: UUID
+
+
+
+2. **Install pnpm**   Edit `apps/.env` with your database credentials:- email: String (unique)
+
+
+
+   ```powershell   ```env- password: String (bcrypt hashed, 12 rounds)
+
+   npm install -g pnpm
+
+   ```   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"- name: String
+
+
+
+3. **Install PostgreSQL**   JWT_SECRET="your-secret-key-min-32-characters"- bio?: String
+
+
+
+   **Option A: Using Windows Installer**   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"- jobTitle?: String
+
+   
+
+   Download from [postgresql.org](https://www.postgresql.org/download/windows/) and run the installer.   ```- department?: String
+
+
+
+   During installation:- role: UserRole (ADMIN | MANAGER | USER)
+
+   - Set password for postgres user
+
+   - Default port: 54328. **Run Database Migrations**- avatar?: String (base64 data URL)
+
+   - Install pgAdmin 4 (optional GUI tool)
+
+- isActive: Boolean
+
+   **Option B: Using Docker Desktop**
+
+      ```bash- isEmailVerified: Boolean
+
+   Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and skip to Docker setup below.
+
+   cd apps- passwordHistory: String[] (prevent reuse)
+
+4. **Configure PostgreSQL**
+
+   pnpm prisma migrate deploy- failedLoginAttempts: Int
+
+   Open Command Prompt or PowerShell:
+
+   ```powershell   pnpm prisma generate- lockedUntil?: DateTime
+
+   psql -U postgres
+
+   ```   ```- createdAt: DateTime
+
+
+
+   In PostgreSQL shell:- updatedAt: DateTime
+
+   ```sql
+
+   CREATE USER godjira WITH PASSWORD 'your_password';#### Fedora / RHEL / CentOS```
+
+   CREATE DATABASE godjira_dev OWNER godjira;
+
+   \q
+
+   ```
+
+1. **Install Node.js**#### **Project Model**
+
+5. **Install Git**
+
+Project management with unique keys
+
+   Download from [git-scm.com](https://git-scm.com/download/win) and install.
+
+   ```bash```typescript
+
+6. **Install Docker Desktop (Optional)**
+
+   sudo dnf module install nodejs:20- id: UUID
+
+   Download from [docker.com](https://www.docker.com/products/docker-desktop/) and install.
+
+   ```- key: String (unique, e.g., "WEB", "MOB")
+
+   Enable WSL 2 backend for better performance (Windows 10/11):
+
+   ```powershell- name: String
+
+   wsl --install
+
+   ```   Or using nvm:- description?: String
+
+
+
+7. **Clone and Setup Project**   ```bash- ownerId: UUID → User
+
+
+
+   ```powershell   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash- createdAt: DateTime
+
+   git clone https://github.com/yourusername/GodJira.git
+
+   cd GodJira   source ~/.bashrc- updatedAt: DateTime
+
+   pnpm install
+
+   Copy-Item apps\.env.example apps\.env   nvm install 20```
+
+   Copy-Item web\.env.example web\.env
+
+   ```   ```
+
+
+
+8. **Configure Environment Variables**#### **Sprint Model**
+
+
+
+   Edit `apps\.env` with your database credentials:2. **Install pnpm**Agile sprint lifecycle
+
+   ```env
+
+   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"```typescript
+
+   JWT_SECRET="your-secret-key-min-32-characters"
+
+   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"   ```bash- id: UUID
+
+   ```
+
+   npm install -g pnpm- name: String
+
+9. **Run Database Migrations**
+
+   ```- goal?: String
+
+   ```powershell
+
+   cd apps- startDate?: DateTime
+
+   pnpm prisma migrate deploy
+
+   pnpm prisma generate3. **Install PostgreSQL**- endDate?: DateTime
+
+   ```
+
+- status: SprintStatus (PLANNED | ACTIVE | COMPLETED | CANCELLED)
+
+#### Windows Troubleshooting
+
+   ```bash- projectId: UUID → Project
+
+- **PowerShell Execution Policy**: If you encounter script execution errors:
+
+  ```powershell   sudo dnf install postgresql-server postgresql-contrib- createdAt: DateTime
+
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+  ```   sudo postgresql-setup --initdb- updatedAt: DateTime
+
+
+
+- **Path Issues**: Ensure Node.js and PostgreSQL bin directories are in PATH:   sudo systemctl start postgresql```
+
+  ```powershell
+
+  $env:PATH += ";C:\Program Files\PostgreSQL\15\bin"   sudo systemctl enable postgresql
+
+  ```
+
+   ```#### **Issue Model**
+
+- **Port Conflicts**: If port 3000 or 5432 is in use, modify `apps/.env` and `web/vite.config.ts`.
+
+Complete ticket system
+
+---
+
+4. **Configure PostgreSQL**```typescript
+
+## Configuration
+
+- id: UUID
+
+### Environment Variables
+
+   Edit `/var/lib/pgsql/data/pg_hba.conf` and change authentication method:- key: String (unique, e.g., "WEB-123")
+
+#### Backend (`apps/.env`)
+
+   ```- title: String
+
+```env
+
+# Database   local   all             all                                     md5- description?: String (markdown)
+
+DATABASE_URL="postgresql://godjira:password@localhost:5432/godjira_dev"
+
+   host    all             all             127.0.0.1/32            md5- type: IssueType (TASK | BUG | STORY | EPIC | SPIKE)
+
+# JWT Configuration
+
+JWT_SECRET="your-secret-key-minimum-32-characters-long"   ```- status: IssueStatus (BACKLOG | TODO | IN_PROGRESS | IN_REVIEW | BLOCKED | DONE | CLOSED)
+
+JWT_REFRESH_SECRET="your-refresh-secret-minimum-32-characters-long"
+
+JWT_EXPIRES_IN="30m"- priority: IssuePriority (LOW | MEDIUM | HIGH | URGENT | CRITICAL)
+
+JWT_REFRESH_EXPIRES_IN="7d"
+
+   Restart PostgreSQL:- storyPoints?: Int (Fibonacci scale)
+
+# Email Configuration (Development)
+
+MAIL_HOST="localhost"   ```bash- labels: String[]
+
+MAIL_PORT=1025
+
+MAIL_USER=""   sudo systemctl restart postgresql- projectId: UUID → Project
+
+MAIL_PASSWORD=""
+
+MAIL_FROM="noreply@godjira.local"   ```- sprintId?: UUID → Sprint
+
+FRONTEND_URL="http://localhost:5173"
+
+- creatorId: UUID → User
+
+# File Upload
+
+UPLOAD_PATH="./uploads"   Create database:- assigneeId?: UUID → User
+
+MAX_FILE_SIZE=20971520
+
+MAX_AVATAR_SIZE=10485760   ```bash- parentIssueId?: UUID → Issue (for sub-tasks)
+
+
+
+# Security   sudo -u postgres psql- createdAt: DateTime
+
+BCRYPT_ROUNDS=12
+
+MAX_FAILED_LOGIN_ATTEMPTS=5   ```- updatedAt: DateTime
+
+ACCOUNT_LOCKOUT_DURATION=900000
+
+```
+
+# Rate Limiting
+
+THROTTLE_TTL=60000   In PostgreSQL shell:
+
+THROTTLE_LIMIT=100
+
+   ```sql#### **Comment Model**
+
+# Server
+
+PORT=3000   CREATE USER godjira WITH PASSWORD 'your_password';Comments with markdown support
+
+NODE_ENV="development"
+
+```   CREATE DATABASE godjira_dev OWNER godjira;```typescript
+
+
+
+#### Frontend (`web/.env`)   \q- id: UUID
+
+
+
+```env   ```- content: String (markdown)
+
+VITE_API_URL=http://localhost:3000/api/v1
+
+VITE_WS_URL=http://localhost:3000- issueId?: UUID → Issue
+
+```
+
+5. **Follow steps 5-8 from Ubuntu/Debian section above**- taskId?: UUID → Task
+
+### Docker Configuration
+
+- authorId: UUID → User
+
+For Docker-based development, environment variables are configured in `docker-compose.dev.yml`.
+
+#### Arch Linux- createdAt: DateTime
+
+---
+
+- updatedAt: DateTime
+
+## Running the Application
+
+1. **Install Node.js**```
+
+### Local Development (Without Docker)
+
+
+
+1. **Start PostgreSQL** (if not using Docker)
+
+   ```bash#### **WorkLog Model**
+
+   Linux/macOS:
+
+   ```bash   sudo pacman -S nodejs npmTime tracking per issue
+
+   sudo systemctl start postgresql  # Linux
+
+   brew services start postgresql@15  # macOS   ``````typescript
+
+   ```
+
+- id: UUID
+
+   Windows: PostgreSQL service should start automatically.
+
+2. **Install pnpm**- description: String
+
+2. **Start Backend**
+
+- timeSpent: Int (minutes)
+
+   ```bash
+
+   cd apps   ```bash- logDate: DateTime
+
+   pnpm dev
+
+   ```   npm install -g pnpm- issueId: UUID → Issue
+
+
+
+   Backend will run at `http://localhost:3000`   ```- userId: UUID → User
+
+   API docs at `http://localhost:3000/api/docs`
+
+- createdAt: DateTime
+
+3. **Start Frontend** (in new terminal)
+
+3. **Install PostgreSQL**- updatedAt: DateTime
+
+   ```bash
+
+   cd web```
+
+   pnpm dev
+
+   ```   ```bash
+
+
+
+   Frontend will run at `http://localhost:5173`   sudo pacman -S postgresql#### **IssueLink Model**
+
+
+
+### Docker Development   sudo -u postgres initdb -D /var/lib/postgres/dataIssue relationships
+
+
+
+1. **Start all services**   sudo systemctl start postgresql```typescript
+
+
+
+   ```bash   sudo systemctl enable postgresql- id: UUID
+
+   docker-compose -f docker-compose.dev.yml up -d
+
+   ```   ```- linkType: IssueLinkType (BLOCKS | BLOCKED_BY | RELATES_TO | DUPLICATES | DUPLICATED_BY | PARENT_OF | CHILD_OF)
+
+
+
+   Services:- fromIssueId: UUID → Issue
+
+   - Backend: `http://localhost:3000`
+
+   - Frontend: `http://localhost:5173`4. **Configure PostgreSQL**- toIssueId: UUID → Issue
+
+   - PostgreSQL: `localhost:5432`
+
+   - pgAdmin: `http://localhost:5050` (admin@godjira.local / admin)- createdAt: DateTime
+
+   - Mailhog: `http://localhost:8025`
+
+   - Redis: `localhost:6379`   ```bash```
+
+
+
+2. **View logs**   sudo -u postgres psql
+
+
+
+   ```bash   ```#### **Watcher Model**
+
+   docker-compose -f docker-compose.dev.yml logs -f
+
+   ```Issue subscription system
+
+
+
+3. **Stop services**   In PostgreSQL shell:```typescript
+
+
+
+   ```bash   ```sql- id: UUID
+
+   docker-compose -f docker-compose.dev.yml down
+
+   ```   CREATE USER godjira WITH PASSWORD 'your_password';- userId: UUID → User
+
+
+
+4. **Restart specific service**   CREATE DATABASE godjira_dev OWNER godjira;- issueId: UUID → Issue
+
+
+
+   ```bash   \q- createdAt: DateTime
+
+   docker-compose -f docker-compose.dev.yml restart api
+
+   ```   ```- UNIQUE(userId, issueId)
+
+
+
+### Windows-Specific Start Script```
+
+
+
+For Windows users, a PowerShell script is provided:5. **Follow steps 5-8 from Ubuntu/Debian section above**
+
+
+
+```powershell#### **Team Model**
+
+.\start.ps1
+
+```---Team management
+
+
+
+This will check prerequisites and start Docker Compose development environment.```typescript
+
+
+
+---### macOS- id: UUID
+
+
+
+## API Documentation- name: String (unique, e.g., "Platform Team", "Developers")
+
+
+
+### Swagger UI#### Intel and Apple Silicon Macs- description?: String
+
+
+
+Once the backend is running, access the interactive API documentation:- createdAt: DateTime
+
+
+
+**URL**: `http://localhost:3000/api/docs`1. **Install Xcode Command Line Tools**- updatedAt: DateTime
+
+
+
+### API Overview```
+
+
+
+- **Base URL**: `http://localhost:3000/api/v1`   ```bash
+
+- **Authentication**: Bearer JWT token in `Authorization` header
+
+- **Total Endpoints**: 113 REST APIs   xcode-select --install#### **TeamMember Model**
+
+- **Modules**: 16 feature modules
+
+   ```Team membership with roles
+
+### Key Endpoints
+
+```typescript
+
+**Authentication**
+
+- `POST /auth/register` - Register new user2. **Install Homebrew**- id: UUID
+
+- `POST /auth/login` - Login
+
+- `POST /auth/refresh` - Refresh access token- teamId: UUID → Team
+
+- `GET /auth/profile` - Get current user profile
+
+- `POST /auth/verify-email` - Verify email   ```bash- userId: UUID → User
+
+
+
+**Projects**   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"- role: String (LEAD | MEMBER)
+
+- `GET /projects` - List all projects
+
+- `POST /projects` - Create project   ```- joinedAt: DateTime
+
+- `GET /projects/:id` - Get project details
+
+- `PATCH /projects/:id` - Update project- UNIQUE(teamId, userId)
+
+- `DELETE /projects/:id` - Delete project
+
+   For Apple Silicon, add Homebrew to PATH:```
+
+**Issues**
+
+- `GET /issues` - List issues (with filters)   ```bash
+
+- `POST /issues` - Create issue
+
+- `GET /issues/:id` - Get issue details   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile#### **TeamProject Model**
+
+- `PATCH /issues/:id` - Update issue
+
+- `PATCH /issues/:id/status` - Change issue status   eval "$(/opt/homebrew/bin/brew shellenv)"Team-project associations
+
+- `PATCH /issues/:id/assign` - Assign issue
+
+   ``````typescript
+
+**Sprints**
+
+- `GET /sprints` - List sprints- id: UUID
+
+- `POST /sprints` - Create sprint
+
+- `POST /sprints/:id/start` - Start sprint3. **Install Node.js**- teamId: UUID → Team
+
+- `POST /sprints/:id/complete` - Complete sprint
+
+- projectId: UUID → Project
+
+For complete API documentation, see [docs/architecture.md](docs/architecture.md).
+
+   Using Homebrew (recommended):- assignedAt: DateTime
+
+---
+
+   ```bash- UNIQUE(teamId, projectId)
+
+## Testing
+
+   brew install node@20```
+
+### Running Tests
+
+   brew link node@20
+
+**Unit Tests**
+
+```bash   ```#### **Notification Model**
+
+cd apps
+
+pnpm testReal-time notifications
+
+```
+
+   Or using nvm:```typescript
+
+**E2E Tests**
+
+```bash   ```bash- id: UUID
+
+cd apps
+
+pnpm test:e2e   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash- type: NotificationType (9 types)
+
+```
+
+   source ~/.zshrc- title: String
+
+**Test Coverage**
+
+```bash   nvm install 20- message: String
+
+cd apps
+
+pnpm test:cov   nvm use 20- userId: UUID → User
+
+```
+
+   ```- actorId?: UUID
+
+### Manual Testing
+
+- actorName?: String
+
+Use the provided test checklist:
+
+- [Phase 1 Test Checklist](docs/PHASE1_TEST_CHECKLIST.md)4. **Install pnpm**- issueId?: UUID
+
+
+
+### Test Users- issueKey?: String
+
+
+
+Default test user (created after setup):   ```bash- projectId?: UUID
+
+- **Email**: `admin@godjira.local`
+
+- **Password**: `Admin123!`   npm install -g pnpm- sprintId?: UUID
+
+- **Role**: ADMIN
+
+   ```- commentId?: UUID
+
+---
+
+- metadata?: JSON
+
+## Deployment
+
+5. **Install PostgreSQL**- isRead: Boolean
+
+### Docker Production
+
+- readAt?: DateTime
+
+```bash
+
+docker-compose up -d   **Option A: Using Homebrew**- createdAt: DateTime
+
+```
+
+   ```bash```
+
+Services:
+
+- API: `http://localhost:3000`   brew install postgresql@15
+
+- PostgreSQL: `localhost:5432`
+
+- pgAdmin: `http://localhost:5050`   brew services start postgresql@15**Notification Types**:
+
+- Prometheus: `http://localhost:9090`
+
+- Grafana: `http://localhost:3001`   ```- `ISSUE_ASSIGNED` - Issue assignment notifications
+
+
+
+### Kubernetes Deployment- `ISSUE_UPDATED` - Issue update notifications
+
+
+
+1. **Create namespace**   **Option B: Using Postgres.app** (GUI application)- `ISSUE_COMMENTED` - New comment notifications
+
+
+
+   ```bash   - `ISSUE_MENTIONED` - @mention notifications
+
+   kubectl apply -f k8s/namespace.yaml
+
+   ```   Download from [postgresapp.com](https://postgresapp.com/) and drag to Applications folder. Start Postgres.app and add to PATH:- `ISSUE_STATUS_CHANGED` - Status change notifications
+
+
+
+2. **Deploy PostgreSQL**   ```bash- `SPRINT_STARTED` - Sprint start notifications
+
+
+
+   ```bash   echo 'export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"' >> ~/.zshrc- `SPRINT_COMPLETED` - Sprint completion notifications
+
+   kubectl apply -f k8s/postgres-statefulset.yaml
+
+   ```   source ~/.zshrc- `TEAM_ADDED` - Team membership notifications
+
+
+
+3. **Deploy API**   ```- `WATCHER_ADDED` - Watcher confirmation notifications
+
+
+
+   ```bash
+
+   kubectl apply -f k8s/api-deployment.yaml
+
+   ```   **Option C: Using Docker Desktop**#### **Attachment Model**
+
+
+
+4. **Deploy Web Frontend**   File attachments with thumbnails
+
+
+
+   ```bash   Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and skip to Docker setup below.```typescript
+
+   kubectl apply -f k8s/web-deployment.yaml
+
+   ```- id: UUID
+
+
+
+5. **Setup Ingress**6. **Configure PostgreSQL**- filename: String
+
+
+
+   ```bash- originalName: String
+
+   kubectl apply -f k8s/ingress.yaml
+
+   ```   If using Homebrew or Postgres.app:- mimetype: String
+
+
+
+### Helm Deployment   ```bash- size: Int (bytes)
+
+
+
+```bash   psql postgres- data: String (base64 data URL)
+
+helm install godjira ./helm/godjira -f ./helm/godjira/values.yaml
+
+```   ```- thumbnail?: String (base64, 200x200)
+
+
+
+For detailed Kubernetes setup, see [K8S_DEPLOYMENT.md](K8S_DEPLOYMENT.md).- issueId: UUID → Issue
+
+
+
+---   In PostgreSQL shell:- uploadedBy: UUID → User
+
+
+
+## Project Structure   ```sql- createdAt: DateTime
+
+
+
+```   CREATE USER godjira WITH PASSWORD 'your_password';```
+
+GodJira/
+
+├── apps/                      # Backend NestJS application   CREATE DATABASE godjira_dev OWNER godjira;
+
+│   ├── src/
+
+│   │   ├── auth/              # Authentication module   \q#### **AuditLog Model**
+
+│   │   ├── users/             # User management
+
+│   │   ├── projects/          # Project management   ```Complete audit trail for compliance
+
+│   │   ├── sprints/           # Sprint management
+
+│   │   ├── issues/            # Issue tracking```typescript
+
+│   │   ├── comments/          # Comments
+
+│   │   ├── worklogs/          # Time tracking7. **Install Docker (Optional)**- id: UUID
+
+│   │   ├── issue-links/       # Issue relationships
+
+│   │   ├── watchers/          # Issue watchers- action: AuditAction (CREATE | UPDATE | DELETE | STATUS_CHANGE | ASSIGN | COMMENT)
+
+│   │   ├── teams/             # Team management
+
+│   │   ├── audit/             # Audit logs   Download Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/) and install.- entityType: String
+
+│   │   ├── notifications/     # WebSocket notifications
+
+│   │   ├── analytics/         # Reports and charts- entityId: UUID
+
+│   │   ├── attachments/       # File uploads
+
+│   │   ├── export/            # Data export   For Apple Silicon, ensure "Use Rosetta for x86/amd64 emulation" is enabled in Docker Desktop settings if needed.- issueId?: UUID → Issue
+
+│   │   ├── email/             # Email service
+
+│   │   ├── health/            # Health checks- userId: UUID
+
+│   │   ├── metrics/           # Prometheus metrics
+
+│   │   ├── prisma/            # Database service8. **Clone and Setup Project**- userName: String
+
+│   │   └── common/            # Shared utilities
+
+│   ├── prisma/- changes: String (JSON)
+
+│   │   └── schema.prisma      # Database schema
+
+│   └── package.json   ```bash- ipAddress?: String
+
+│
+
+├── web/                       # Frontend React application   git clone https://github.com/yourusername/GodJira.git- userAgent?: String
+
+│   ├── src/
+
+│   │   ├── components/        # Reusable components   cd GodJira- createdAt: DateTime
+
+│   │   ├── pages/             # Page components
+
+│   │   ├── contexts/          # React contexts   pnpm install```
+
+│   │   ├── services/          # API services
+
+│   │   ├── lib/               # Utilities   cp apps/.env.example apps/.env
+
+│   │   └── types/             # TypeScript types
+
+│   ├── public/   cp web/.env.example web/.env#### **Task Model**
+
+│   └── package.json
+
+│   ```Legacy task support
+
+├── docs/                      # Documentation
+
+│   ├── architecture.md        # System architecture```typescript
+
+│   ├── docker-dev.md          # Docker development guide
+
+│   ├── env.md                 # Environment variables9. **Configure Environment Variables**- id: UUID
+
+│   ├── PHASE1_IMPLEMENTATION.md
+
+│   ├── PHASE1_TEST_CHECKLIST.md- title: String
+
+│   ├── STACK_COMPLIANCE.md
+
+│   └── STACK_STATUS.md   Edit `apps/.env` with your database credentials:- description?: String
+
+│
+
+├── k8s/                       # Kubernetes manifests   ```env- status: TaskStatus (TODO | IN_PROGRESS | DONE | CANCELLED)
+
+│   ├── namespace.yaml
+
+│   ├── api-deployment.yaml   DATABASE_URL="postgresql://godjira:your_password@localhost:5432/godjira_dev"- priority: TaskPriority (LOW | MEDIUM | HIGH)
+
+│   ├── postgres-statefulset.yaml
+
+│   ├── web-deployment.yaml   JWT_SECRET="your-secret-key-min-32-characters"- dueDate?: DateTime
+
+│   └── ingress.yaml
+
+│   JWT_REFRESH_SECRET="your-refresh-secret-key-min-32-characters"- projectId: UUID → Project
+
+├── helm/                      # Helm charts
+
+│   └── godjira/   ```- creatorId: UUID → User
+
+│
+
+├── monitoring/                # Monitoring configuration- assigneeId?: UUID → User
+
+│   ├── prometheus.yml
+
+│   └── grafana/10. **Run Database Migrations**- createdAt: DateTime
+
+│
+
+├── docker-compose.yml         # Production Docker Compose- updatedAt: DateTime
+
+├── docker-compose.dev.yml     # Development Docker Compose
+
+├── package.json               # Root package.json    ```bash```
+
+├── pnpm-workspace.yaml        # pnpm workspace config
+
+├── turbo.json                 # Turborepo config    cd apps
+
+└── README.md                  # This file
+
+```    pnpm prisma migrate deploy---
+
+
+
+---    pnpm prisma generate
+
+
+
+## Documentation    ```## 🔐 Security Features
+
+
+
+- [Architecture Overview](docs/architecture.md) - Detailed system architecture
+
+- [Docker Development Guide](docs/docker-dev.md) - Docker setup and troubleshooting
+
+- [Environment Variables](docs/env.md) - All configuration options#### macOS Performance Optimization### NIST-Compliant Password Security
+
+- [Phase 1 Implementation](docs/PHASE1_IMPLEMENTATION.md) - Backend implementation details
+
+- [Phase 1 Test Checklist](docs/PHASE1_TEST_CHECKLIST.md) - Testing procedures- ✅ Minimum 8 characters required
+
+- [Stack Compliance](docs/STACK_COMPLIANCE.md) - Technology stack validation
+
+- [Stack Status](docs/STACK_STATUS.md) - Implementation statusFor better Docker performance on macOS:- ✅ Must contain uppercase, lowercase, number, and special character
+
+- [Kubernetes Deployment](K8S_DEPLOYMENT.md) - K8s deployment guide
 
 - ✅ Bcrypt hashing with 12 rounds (configurable)
 
+---
+
 1. **Increase Docker Resources**- ✅ Password history tracking (prevents last 5 passwords from reuse)
+
+## Contributing
 
    - ✅ Account lockout after 5 failed attempts (15-minute lock)
 
-   Docker Desktop → Settings → Resources:- ✅ Secure password reset with time-limited tokens
+1. Fork the repository
 
-   - CPUs: 4+ cores- ✅ Email verification system
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)   Docker Desktop → Settings → Resources:- ✅ Secure password reset with time-limited tokens
+
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+
+4. Push to the branch (`git push origin feature/amazing-feature`)   - CPUs: 4+ cores- ✅ Email verification system
+
+5. Open a Pull Request
 
    - Memory: 8+ GB
 
+---
+
    - Swap: 2 GB### Authentication & Authorization
+
+## License
 
    - Disk: 64+ GB- ✅ JWT authentication with 30-minute access tokens
 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
 - ✅ Refresh tokens with 7-day expiry
+
+---
 
 2. **Enable VirtioFS** (macOS 12.2+)- ✅ Role-Based Access Control (RBAC)
 
+## Support
+
      - **USER**: Standard user permissions
+
+For issues, questions, or contributions, please open an issue on GitHub.
 
    Docker Desktop → Settings → General → Enable "VirtioFS"  - **MANAGER**: Project management capabilities
 
+---
+
   - **ADMIN**: Full system access
+
+**Last Updated**: November 2025
 
 3. **Use Docker Volumes for node_modules**- ✅ JWT refresh token strategy
 
