@@ -262,12 +262,13 @@ pnpm dev
 ### Expected Backend Endpoints (Must Be Running)
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login (returns JWT tokens)
-- `POST /api/auth/logout` - Invalidate tokens
 - `POST /api/auth/refresh` - Refresh access token
-- `GET /api/auth/profile` - Get current user
+- `GET /api/auth/profile` - Get JWT payload (lightweight, for healthcheck)
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password` - Reset password with token
 - `POST /api/auth/verify-email` - Verify email with token
+- `GET /api/users/me` - Get current user profile (full user data)
+- `PATCH /api/users/me` - Update current user profile
 - `PATCH /api/users/me/password` - Change password (authenticated)
 
 ## ✅ Phase 1 Completion Criteria

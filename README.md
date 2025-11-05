@@ -536,8 +536,7 @@ http://localhost:3000/api/docs
 - `POST /api/v1/auth/forgot-password` - Password reset request
 - `POST /api/v1/auth/reset-password` - Reset password with token
 - `POST /api/v1/auth/verify-email` - Verify email address
-- `GET /api/v1/auth/profile` - Get current user profile
-- `POST /api/v1/auth/logout` - Logout (invalidate tokens)
+- `GET /api/v1/auth/profile` - Get JWT payload (lightweight auth check, used by Docker healthcheck)
 
 #### **Users (14 endpoints)**
 - `GET /api/v1/users` - List all users (paginated, searchable)

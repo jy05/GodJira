@@ -28,11 +28,8 @@ export const authApi = {
 
   // Logout
   logout: async (): Promise<void> => {
-    try {
-      await apiClient.post('/auth/logout');
-    } finally {
-      clearTokens();
-    }
+    // JWT tokens are stateless, so we only need to clear them on the client
+    clearTokens();
   },
 
   // Refresh token
