@@ -118,6 +118,11 @@ export default function IssueDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['issue', id] });
       setIsCreatingSubTask(false);
       subTaskReset();
+      alert('Sub-task created successfully!');
+    },
+    onError: (error: any) => {
+      console.error('Failed to create sub-task:', error);
+      alert(`Failed to create sub-task: ${error?.response?.data?.message || error.message}`);
     },
   });
 
@@ -496,7 +501,7 @@ export default function IssueDetailPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <select
                     {...subTaskRegister('type')}
                     className="px-3 py-2 border rounded-md text-sm"
@@ -512,6 +517,19 @@ export default function IssueDetailPage() {
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
+                  </select>
+
+                  <select
+                    {...subTaskRegister('assigneeId')}
+                    disabled={usersLoading || users.length === 0}
+                    className="px-3 py-2 border rounded-md text-sm disabled:bg-gray-100"
+                  >
+                    <option value="">Unassigned</option>
+                    {users.map((user: any) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

@@ -22,14 +22,43 @@ export class IssuesService {
       throw new NotFoundException('Project not found');
     }
 
-    // Get the count of issues for this project
-    const issueCount = await this.prisma.issue.count({
+    // Get the highest issue number for this project
+    const lastIssue = await this.prisma.issue.findFirst({
       where: { projectId },
+      orderBy: { createdAt: 'desc' },
+      select: { key: true },
     });
 
-    // Generate key: PROJECT-1, PROJECT-2, etc.
-    const issueNumber = issueCount + 1;
-    return `${project.key}-${issueNumber}`;
+    let issueNumber = 1;
+    if (lastIssue) {
+      // Extract number from key (e.g., "PROJ-123" -> 123)
+      const match = lastIssue.key.match(/-(\d+)$/);
+      if (match) {
+        issueNumber = parseInt(match[1], 10) + 1;
+      }
+    }
+
+    // Try to create unique key, retry with incremented number if collision
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    while (attempts < maxAttempts) {
+      const key = `${project.key}-${issueNumber}`;
+      
+      // Check if key already exists
+      const existing = await this.prisma.issue.findUnique({
+        where: { key },
+      });
+      
+      if (!existing) {
+        return key;
+      }
+      
+      issueNumber++;
+      attempts++;
+    }
+
+    throw new BadRequestException('Failed to generate unique issue key');
   }
 
   /**
