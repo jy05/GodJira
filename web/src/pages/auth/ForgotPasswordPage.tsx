@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import authService from '@/services/auth.service';
 import { AxiosError } from 'axios';
-import logo from '@/assets/logo.png';
 
 interface ForgotPasswordFormData {
   email: string;
@@ -39,7 +38,7 @@ export const ForgotPasswordPage = () => {
         <div>
           <div className="flex justify-center">
             <img 
-              src={logo} 
+              src="/logo.png" 
               alt="GodJira Logo" 
               className="h-24 w-auto"
             />

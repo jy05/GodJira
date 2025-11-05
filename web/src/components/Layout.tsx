@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from './RoleBasedRoute';
-import logo from '@/assets/logo.png';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,7 +36,7 @@ export const Layout = ({ children }: LayoutProps) => {
               <div className="flex-shrink-0 flex items-center">
                 <Link to="/dashboard" className="flex items-center">
                   <img 
-                    src={logo} 
+                    src="/logo.png" 
                     alt="GodJira Logo" 
                     className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                   />

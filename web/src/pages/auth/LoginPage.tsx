@@ -7,7 +7,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { settingsApi } from '@/services/settings.service';
 import type { LoginRequest } from '@/types';
 import { AxiosError } from 'axios';
-import logo from '@/assets/logo.png';
 
 interface LoginFormData extends LoginRequest {}
 
@@ -75,9 +74,9 @@ export const LoginPage = () => {
         <div>
           <div className="flex justify-center">
             <img 
-              src={logo} 
+              src="/logo.png" 
               alt="GodJira Logo" 
-              className="h-24 w-auto"
+              className="h-36 w-auto"
             />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

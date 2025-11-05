@@ -7,7 +7,6 @@ import { settingsApi } from '@/services/settings.service';
 import type { RegisterRequest } from '@/types';
 import { AxiosError } from 'axios';
 import { PASSWORD_RULES } from '@/config/constants';
-import logo from '@/assets/logo.png';
 
 interface RegisterFormData extends RegisterRequest {
   confirmPassword: string;
@@ -80,7 +79,7 @@ export const RegisterPage = () => {
           <div>
             <div className="flex justify-center">
               <img 
-                src={logo} 
+                src="/logo.png" 
                 alt="GodJira Logo" 
                 className="h-24 w-auto"
               />
@@ -110,7 +109,7 @@ export const RegisterPage = () => {
         <div>
           <div className="flex justify-center">
             <img 
-              src={logo} 
+              src="/logo.png" 
               alt="GodJira Logo" 
               className="h-24 w-auto"
             />
