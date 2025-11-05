@@ -208,6 +208,7 @@ export const SprintsPage = () => {
                 <SprintCard
                   key={sprint.id}
                   sprint={sprint}
+                  projectId={projectId!}
                   onEdit={(s) => {
                     setSelectedSprint(s);
                     setShowEditModal(true);
@@ -270,6 +271,7 @@ export const SprintsPage = () => {
 // Sprint Card Component
 interface SprintCardProps {
   sprint: Sprint;
+  projectId: string;
   onEdit: (sprint: Sprint) => void;
   onDelete: (sprint: Sprint) => void;
   onStart: (sprint: Sprint) => void;
@@ -279,12 +281,14 @@ interface SprintCardProps {
 
 const SprintCard = ({
   sprint,
+  projectId,
   onEdit,
   onDelete,
   onStart,
   onComplete,
   onCancel,
 }: SprintCardProps) => {
+  const navigate = useNavigate();
   const statusColors = {
     PLANNED: 'bg-gray-100 text-gray-800',
     ACTIVE: 'bg-green-100 text-green-800',
@@ -341,10 +345,16 @@ const SprintCard = ({
 
         {/* Actions */}
         <div className="ml-4 flex flex-col space-y-2">
+          <button
+            onClick={() => navigate(`/projects/${projectId}/sprints/${sprint.id}`)}
+            className="btn btn-primary btn-sm"
+          >
+            View Details
+          </button>
           {canStart && (
             <button
               onClick={() => onStart(sprint)}
-              className="btn btn-primary btn-sm"
+              className="btn bg-green-600 text-white hover:bg-green-700 btn-sm"
             >
               Start Sprint
             </button>
@@ -352,7 +362,7 @@ const SprintCard = ({
           {canComplete && (
             <button
               onClick={() => onComplete(sprint)}
-              className="btn bg-green-600 text-white hover:bg-green-700 btn-sm"
+              className="btn bg-blue-600 text-white hover:bg-blue-700 btn-sm"
             >
               Complete Sprint
             </button>

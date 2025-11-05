@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/Layout';
 import { projectApi } from '@/services/project.service';
+import { analyticsApi } from '@/services/analytics.service';
 
 export const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,12 @@ export const ProjectDetailPage = () => {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['project-stats', id],
     queryFn: () => projectApi.getProjectStatistics(id!),
+    enabled: !!id,
+  });
+
+  const { data: projectSummary } = useQuery({
+    queryKey: ['project-summary', id],
+    queryFn: () => analyticsApi.getProjectSummary(id!),
     enabled: !!id,
   });
 
@@ -92,44 +99,84 @@ export const ProjectDetailPage = () => {
           {statsLoading ? (
             <div className="text-sm text-gray-500">Loading statistics...</div>
           ) : stats ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <StatCard
-                title="Total Issues"
-                value={stats.totalIssues}
-                icon="📋"
-                color="blue"
-              />
-              <StatCard
-                title="Completed Issues"
-                value={stats.completedIssues}
-                icon="✅"
-                color="green"
-              />
-              <StatCard
-                title="Active Issues"
-                value={stats.activeIssues}
-                icon="🔄"
-                color="yellow"
-              />
-              <StatCard
-                title="Total Sprints"
-                value={stats.totalSprints}
-                icon="🏃"
-                color="purple"
-              />
-              <StatCard
-                title="Active Sprints"
-                value={stats.activeSprints}
-                icon="⚡"
-                color="indigo"
-              />
-              <StatCard
-                title="Completed Sprints"
-                value={stats.completedSprints}
-                icon="🏁"
-                color="green"
-              />
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <StatCard
+                  title="Total Issues"
+                  value={stats.totalIssues}
+                  icon="📋"
+                  color="blue"
+                />
+                <StatCard
+                  title="Completed Issues"
+                  value={stats.completedIssues}
+                  icon="✅"
+                  color="green"
+                />
+                <StatCard
+                  title="Active Issues"
+                  value={stats.activeIssues}
+                  icon="🔄"
+                  color="yellow"
+                />
+                <StatCard
+                  title="Total Sprints"
+                  value={stats.totalSprints}
+                  icon="🏃"
+                  color="purple"
+                />
+                <StatCard
+                  title="Active Sprints"
+                  value={stats.activeSprints}
+                  icon="⚡"
+                  color="indigo"
+                />
+                <StatCard
+                  title="Completed Sprints"
+                  value={stats.completedSprints}
+                  icon="🏁"
+                  color="green"
+                />
+              </div>
+
+              {/* Velocity & AGILE Metrics */}
+              {projectSummary && (
+                <div className="mt-6 card">
+                  <h3 className="text-md font-semibold text-gray-900 mb-3">AGILE Metrics</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <dt className="text-gray-500">Average Velocity</dt>
+                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                        {projectSummary.velocity.average.toFixed(1)} pts/sprint
+                      </dd>
+                      <dd className="text-xs text-gray-500">
+                        Trend: <span className={projectSummary.velocity.trend === 'INCREASING' ? 'text-green-600' : projectSummary.velocity.trend === 'DECREASING' ? 'text-red-600' : 'text-gray-600'}>
+                          {projectSummary.velocity.trend}
+                        </span>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-gray-500">Commitment Accuracy</dt>
+                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                        {projectSummary.completionRate.toFixed(0)}%
+                      </dd>
+                      <dd className="text-xs text-gray-500">
+                        How well we estimate
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-gray-500">Issue Health</dt>
+                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                        {projectSummary.issues.averageAge.toFixed(0)} days
+                      </dd>
+                      <dd className="text-xs text-gray-500">
+                        Average issue age ({projectSummary.issues.staleCount} stale)
+                      </dd>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-sm text-gray-500">No statistics available</div>
           )}

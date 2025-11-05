@@ -96,7 +96,8 @@ export const ProjectsPage = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
               <p className="mt-2 text-sm text-gray-600">
-                Manage your projects and track progress
+                Projects are containers that organize your team's work. Each project contains sprints, 
+                issues (stories, tasks, bugs, spikes), and tracks overall progress.
               </p>
             </div>
             <button

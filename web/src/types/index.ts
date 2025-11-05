@@ -145,12 +145,65 @@ export interface UpdateSprintRequest {
 }
 
 export interface SprintStatistics {
-  totalIssues: number;
-  completedIssues: number;
-  inProgressIssues: number;
-  todoIssues: number;
-  totalStoryPoints: number;
-  completedStoryPoints: number;
-  capacity: number;
-  velocity: number;
+  sprint: {
+    id: string;
+    name: string;
+    status: SprintStatus;
+    startDate: string | null;
+    endDate: string | null;
+  };
+  summary: {
+    totalIssues: number;
+    completedIssues: number;
+    inProgressIssues: number;
+    todoIssues: number;
+    completionRate: number;
+  };
+  storyPoints: {
+    total: number;
+    completed: number;
+    remaining: number;
+    completionRate: number;
+  };
+  breakdown: {
+    byStatus: Record<string, number>;
+    byPriority: Record<string, number>;
+    byType: Record<string, number>;
+  };
 }
+
+export interface BurndownChart {
+  sprintId: string;
+  sprintName: string;
+  startDate: string;
+  endDate: string;
+  dataPoints: {
+    date: string;
+    idealRemaining: number;
+    actualRemaining: number;
+    completed: number;
+  }[];
+  summary: {
+    totalStoryPoints: number;
+    completedStoryPoints: number;
+    remainingStoryPoints: number;
+    completionRate: number;
+  };
+}
+
+export interface VelocityReport {
+  projectId: string;
+  projectName: string;
+  sprints: {
+    sprintId: string;
+    sprintName: string;
+    committedPoints: number;
+    completedPoints: number;
+    completionRate: number;
+  }[];
+  averageVelocity: number;
+  averageCommitmentAccuracy: number;
+  trend: 'INCREASING' | 'STABLE' | 'DECREASING';
+  totalSprints: number;
+}
+

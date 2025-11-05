@@ -19,6 +19,7 @@ import { UsersPage } from './pages/UsersPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { SprintsPage } from './pages/SprintsPage';
+import { SprintDetailPage } from './pages/SprintDetailPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -109,6 +110,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SprintsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId/sprints/:sprintId"
+              element={
+                <ProtectedRoute>
+                  <SprintDetailPage />
                 </ProtectedRoute>
               }
             />
