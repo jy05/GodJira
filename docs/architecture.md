@@ -1077,8 +1077,7 @@ docker-compose.yml:
 
 ## Related Documentation
 
-- [Setup Guide (Linux)](./setup-linux.md)
-- [Setup Guide (macOS)](./setup-macos.md)
+- [Installation Guide](../README.md#installation) - Linux, macOS, and Windows setup
 - [Docker Development](./docker-dev.md)
 - [Environment Variables](./env.md)
 - [Kubernetes Deployment](../K8S_DEPLOYMENT.md)
@@ -1086,6 +1085,6 @@ docker-compose.yml:
 
 ---
 
-**Last Updated**: November 4, 2025  
+**Last Updated**: November 2025  
 **Version**: 1.0.0  
-**Backend Completeness**: 100% (113 endpoints, 16 modules, 16 models)
+**Backend**: Complete (113 endpoints, 16 modules, 16 models)
