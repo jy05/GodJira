@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
+import { IssueLinkSection } from '@/components/issue/IssueLinkSection';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -759,6 +760,9 @@ export default function IssueDetailPage() {
               )}
             </div>
           )}
+
+          {/* Issue Links Section */}
+          <IssueLinkSection issueId={id!} />
 
           {/* Comments Section */}
           <div className="bg-white p-6 rounded-lg shadow">
