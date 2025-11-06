@@ -762,7 +762,7 @@ export default function IssueDetailPage() {
           )}
 
           {/* Issue Links Section */}
-          <IssueLinkSection issueId={id!} />
+          {id && <IssueLinkSection issueId={id} />}
 
           {/* Comments Section */}
           <div className="bg-white p-6 rounded-lg shadow">

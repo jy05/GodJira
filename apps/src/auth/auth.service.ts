@@ -278,8 +278,12 @@ export class AuthService {
       },
     });
 
-    // In production, send email here
-    // await this.emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+    // Send password reset email
+    await this.emailService.sendPasswordResetEmail(user.email, user.name, resetToken)
+      .catch(err => {
+        console.error('Failed to send password reset email:', err);
+        // Don't fail the request if email fails
+      });
 
     return { message: 'If an account with that email exists, a password reset link has been sent.' };
   }

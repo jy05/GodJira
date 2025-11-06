@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { issueLinksApi } from '@/services/issue-links.service';
 import { issueApi } from '@/services/issue.service';
 import type { IssueLink, IssueLinkType, Issue } from '@/types';
@@ -20,13 +21,14 @@ const LINK_TYPE_LABELS: Record<IssueLinkType, { outbound: string; inbound: strin
 
 export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [isCreating, setIsCreating] = useState(false);
   const [linkType, setLinkType] = useState<IssueLinkType>('RELATES_TO');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState<string>('');
 
   // Fetch links for this issue
-  const { data: links = [], isLoading } = useQuery({
+  const { data: links = [], isLoading, isError } = useQuery({
     queryKey: ['issue-links', issueId],
     queryFn: () => issueLinksApi.getLinksForIssue(issueId),
     enabled: !!issueId,
@@ -91,22 +93,32 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
     return link.fromIssueId === issueId ? link.toIssue : link.fromIssue;
   };
 
+  if (isLoading) {
+    return <div className="bg-white p-6 rounded-lg shadow">Loading links...</div>;
+  }
+
+  if (isError) {
+    return <div className="bg-white p-6 rounded-lg shadow">
+      <h3 className="text-lg font-semibold mb-4">Issue Links</h3>
+      <p className="text-gray-500 text-sm">Unable to load issue links.</p>
+    </div>;
+  }
+
+  // Ensure links is an array before processing
+  const linksArray = Array.isArray(links) ? links : [];
+
   // Group links by type
-  const groupedLinks = links.reduce((acc, link) => {
+  const groupedLinks = linksArray.reduce((acc, link) => {
     const label = getDisplayLabel(link);
     if (!acc[label]) acc[label] = [];
     acc[label].push(link);
     return acc;
   }, {} as Record<string, IssueLink[]>);
 
-  if (isLoading) {
-    return <div className="bg-white p-6 rounded-lg shadow">Loading links...</div>;
-  }
-
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Issue Links ({links.length})</h3>
+        <h3 className="text-lg font-semibold">Issue Links ({linksArray.length})</h3>
         <button
           onClick={() => setIsCreating(!isCreating)}
           className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
@@ -193,7 +205,7 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
       )}
 
       {/* Display Links */}
-      {links.length === 0 ? (
+      {linksArray.length === 0 ? (
         <p className="text-gray-500 text-sm">No linked issues</p>
       ) : (
         <div className="space-y-4">
@@ -211,16 +223,12 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300"
                     >
                       <div className="flex-1">
-                        <a
-                          href={`/issues/${linkedIssue.id}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            window.location.href = `/issues/${linkedIssue.id}`;
-                          }}
+                        <button
+                          onClick={() => navigate(`/issues/${linkedIssue.id}`)}
+                          className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline text-left"
                         >
                           {linkedIssue.key}
-                        </a>
+                        </button>
                         <p className="text-sm text-gray-700 mt-1">{linkedIssue.title}</p>
                         <div className="flex gap-2 mt-1">
                           <span
