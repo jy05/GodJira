@@ -56,6 +56,10 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
       setSelectedIssueId('');
       setLinkType('RELATES_TO');
     },
+    onError: (error: any) => {
+      console.error('Failed to create link:', error);
+      alert(`Failed to create link: ${error?.response?.data?.message || error.message || 'Unknown error'}`);
+    },
   });
 
   // Delete link mutation
@@ -67,13 +71,24 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
   });
 
   const handleCreateLink = () => {
-    if (!selectedIssueId) return;
+    console.log('handleCreateLink called');
+    console.log('selectedIssueId:', selectedIssueId);
+    console.log('linkType:', linkType);
+    console.log('issueId:', issueId);
+    
+    if (!selectedIssueId) {
+      alert('Please select an issue first');
+      return;
+    }
 
-    createLinkMutation.mutate({
+    const linkData = {
       linkType,
       fromIssueId: issueId,
       toIssueId: selectedIssueId,
-    });
+    };
+    
+    console.log('Creating link with data:', linkData);
+    createLinkMutation.mutate(linkData);
   };
 
   const handleDeleteLink = (linkId: string) => {
@@ -161,7 +176,7 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
                 placeholder="Search by key or title..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              {searchResults.length > 0 && (
+              {searchResults.length > 0 && !selectedIssueId && (
                 <div className="mt-2 max-h-60 overflow-y-auto border border-gray-300 rounded-lg bg-white">
                   {searchResults.map((issue: Issue) => (
                     <button
@@ -181,6 +196,11 @@ export function IssueLinkSection({ issueId }: IssueLinkSectionProps) {
                     </button>
                   ))}
                 </div>
+              )}
+              {selectedIssueId && (
+                <p className="mt-2 text-sm text-green-600">
+                  ✓ Issue selected
+                </p>
               )}
             </div>
 
