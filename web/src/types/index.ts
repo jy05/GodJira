@@ -220,6 +220,7 @@ export type IssueStatus =
   | 'TODO'
   | 'IN_PROGRESS'
   | 'IN_REVIEW'
+  | 'SMOKE_TESTING'
   | 'BLOCKED'
   | 'DONE'
   | 'CLOSED';
@@ -236,6 +237,7 @@ export interface Issue {
   priority: IssuePriority;
   storyPoints: number | null;
   labels: string[];
+  dueDate: string | null;
   projectId: string;
   project?: {
     id: string;
@@ -286,6 +288,7 @@ export interface UpdateIssueRequest {
   priority?: IssuePriority;
   storyPoints?: number;
   labels?: string[];
+  dueDate?: string | null;
   sprintId?: string | null;
   assigneeId?: string | null;
 }

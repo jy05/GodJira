@@ -42,6 +42,7 @@ enum IssueStatus {
   TODO
   IN_PROGRESS
   IN_REVIEW
+  SMOKE_TESTING
   BLOCKED
   DONE
   CLOSED

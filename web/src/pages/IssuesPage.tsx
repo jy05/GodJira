@@ -259,6 +259,7 @@ export default function IssuesPage() {
             <option value="TODO">To Do</option>
             <option value="IN_PROGRESS">In Progress</option>
             <option value="IN_REVIEW">In Review</option>
+            <option value="SMOKE_TESTING">Smoke Testing</option>
             <option value="BLOCKED">Blocked</option>
             <option value="DONE">Done</option>
             <option value="CLOSED">Closed</option>

@@ -296,6 +296,8 @@ export default function IssueDetailPage() {
         return 'bg-yellow-100 text-yellow-800';
       case 'IN_REVIEW':
         return 'bg-purple-100 text-purple-800';
+      case 'SMOKE_TESTING':
+        return 'bg-orange-100 text-orange-800';
       case 'BLOCKED':
         return 'bg-red-100 text-red-800';
       case 'DONE':
@@ -501,22 +503,14 @@ export default function IssueDetailPage() {
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div>
           {!isEditing && (
-            <>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
-              >
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-red-600 border border-red-600 rounded-md hover:bg-red-50"
-              >
-                Delete
-              </button>
-            </>
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 text-red-600 border border-red-600 rounded-md hover:bg-red-50"
+            >
+              Delete
+            </button>
           )}
         </div>
       </div>
@@ -628,6 +622,18 @@ export default function IssueDetailPage() {
               </>
             )}
           </div>
+
+          {/* Edit Button */}
+          {!isEditing && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+              >
+                Edit
+              </button>
+            </div>
+          )}
 
           {/* Sub-tasks - Only show for parent issues, not for sub-tasks */}
           {!issue.parentIssueId && (
@@ -940,6 +946,7 @@ export default function IssueDetailPage() {
                 <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="IN_REVIEW">In Review</option>
+                <option value="SMOKE_TESTING">Smoke Testing</option>
                 <option value="BLOCKED">Blocked</option>
                 <option value="DONE">Done</option>
                 <option value="CLOSED">Closed</option>
@@ -993,6 +1000,26 @@ export default function IssueDetailPage() {
                 ))}
               </select>
             </div>
+
+            {/* Due Date - Only for Managers and Admins */}
+            {currentUser && ['MANAGER', 'ADMIN'].includes(currentUser.role) && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  value={issue.dueDate ? new Date(issue.dueDate).toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    const newDate = e.target.value ? new Date(e.target.value).toISOString() : null;
+                    if (id) {
+                      updateMutation.mutate({ id, updates: { dueDate: newDate } });
+                    }
+                  }}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            )}
           </div>
 
           {/* Details */}
@@ -1021,6 +1048,18 @@ export default function IssueDetailPage() {
                 <dt className="text-gray-500">Updated</dt>
                 <dd className="font-medium">
                   {new Date(issue.updatedAt).toLocaleDateString()}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-gray-500">Due By</dt>
+                <dd className="font-medium">
+                  {issue.dueDate ? (
+                    <span className={new Date(issue.dueDate) < new Date() ? 'text-red-600 font-semibold' : ''}>
+                      {new Date(issue.dueDate).toLocaleDateString()}
+                    </span>
+                  ) : (
+                    'Not set'
+                  )}
                 </dd>
               </div>
               {issue.labels && issue.labels.length > 0 && (

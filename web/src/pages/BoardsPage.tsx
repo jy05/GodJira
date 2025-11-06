@@ -289,6 +289,7 @@ export default function BoardsPage() {
               <option value="TODO">To Do</option>
               <option value="IN_PROGRESS">In Progress</option>
               <option value="IN_REVIEW">In Review</option>
+              <option value="SMOKE_TESTING">Smoke Testing</option>
               <option value="BLOCKED">Blocked</option>
               <option value="DONE">Done</option>
               <option value="CLOSED">Closed</option>
@@ -625,6 +626,7 @@ export default function BoardsPage() {
       TODO: 'To Do',
       IN_PROGRESS: 'In Progress',
       IN_REVIEW: 'In Review',
+      SMOKE_TESTING: 'Smoke Testing',
       BLOCKED: 'Blocked',
       DONE: 'Done',
       CLOSED: 'Closed',

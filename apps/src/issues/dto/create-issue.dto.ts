@@ -39,11 +39,11 @@ export class CreateIssueDto {
 
   @ApiProperty({
     example: 'TODO',
-    enum: ['BACKLOG', 'TODO', 'IN_PROGRESS', 'IN_REVIEW', 'BLOCKED', 'DONE', 'CLOSED'],
+    enum: ['BACKLOG', 'TODO', 'IN_PROGRESS', 'IN_REVIEW', 'SMOKE_TESTING', 'BLOCKED', 'DONE', 'CLOSED'],
     description: 'Issue status',
     required: false,
   })
-  @IsEnum(['BACKLOG', 'TODO', 'IN_PROGRESS', 'IN_REVIEW', 'BLOCKED', 'DONE', 'CLOSED'])
+  @IsEnum(['BACKLOG', 'TODO', 'IN_PROGRESS', 'IN_REVIEW', 'SMOKE_TESTING', 'BLOCKED', 'DONE', 'CLOSED'])
   @IsOptional()
   status?: string;
 
