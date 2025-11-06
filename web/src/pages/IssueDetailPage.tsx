@@ -27,6 +27,8 @@ export default function IssueDetailPage() {
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  const [isEditingKey, setIsEditingKey] = useState(false);
+  const [tempKey, setTempKey] = useState('');
 
   // Fetch issue details
   const { data: issue, isLoading } = useQuery({
@@ -329,6 +331,42 @@ export default function IssueDetailPage() {
     setEditCommentContent('');
   };
 
+  const handleEditKey = () => {
+    setTempKey(issue?.key || '');
+    setIsEditingKey(true);
+  };
+
+  const handleSaveKey = () => {
+    if (tempKey.trim() && tempKey !== issue?.key) {
+      // Validate format
+      if (!/^[A-Z]+-\d+$/.test(tempKey)) {
+        alert('Issue key must follow format: LETTERS-NUMBER (e.g., PROJ-123)');
+        return;
+      }
+      if (id) {
+        updateMutation.mutate(
+          { id, updates: { key: tempKey } },
+          {
+            onSuccess: () => {
+              setIsEditingKey(false);
+            },
+            onError: (error: any) => {
+              alert(error?.response?.data?.message || 'Failed to update issue key');
+              setTempKey(issue?.key || '');
+            },
+          }
+        );
+      }
+    } else {
+      setIsEditingKey(false);
+    }
+  };
+
+  const handleCancelKeyEdit = () => {
+    setIsEditingKey(false);
+    setTempKey('');
+  };
+
   const getPriorityBadgeColor = (priority: IssuePriority) => {
     switch (priority) {
       case 'CRITICAL':
@@ -382,7 +420,58 @@ export default function IssueDetailPage() {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-gray-900">{issue.key}</h1>
+            {isEditingKey ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={tempKey}
+                  onChange={(e) => setTempKey(e.target.value.toUpperCase())}
+                  placeholder="PROJ-123"
+                  className="text-2xl font-bold px-2 py-1 border-2 border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ width: '200px' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveKey();
+                    } else if (e.key === 'Escape') {
+                      handleCancelKeyEdit();
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveKey}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? 'Saving...' : 'Save'}
+                </button>
+                <button
+                  onClick={handleCancelKeyEdit}
+                  className="px-3 py-1 text-sm text-gray-600 border rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 
+                  className="text-3xl font-bold text-blue-600 hover:text-blue-800 cursor-pointer border-b-2 border-transparent hover:border-blue-600 transition-colors"
+                  onClick={handleEditKey}
+                  title="Click to edit issue key"
+                >
+                  {issue.key}
+                </h1>
+                <button
+                  onClick={handleEditKey}
+                  className="text-gray-400 hover:text-gray-600"
+                  title="Edit issue key"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+            )}
             {issue.parentIssueId && (
               <span className="px-3 py-1 text-sm font-medium rounded-full bg-indigo-100 text-indigo-800">
                 SUB-TASK

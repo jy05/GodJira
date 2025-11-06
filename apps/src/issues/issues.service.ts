@@ -451,7 +451,18 @@ export class IssuesService {
       throw new NotFoundException(`Issue with ID ${id} not found`);
     }
 
-    const { sprintId, assigneeId, ...rest } = updateIssueDto;
+    const { sprintId, assigneeId, key, ...rest } = updateIssueDto;
+
+    // Verify custom key uniqueness if provided
+    if (key && key !== issue.key) {
+      const existingIssue = await this.prisma.issue.findUnique({
+        where: { key },
+      });
+
+      if (existingIssue) {
+        throw new BadRequestException(`Issue key '${key}' is already in use`);
+      }
+    }
 
     // Verify sprint if provided
     if (sprintId) {
@@ -482,6 +493,7 @@ export class IssuesService {
     const updatedIssue = await this.prisma.issue.update({
       where: { id },
       data: {
+        ...(key && { key }),
         ...(sprintId !== undefined && { sprintId }),
         ...(assigneeId !== undefined && { assigneeId }),
         ...(rest.title && { title: rest.title }),

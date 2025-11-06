@@ -278,6 +278,7 @@ export interface CreateIssueRequest {
 }
 
 export interface UpdateIssueRequest {
+  key?: string;
   title?: string;
   description?: string;
   type?: IssueType;

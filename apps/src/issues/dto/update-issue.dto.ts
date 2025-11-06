@@ -5,10 +5,23 @@ import {
   IsInt,
   IsArray,
   Min,
+  Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateIssueDto {
+  @ApiProperty({
+    example: 'PROJ-123',
+    description: 'Custom issue key (must be unique and follow format: LETTERS-NUMBER)',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Matches(/^[A-Z]+-\d+$/, {
+    message: 'Issue key must follow format: LETTERS-NUMBER (e.g., PROJ-123)',
+  })
+  key?: string;
+
   @ApiProperty({
     example: 'Implement user authentication - Updated',
     description: 'Issue title',

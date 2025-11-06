@@ -409,7 +409,13 @@ export default function BoardsPage() {
                                 onClick={() => navigate(`/issues/${issue.id}`)}
                               >
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-medium text-blue-600">
+                                  <span 
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate(`/issues/${issue.id}`);
+                                    }}
+                                  >
                                     {issue.key}
                                   </span>
                                   {hasSubTasks && (
@@ -570,7 +576,15 @@ export default function BoardsPage() {
         className="px-4 py-3 bg-white border rounded-lg shadow-sm hover:shadow-md cursor-move transition-shadow"
       >
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium text-blue-600">{issue.key}</span>
+          <span 
+            className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/issues/${issue.id}`);
+            }}
+          >
+            {issue.key}
+          </span>
           <span
             className={`px-2 py-0.5 text-xs font-medium rounded-full ${getIssueTypeBadgeColor(
               issue.type
@@ -840,7 +854,13 @@ export default function BoardsPage() {
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-blue-600">
+                            <span 
+                              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/issues/${issue.id}`);
+                              }}
+                            >
                               {issue.key}
                             </span>
                             <span
