@@ -170,6 +170,8 @@ export default function IssuesPage() {
         return 'bg-yellow-100 text-yellow-800';
       case 'IN_REVIEW':
         return 'bg-purple-100 text-purple-800';
+      case 'SMOKE_TESTING':
+        return 'bg-orange-100 text-orange-800';
       case 'BLOCKED':
         return 'bg-red-100 text-red-800';
       case 'DONE':
