@@ -77,6 +77,10 @@ export default function IssueDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['project-summary'] });
       setIsEditing(false);
     },
+    onError: (error: any) => {
+      console.error('Update mutation error:', error);
+      alert(`Failed to update issue: ${error?.response?.data?.message || error.message || 'Unknown error'}`);
+    },
   });
 
   // Delete issue mutation
@@ -342,8 +346,8 @@ export default function IssueDetailPage() {
   const handleSaveKey = () => {
     if (tempKey.trim() && tempKey !== issue?.key) {
       // Validate format
-      if (!/^[A-Z]+-\d+$/.test(tempKey)) {
-        alert('Issue key must follow format: LETTERS-NUMBER (e.g., PROJ-123)');
+      if (!/^[A-Z0-9]+-[A-Z0-9]+$/.test(tempKey)) {
+        alert('Issue key must follow format: ALPHANUMERIC-ALPHANUMERIC (e.g., PROJ-123, EPIC01-GODJIRA)');
         return;
       }
       if (id) {
@@ -429,9 +433,9 @@ export default function IssueDetailPage() {
                   type="text"
                   value={tempKey}
                   onChange={(e) => setTempKey(e.target.value.toUpperCase())}
-                  placeholder="PROJ-123"
+                  placeholder="PROJ-123 or EPIC01-GODJIRA"
                   className="text-2xl font-bold px-2 py-1 border-2 border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{ width: '200px' }}
+                  style={{ width: '280px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleSaveKey();
@@ -1001,25 +1005,48 @@ export default function IssueDetailPage() {
               </select>
             </div>
 
-            {/* Due Date - Only for Managers and Admins */}
-            {currentUser && ['MANAGER', 'ADMIN'].includes(currentUser.role) && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Due Date
-                </label>
+            {/* Due Date - Editable for Managers and Admins only */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Due Date {currentUser && !['MANAGER', 'ADMIN'].includes(currentUser.role) && '(Read-only)'}
+              </label>
+              {currentUser && ['MANAGER', 'ADMIN'].includes(currentUser.role) ? (
                 <input
                   type="date"
                   value={issue.dueDate ? new Date(issue.dueDate).toISOString().split('T')[0] : ''}
                   onChange={(e) => {
+                    console.log('Date changed:', e.target.value);
                     const newDate = e.target.value ? new Date(e.target.value).toISOString() : null;
+                    console.log('Converted to ISO:', newDate);
                     if (id) {
-                      updateMutation.mutate({ id, updates: { dueDate: newDate } });
+                      console.log('Updating issue with dueDate:', newDate);
+                      updateMutation.mutate(
+                        { id, updates: { dueDate: newDate } },
+                        {
+                          onSuccess: () => {
+                            console.log('Due date updated successfully!');
+                          },
+                          onError: (error: any) => {
+                            console.error('Failed to update due date:', error);
+                          }
+                        }
+                      );
                     }
                   }}
                   className="w-full px-3 py-2 border rounded-md"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-700">
+                  {issue.dueDate ? (
+                    <span className={new Date(issue.dueDate) < new Date() ? 'text-red-600 font-semibold' : ''}>
+                      {new Date(issue.dueDate).toLocaleDateString()}
+                    </span>
+                  ) : (
+                    'Not set'
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Details */}

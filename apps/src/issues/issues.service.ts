@@ -503,6 +503,7 @@ export class IssuesService {
         ...(rest.priority && { priority: rest.priority as any }),
         ...(rest.storyPoints !== undefined && { storyPoints: rest.storyPoints }),
         ...(rest.labels && { labels: rest.labels }),
+        ...(rest.dueDate !== undefined && { dueDate: rest.dueDate ? new Date(rest.dueDate) : null }),
       },
       include: {
         project: {

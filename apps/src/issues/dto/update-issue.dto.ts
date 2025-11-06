@@ -13,13 +13,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateIssueDto {
   @ApiProperty({
     example: 'PROJ-123',
-    description: 'Custom issue key (must be unique and follow format: LETTERS-NUMBER)',
+    description: 'Custom issue key (must be unique and follow format: alphanumeric-alphanumeric with at least one letter)',
     required: false,
   })
   @IsString()
   @IsOptional()
-  @Matches(/^[A-Z]+-\d+$/, {
-    message: 'Issue key must follow format: LETTERS-NUMBER (e.g., PROJ-123)',
+  @Matches(/^[A-Z0-9]+-[A-Z0-9]+$/, {
+    message: 'Issue key must follow format: ALPHANUMERIC-ALPHANUMERIC (e.g., PROJ-123, EPIC01-GODJIRA)',
   })
   key?: string;
 
