@@ -303,4 +303,42 @@ export interface IssueFilters {
   search?: string;
 }
 
+// Issue Links types
+export type IssueLinkType =
+  | 'BLOCKS'
+  | 'BLOCKED_BY'
+  | 'RELATES_TO'
+  | 'DUPLICATES'
+  | 'DUPLICATED_BY'
+  | 'PARENT_OF'
+  | 'CHILD_OF';
+
+export interface IssueLink {
+  id: string;
+  linkType: IssueLinkType;
+  fromIssueId: string;
+  toIssueId: string;
+  fromIssue?: {
+    id: string;
+    key: string;
+    title: string;
+    status: IssueStatus;
+    type: IssueType;
+  };
+  toIssue?: {
+    id: string;
+    key: string;
+    title: string;
+    status: IssueStatus;
+    type: IssueType;
+  };
+  createdAt: string;
+}
+
+export interface CreateIssueLinkRequest {
+  linkType: IssueLinkType;
+  fromIssueId: string;
+  toIssueId: string;
+}
+
 
