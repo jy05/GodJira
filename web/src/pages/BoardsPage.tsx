@@ -123,7 +123,31 @@ export default function BoardsPage() {
   const updateIssueMutation = useMutation({
     mutationFn: ({ issueId, status }: { issueId: string; status: IssueStatus }) =>
       issueApi.updateIssue(issueId, { status }),
+    onMutate: async ({ issueId, status }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['all-issues'] });
+      
+      // Snapshot the previous value
+      const previousIssues = queryClient.getQueryData(['all-issues', searchTerm, typeFilter, statusFilter, priorityFilter, projectFilter]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData(['all-issues', searchTerm, typeFilter, statusFilter, priorityFilter, projectFilter], (old: any) => {
+        if (!old) return old;
+        return old.map((issue: any) => 
+          issue.id === issueId ? { ...issue, status } : issue
+        );
+      });
+      
+      return { previousIssues };
+    },
+    onError: (_err, _variables, context: any) => {
+      // Rollback on error
+      if (context?.previousIssues) {
+        queryClient.setQueryData(['all-issues', searchTerm, typeFilter, statusFilter, priorityFilter, projectFilter], context.previousIssues);
+      }
+    },
     onSuccess: () => {
+      // Invalidate all queries that start with 'all-issues' to refetch
       queryClient.invalidateQueries({ queryKey: ['all-issues'] });
     },
   });
