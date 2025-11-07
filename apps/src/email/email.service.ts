@@ -41,7 +41,7 @@ export class EmailService {
     verificationToken: string,
   ): Promise<void> {
     const appUrl = this.configService.get<string>('FRONTEND_URL');
-    const verificationUrl = `${appUrl}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${appUrl}/#/verify-email?token=${verificationToken}`;
 
     try {
       await this.mailerService.sendMail({
@@ -69,7 +69,7 @@ export class EmailService {
     resetToken: string,
   ): Promise<void> {
     const appUrl = this.configService.get<string>('FRONTEND_URL');
-    const resetUrl = `${appUrl}/reset-password?token=${resetToken}`;
+    const resetUrl = `${appUrl}/#/reset-password?token=${resetToken}`;
 
     try {
       await this.mailerService.sendMail({
