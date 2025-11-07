@@ -1016,7 +1016,8 @@ export default function IssueDetailPage() {
                   value={issue.dueDate ? new Date(issue.dueDate).toISOString().split('T')[0] : ''}
                   onChange={(e) => {
                     console.log('Date changed:', e.target.value);
-                    const newDate = e.target.value ? new Date(e.target.value).toISOString() : null;
+                    // Convert YYYY-MM-DD to ISO string at noon UTC to avoid timezone shifts
+                    const newDate = e.target.value ? `${e.target.value}T12:00:00.000Z` : null;
                     console.log('Converted to ISO:', newDate);
                     if (id) {
                       console.log('Updating issue with dueDate:', newDate);
@@ -1039,7 +1040,7 @@ export default function IssueDetailPage() {
                 <div className="w-full px-3 py-2 border rounded-md bg-gray-50 text-gray-700">
                   {issue.dueDate ? (
                     <span className={new Date(issue.dueDate) < new Date() ? 'text-red-600 font-semibold' : ''}>
-                      {new Date(issue.dueDate).toLocaleDateString()}
+                      {new Date(issue.dueDate).toISOString().split('T')[0]}
                     </span>
                   ) : (
                     'Not set'
@@ -1082,7 +1083,7 @@ export default function IssueDetailPage() {
                 <dd className="font-medium">
                   {issue.dueDate ? (
                     <span className={new Date(issue.dueDate) < new Date() ? 'text-red-600 font-semibold' : ''}>
-                      {new Date(issue.dueDate).toLocaleDateString()}
+                      {new Date(issue.dueDate).toISOString().split('T')[0]}
                     </span>
                   ) : (
                     'Not set'

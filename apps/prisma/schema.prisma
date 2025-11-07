@@ -234,6 +234,9 @@ model Issue {
   // Labels/tags for categorization (e.g., "Platform Team", "Developers")
   labels      String[]       @default([])
   
+  // Due date for the issue
+  dueDate     DateTime?
+  
   // Relationships
   projectId   String         @db.Uuid
   project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
