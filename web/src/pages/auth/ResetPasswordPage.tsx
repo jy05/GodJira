@@ -54,6 +54,11 @@ export const ResetPasswordPage = () => {
       return;
     }
 
+    if (!data.password || data.password.trim() === '') {
+      setError('Password is required');
+      return;
+    }
+
     try {
       setError('');
       await authService.resetPassword(token, data.password);
@@ -63,10 +68,18 @@ export const ResetPasswordPage = () => {
       }, 3000);
     } catch (err) {
       const axiosError = err as AxiosError<any>;
-      setError(
-        axiosError.response?.data?.message ||
-          'Failed to reset password. The link may have expired.'
-      );
+      const errorData = axiosError.response?.data;
+      
+      // Handle validation errors
+      if (errorData?.message) {
+        if (Array.isArray(errorData.message)) {
+          setError(errorData.message.join('. '));
+        } else {
+          setError(errorData.message);
+        }
+      } else {
+        setError('Failed to reset password. The link may have expired.');
+      }
     }
   };
 
