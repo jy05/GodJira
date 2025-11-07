@@ -97,7 +97,7 @@ const authService = {
   refresh: authApi.refresh,
   getProfile: authApi.getProfile,
   forgotPassword: (email: string) => authApi.forgotPassword({ email }),
-  resetPassword: (token: string, password: string) => authApi.resetPassword({ token, password }),
+  resetPassword: (token: string, password: string) => authApi.resetPassword({ token, newPassword: password }),
   verifyEmail: (token: string) => authApi.verifyEmail({ token }),
   changePassword: (currentPassword: string, newPassword: string) => 
     authApi.changePassword({ currentPassword, newPassword }),
