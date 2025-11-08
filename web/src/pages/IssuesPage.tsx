@@ -215,14 +215,14 @@ export default function IssuesPage() {
                   Manage your backlog, stories, tasks, bugs, and spikes
                 </p>
               </div>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Create Issue
-          </button>
-        </div>
-      </div>
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Create Issue
+              </button>
+            </div>
+          </div>
 
       {/* Filters */}
       <div className="mb-6 bg-white p-4 rounded-lg shadow space-y-4">
