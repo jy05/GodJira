@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { IssueLinkSection } from '@/components/issue/IssueLinkSection';
+import { WatchersList } from '@/components/issue/WatchersList';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -1048,6 +1049,13 @@ export default function IssueDetailPage() {
                 </div>
               )}
             </div>
+
+            {/* Watchers */}
+            {id && (
+              <div className="mt-6 pt-6 border-t">
+                <WatchersList issueId={id} />
+              </div>
+            )}
           </div>
 
           {/* Details */}
