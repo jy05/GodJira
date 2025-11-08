@@ -127,7 +127,11 @@ function App() {
             />
             <Route
               path="/issues"
-              element={<Navigate to="/boards" replace />}
+              element={
+                <ProtectedRoute>
+                  <IssuesPage />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/projects/:projectId/issues"
