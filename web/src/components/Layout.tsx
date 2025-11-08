@@ -16,9 +16,10 @@ export const Layout = ({ children }: LayoutProps) => {
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Projects', href: '/projects' },
     {
-      name: 'Boards',
-      href: '/boards',
+        name: 'Work',
+        // No href: Work is just a dropdown container
       dropdown: [
+        { name: 'Boards', href: '/boards' },
         { name: 'Issues', href: '/issues' },
       ],
     },
@@ -65,20 +66,20 @@ export const Layout = ({ children }: LayoutProps) => {
                     </Link>
                   ) : (
                     <div key={item.name} className="relative group flex items-center">
-                      <Link
-                        to={item.href}
+                      <button
+                        type="button"
                         className={`inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium focus:outline-none ${
-                          isActive(item.href)
-                            ? 'border-primary-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                          'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                         }`}
                         tabIndex={0}
+                        aria-haspopup="true"
+                        aria-expanded="false"
                       >
                         {item.name}
                         <svg className="ml-1 w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 20 20" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7l3 3 3-3" />
                         </svg>
-                      </Link>
+                      </button>
                       <div className="absolute left-0 top-full min-w-[120px] bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity z-10">
                         {item.dropdown.map((sub) => (
                           <Link
