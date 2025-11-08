@@ -6,15 +6,8 @@ interface WatchedIssue {
   id: string;
   key: string;
   title: string;
-  status: {
-    id: string;
-    name: string;
-    category: string;
-  };
-  priority?: {
-    id: string;
-    name: string;
-  };
+  status: string; // IssueStatus enum
+  priority: string; // IssuePriority enum
   assignee?: {
     id: string;
     name: string;
@@ -22,28 +15,23 @@ interface WatchedIssue {
   };
 }
 
-const getPriorityColor = (priorityName?: string) => {
-  if (!priorityName) return 'bg-gray-100 text-gray-800';
+const getPriorityColor = (priority?: string) => {
+  if (!priority) return 'bg-gray-100 text-gray-800';
   
-  const lower = priorityName.toLowerCase();
-  if (lower.includes('critical') || lower.includes('highest')) return 'bg-red-100 text-red-800';
-  if (lower.includes('high')) return 'bg-orange-100 text-orange-800';
-  if (lower.includes('medium')) return 'bg-yellow-100 text-yellow-800';
-  if (lower.includes('low') || lower.includes('lowest')) return 'bg-green-100 text-green-800';
+  const lower = priority.toLowerCase();
+  if (lower === 'critical' || lower === 'highest') return 'bg-red-100 text-red-800';
+  if (lower === 'high') return 'bg-orange-100 text-orange-800';
+  if (lower === 'medium') return 'bg-yellow-100 text-yellow-800';
+  if (lower === 'low' || lower === 'lowest') return 'bg-green-100 text-green-800';
   return 'bg-gray-100 text-gray-800';
 };
 
-const getStatusColor = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'todo':
-      return 'bg-gray-100 text-gray-800';
-    case 'in_progress':
-      return 'bg-blue-100 text-blue-800';
-    case 'done':
-      return 'bg-green-100 text-green-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
+const getStatusColor = (status: string) => {
+  const lower = status.toLowerCase();
+  if (lower === 'todo' || lower === 'backlog') return 'bg-gray-100 text-gray-800';
+  if (lower === 'in_progress' || lower.includes('progress')) return 'bg-blue-100 text-blue-800';
+  if (lower === 'done' || lower === 'completed') return 'bg-green-100 text-green-800';
+  return 'bg-gray-100 text-gray-800';
 };
 
 export const MyWatchedIssues: React.FC = () => {
@@ -109,12 +97,12 @@ export const MyWatchedIssues: React.FC = () => {
                     <span className="text-xs font-mono text-gray-500 font-medium">
                       {issue.key}
                     </span>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(issue.status.category)}`}>
-                      {issue.status.name}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(issue.status)}`}>
+                      {issue.status}
                     </span>
                     {issue.priority && (
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityColor(issue.priority.name)}`}>
-                        {issue.priority.name}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityColor(issue.priority)}`}>
+                        {issue.priority}
                       </span>
                     )}
                   </div>
