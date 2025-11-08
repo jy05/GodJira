@@ -13,10 +13,18 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
   const { user } = useAuth();
   const [showWatchers, setShowWatchers] = useState(false);
 
-  // Fetch watcher data
+  // Fetch watcher count (used when collapsed)
+  const { data: watcherCount = 0 } = useQuery<number>({
+    queryKey: ['watcher-count', issueId],
+    queryFn: () => watcherApi.getWatcherCount(issueId),
+    enabled: !showWatchers, // Only fetch count when collapsed
+  });
+
+  // Fetch full watcher list (only when expanded)
   const { data: watchers = [], isLoading: watchersLoading } = useQuery<Watcher[]>({
     queryKey: ['watchers', issueId],
     queryFn: () => watcherApi.getIssueWatchers(issueId),
+    enabled: showWatchers, // Only fetch full list when expanded
   });
 
   const { data: isWatching = false } = useQuery<boolean>({
@@ -30,6 +38,7 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['watchers', issueId] });
       queryClient.invalidateQueries({ queryKey: ['is-watching', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['watcher-count', issueId] });
       toast.success('You are now watching this issue');
     },
     onError: (error: any) => {
@@ -43,6 +52,7 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['watchers', issueId] });
       queryClient.invalidateQueries({ queryKey: ['is-watching', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['watcher-count', issueId] });
       toast.success('You are no longer watching this issue');
     },
     onError: (error: any) => {
@@ -75,7 +85,7 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           <h4 className="font-medium text-gray-900">
-            Watchers ({watchers.length})
+            Watchers ({showWatchers ? watchers.length : watcherCount})
           </h4>
         </div>
         <button
@@ -173,30 +183,17 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
       )}
 
       {/* Watcher Count Badge (when collapsed) */}
-      {!showWatchers && watchers.length > 0 && (
+      {!showWatchers && watcherCount > 0 && (
         <div className="mt-3 flex items-center gap-2">
-          <div className="flex -space-x-2">
-            {watchers.slice(0, 3).map((watcher) => (
-              <div key={watcher.id} className="relative" title={watcher.user.name}>
-                {watcher.user.avatar ? (
-                  <img
-                    src={watcher.user.avatar}
-                    alt={watcher.user.name}
-                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium border-2 border-white">
-                    {getInitials(watcher.user.name)}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          {watchers.length > 3 && (
-            <span className="text-sm text-gray-500">
-              +{watchers.length - 3} more
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span className="text-sm text-gray-600">
+              {watcherCount} {watcherCount === 1 ? 'person' : 'people'} watching
             </span>
-          )}
+          </div>
         </div>
       )}
     </div>
