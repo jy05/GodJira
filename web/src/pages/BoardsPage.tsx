@@ -14,6 +14,7 @@ import {
   useDraggable,
 } from '@dnd-kit/core';
 import { Layout } from '@/components/Layout';
+import { Breadcrumbs, BreadcrumbItem } from '@/components/Breadcrumbs';
 import { IssueType, IssueStatus, IssuePriority } from '../types';
 import { issueApi } from '../services/issue.service';
 import { userApi } from '../services/user.service';
@@ -937,10 +938,19 @@ export default function BoardsPage() {
     );
   };
 
+  // Build breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Boards' },
+  ];
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-0">
+          {/* Breadcrumbs */}
+          <Breadcrumbs items={breadcrumbs} />
+          
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Boards</h1>

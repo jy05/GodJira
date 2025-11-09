@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Layout } from '@/components/Layout';
+import { Breadcrumbs, BreadcrumbItem } from '@/components/Breadcrumbs';
 import {
   CreateIssueRequest,
   IssueType,
@@ -72,12 +73,16 @@ export default function IssuesPage() {
     // Always fetch issues, projectId is optional for filtering
   });
 
-  // Fetch sprints for filter dropdown
-  const { data: sprints = [] } = useQuery({
-    queryKey: ['sprints', projectId],
-    queryFn: () => sprintApi.getSprints({ projectId }),
-    enabled: !!projectId,
+  // Fetch sprints for filter dropdown (fetch all sprints across all projects)
+  const { data: allSprintsResponse = [] } = useQuery({
+    queryKey: ['all-sprints'],
+    queryFn: () => sprintApi.getSprints({}), // Fetch all sprints without project filter
   });
+
+  // Filter sprints based on selected project if one is chosen
+  const sprints = (projectId || projectFilter)
+    ? allSprintsResponse.filter((sprint: any) => sprint.projectId === (projectId || projectFilter))
+    : allSprintsResponse;
 
   // Fetch all projects for the create modal when no projectId is in route
   const { data: projects = [] } = useQuery({
@@ -209,10 +214,28 @@ export default function IssuesPage() {
     }
   };
 
+  // Build breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+  ];
+  
+  if (projectId && project) {
+    breadcrumbs.push(
+      { label: 'Projects', href: '/projects' },
+      { label: project.name, href: `/projects/${projectId}` },
+      { label: 'Issues' }
+    );
+  } else {
+    breadcrumbs.push({ label: 'All Issues' });
+  }
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-0">
+          {/* Breadcrumbs */}
+          <Breadcrumbs items={breadcrumbs} />
+          
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between">
@@ -233,8 +256,8 @@ export default function IssuesPage() {
             </div>
           </div>
 
-      {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow space-y-4">
+          {/* Filters */}
+          <div className="mb-6 bg-white p-4 rounded-lg shadow space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Search */}
           <input
@@ -322,14 +345,12 @@ export default function IssuesPage() {
               </option>
             ))}
           </select>
-        </div>
 
-        {/* Sprint Filter */}
-        <div className="flex gap-4">
+          {/* Sprint Filter - Always visible and usable */}
           <select
             value={sprintFilter}
             onChange={(e) => setSprintFilter(e.target.value)}
-            className="px-3 py-2 border rounded-md flex-1"
+            className="px-3 py-2 border rounded-md"
           >
             <option value="">All Sprints</option>
             <option value="backlog">Backlog (No Sprint)</option>
@@ -339,7 +360,10 @@ export default function IssuesPage() {
               </option>
             ))}
           </select>
+        </div>
 
+        {/* Clear Filters Button */}
+        <div className="flex justify-end">
           <button
             onClick={() => {
               setSearchTerm('');

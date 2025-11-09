@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { Layout } from '@/components/Layout';
+import { Breadcrumbs, BreadcrumbItem } from '@/components/Breadcrumbs';
 import { sprintApi } from '@/services/sprint.service';
 import { projectApi } from '@/services/project.service';
 import type {
@@ -22,23 +23,30 @@ export const SprintsPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
   const [statusFilter, setStatusFilter] = useState<SprintStatus | 'ALL'>('ALL');
+  const [projectFilter, setProjectFilter] = useState<string>(''); // For filtering when viewing all sprints
 
-  // Fetch project
+  // Fetch project (only if we have a projectId from route)
   const { data: project } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => projectApi.getProject(projectId!),
     enabled: !!projectId,
   });
 
+  // Fetch all projects (for filtering when viewing all sprints)
+  const { data: allProjects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => projectApi.getProjects(),
+    enabled: !projectId, // Only fetch when not in a specific project context
+  });
+
   // Fetch sprints
   const { data: sprints, isLoading } = useQuery({
-    queryKey: ['sprints', projectId, statusFilter],
+    queryKey: ['sprints', projectId, projectFilter, statusFilter],
     queryFn: () =>
       sprintApi.getSprints({
-        projectId,
+        projectId: projectId || projectFilter || undefined,
         status: statusFilter !== 'ALL' ? statusFilter : undefined,
       }),
-    enabled: !!projectId,
   });
 
   // Create sprint mutation
@@ -119,52 +127,109 @@ export const SprintsPage = () => {
     },
   });
 
+  // Build breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+  ];
+  
+  if (projectId && project) {
+    breadcrumbs.push(
+      { label: 'Projects', href: '/projects' },
+      { label: project.name, href: `/projects/${projectId}` },
+      { label: 'Sprints' }
+    );
+  } else {
+    breadcrumbs.push({ label: 'All Sprints' });
+  }
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Breadcrumbs */}
+        <div className="px-4 sm:px-0">
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
+        
         {/* Header */}
         <div className="px-4 sm:px-0 mb-6">
-          <button
-            onClick={() => navigate(`/projects/${projectId}`)}
-            className="mb-4 text-sm text-primary-600 hover:text-primary-500 flex items-center"
-          >
-            ← Back to Project
-          </button>
+          {projectId && (
+            <button
+              onClick={() => navigate(`/projects/${projectId}`)}
+              className="mb-4 text-sm text-primary-600 hover:text-primary-500 flex items-center"
+            >
+              ← Back to Project
+            </button>
+          )}
 
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Sprints</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {projectId ? 'Sprints' : 'All Sprints'}
+              </h1>
               {project && (
                 <p className="mt-2 text-sm text-gray-600">
                   Project: {project.name} ({project.key})
                 </p>
               )}
+              {!projectId && (
+                <p className="mt-2 text-sm text-gray-600">
+                  Manage sprints across all projects
+                </p>
+              )}
             </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn btn-primary"
-            >
-              + New Sprint
-            </button>
+            {projectId && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="btn btn-primary"
+              >
+                + New Sprint
+              </button>
+            )}
           </div>
         </div>
 
         {/* Filters */}
         <div className="px-4 sm:px-0 mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filter by Status
-          </label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as SprintStatus | 'ALL')}
-            className="input max-w-xs"
-          >
-            <option value="ALL">All Sprints</option>
-            <option value="PLANNED">Planned</option>
-            <option value="ACTIVE">Active</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Project Filter - Only show when viewing all sprints */}
+            {!projectId && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Filter by Project
+                </label>
+                <select
+                  value={projectFilter}
+                  onChange={(e) => setProjectFilter(e.target.value)}
+                  className="input w-full"
+                >
+                  <option value="">All Projects</option>
+                  {allProjects.map((proj: any) => (
+                    <option key={proj.id} value={proj.id}>
+                      {proj.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Status
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as SprintStatus | 'ALL')}
+                className="input w-full"
+              >
+                <option value="ALL">All Sprints</option>
+                <option value="PLANNING">Planning</option>
+                <option value="ACTIVE">Active</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Sprints List */}

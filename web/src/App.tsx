@@ -118,6 +118,14 @@ function App() {
               }
             />
             <Route
+              path="/sprints"
+              element={
+                <ProtectedRoute>
+                  <SprintsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/projects/:projectId/sprints/:sprintId"
               element={
                 <ProtectedRoute>

@@ -22,6 +22,7 @@ export const Layout = ({ children }: LayoutProps) => {
       name: 'Work',
       dropdown: [
         { name: 'Boards', href: '/boards' },
+        { name: 'Sprints', href: '/sprints' },
         { name: 'Issues', href: '/issues' },
       ],
     },
