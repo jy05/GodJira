@@ -32,6 +32,7 @@ export default function IssuesPage() {
   const [priorityFilter, setPriorityFilter] = useState<IssuePriority | ''>('');
   const [assigneeFilter, setAssigneeFilter] = useState('');
   const [sprintFilter, setSprintFilter] = useState<string | 'backlog' | ''>('');
+  const [projectFilter, setProjectFilter] = useState<string>(''); // For filtering by project when viewing all issues
 
   // Fetch project details
   const { data: project } = useQuery({
@@ -45,6 +46,7 @@ export default function IssuesPage() {
     queryKey: [
       'issues',
       projectId,
+      projectFilter, // Add projectFilter to query key
       searchTerm,
       typeFilter,
       statusFilter,
@@ -54,7 +56,7 @@ export default function IssuesPage() {
     ],
     queryFn: () =>
       issueApi.getIssues({
-        projectId,
+        projectId: projectId || projectFilter || undefined, // Use route projectId, or filter projectId, or undefined
         search: searchTerm || undefined,
         type: typeFilter || undefined,
         status: statusFilter || undefined,
@@ -67,7 +69,7 @@ export default function IssuesPage() {
             ? sprintFilter
             : undefined,
       }),
-    enabled: !!projectId,
+    // Always fetch issues, projectId is optional for filtering
   });
 
   // Fetch sprints for filter dropdown
@@ -75,6 +77,13 @@ export default function IssuesPage() {
     queryKey: ['sprints', projectId],
     queryFn: () => sprintApi.getSprints({ projectId }),
     enabled: !!projectId,
+  });
+
+  // Fetch all projects for the create modal when no projectId is in route
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => projectApi.getProjects(),
+    enabled: !projectId, // Only fetch if not on a specific project page
   });
 
   // Fetch users for assignee filter
@@ -132,7 +141,7 @@ export default function IssuesPage() {
     console.log('Creating issue with data:', data);
     createMutation.mutate({
       ...data,
-      projectId: projectId!,
+      projectId: data.projectId || projectId!, // Use form projectId or route projectId
       labels: data.labels || [],
     });
   };
@@ -209,7 +218,7 @@ export default function IssuesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {project?.name} - Issues
+                  {project?.name ? `${project.name} - Issues` : 'All Issues'}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
                   Manage your backlog, stories, tasks, bugs, and spikes
@@ -235,6 +244,22 @@ export default function IssuesPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="px-3 py-2 border rounded-md col-span-2"
           />
+
+          {/* Project Filter - Only show when viewing all issues */}
+          {!projectId && (
+            <select
+              value={projectFilter}
+              onChange={(e) => setProjectFilter(e.target.value)}
+              className="px-3 py-2 border rounded-md"
+            >
+              <option value="">All Projects</option>
+              {projects.map((proj) => (
+                <option key={proj.id} value={proj.id}>
+                  {proj.name}
+                </option>
+              ))}
+            </select>
+          )}
 
           {/* Type Filter */}
           <select
@@ -318,6 +343,7 @@ export default function IssuesPage() {
           <button
             onClick={() => {
               setSearchTerm('');
+              setProjectFilter('');
               setTypeFilter('');
               setStatusFilter('');
               setPriorityFilter('');
@@ -454,6 +480,30 @@ export default function IssuesPage() {
                   </ul>
                 </div>
               )}
+              
+              {/* Project Selector - Only show when not on a specific project page */}
+              {!projectId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Project *
+                  </label>
+                  <select
+                    {...register('projectId', { required: 'Project is required' })}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map((proj) => (
+                      <option key={proj.id} value={proj.id}>
+                        {proj.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.projectId && (
+                    <p className="text-red-500 text-sm mt-1">{errors.projectId.message}</p>
+                  )}
+                </div>
+              )}
+
               {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

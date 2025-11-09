@@ -6,18 +6,20 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+type NavigationItem = 
+  | { name: string; href: string; dropdown?: never }
+  | { name: string; href?: never; dropdown: Array<{ name: string; href: string }> };
+
 export const Layout = ({ children }: LayoutProps) => {
   const { user, logout } = useAuth();
   const { isAdmin } = usePermissions();
   const location = useLocation();
 
-
-  const navigation = [
+  const navigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Projects', href: '/projects' },
     {
-        name: 'Work',
-        // No href: Work is just a dropdown container
+      name: 'Work',
       dropdown: [
         { name: 'Boards', href: '/boards' },
         { name: 'Issues', href: '/issues' },

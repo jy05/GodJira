@@ -119,42 +119,18 @@ export const getUserTimezone = (): string => {
 };
 
 /**
- * Convert a date from one timezone to another
+ * Convert date from one timezone to another
+ * Note: JavaScript Date objects are timezone-agnostic and represent a moment in time.
+ * The actual timezone conversion happens during display/formatting using formatInTimezone.
  * @param dateString - ISO date string
- * @param fromTimezone - Source timezone
- * @param toTimezone - Target timezone
- * @returns Date object adjusted to target timezone
+ * @returns Date object
  */
 export const convertTimezone = (
   dateString: string,
-  fromTimezone: string,
-  toTimezone: string
+  _fromTimezone?: string,
+  _toTimezone?: string
 ): Date => {
+  // Return the date as-is. Use formatInTimezone() to display in specific timezones
   const date = new Date(dateString);
-  
-  // Format date in source timezone
-  const sourceFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: fromTimezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-
-  // Format date in target timezone
-  const targetFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: toTimezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-
   return date;
 };
