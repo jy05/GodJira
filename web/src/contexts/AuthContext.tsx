@@ -62,10 +62,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [loadUser]);
 
   const login = async (credentials: LoginRequest) => {
-    if (isLoading) {
-      return; // Prevent concurrent login attempts
-    }
-    
     setIsLoading(true);
     try {
       const response = await authApi.login(credentials);

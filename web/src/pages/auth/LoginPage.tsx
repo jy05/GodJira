@@ -14,10 +14,11 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutTime, setLockoutTime] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>();
 
   // Check if registration is enabled
@@ -31,7 +32,10 @@ export const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    if (isLoading) return; // Prevent double submission
+    
     try {
+      setIsLoading(true);
       setIsLocked(false);
       setLockoutTime(0);
       await login(data);
@@ -65,6 +69,8 @@ export const LoginPage = () => {
       else {
         toast.error(axiosError.response?.data?.message || 'An error occurred during login.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -172,10 +178,10 @@ export const LoginPage = () => {
           <div>
             <button
               type="submit"
-              disabled={isSubmitting || isLocked}
+              disabled={isLoading || isLocked}
               className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
