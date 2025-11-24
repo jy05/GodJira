@@ -32,7 +32,7 @@ export const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    if (isLoading || isLocked) return; // Prevent submission when locked or already loading
+    if (isLoading || isLocked) return;
     
     setIsLoading(true);
     setIsLocked(false);
