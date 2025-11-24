@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/Layout';
 import { projectApi } from '@/services/project.service';
 import { analyticsApi } from '@/services/analytics.service';
+import { DateDisplay } from '@/components/DateDisplay';
 
 export const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -81,7 +82,7 @@ export const ProjectDetailPage = () => {
                 <p className="mt-2 text-sm text-gray-600">{project.description}</p>
               )}
               <p className="mt-2 text-xs text-gray-500">
-                Created on {new Date(project.createdAt).toLocaleDateString()}
+                Created on <DateDisplay date={project.createdAt} format="date-only" />
               </p>
             </div>
             <div className="flex gap-2">
@@ -218,13 +219,13 @@ export const ProjectDetailPage = () => {
               <div>
                 <dt className="text-sm font-medium text-gray-500">Created</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(project.createdAt).toLocaleString()}
+                  <DateDisplay date={project.createdAt} format="medium" />
                 </dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(project.updatedAt).toLocaleString()}
+                  <DateDisplay date={project.updatedAt} format="medium" />
                 </dd>
               </div>
             </dl>

@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { projectApi } from '@/services/project.service';
 import type { Project, CreateProjectRequest, UpdateProjectRequest } from '@/types';
 import { useForm } from 'react-hook-form';
+import { DateDisplay } from '@/components/DateDisplay';
 
 export const ProjectsPage = () => {
   const { user } = useAuth();
@@ -260,7 +261,7 @@ const ProjectCard = ({
       </div>
 
       <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-        <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
+        <span>Created <DateDisplay date={project.createdAt} format="short" /></span>
       </div>
 
       <div className="mt-4 flex space-x-2">
