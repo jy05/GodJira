@@ -416,6 +416,18 @@ const EditProjectModal = ({
   onSubmit,
   isLoading,
 }: EditProjectModalProps) => {
+  const [showOwnerTransferConfirm, setShowOwnerTransferConfirm] = useState(false);
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(project.ownerId);
+  
+  // Fetch all users for owner selection
+  const { data: usersData } = useQuery({
+    queryKey: ['users-for-transfer'],
+    queryFn: () => userApi.getUsers({ limit: 100 }),
+  });
+  
+  const users = usersData?.data || [];
+  const ownerChanged = selectedOwnerId !== project.ownerId;
+  
   const {
     register,
     handleSubmit,
@@ -426,6 +438,20 @@ const EditProjectModal = ({
       description: project.description || '',
     },
   });
+
+  const handleFormSubmit = (data: UpdateProjectRequest) => {
+    if (ownerChanged && !showOwnerTransferConfirm) {
+      setShowOwnerTransferConfirm(true);
+      return;
+    }
+    
+    // Include owner transfer if changed
+    const submitData = ownerChanged 
+      ? { ...data, ownerId: selectedOwnerId }
+      : data;
+    
+    onSubmit(submitData);
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
@@ -438,7 +464,46 @@ const EditProjectModal = ({
           <p className="text-xs text-gray-500 mt-1">Key cannot be changed</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Owner Transfer Confirmation */}
+        {showOwnerTransferConfirm && (
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            <div className="flex items-start">
+              <span className="text-2xl mr-3">⚠️</span>
+              <div>
+                <h3 className="text-sm font-semibold text-yellow-900 mb-2">Confirm Owner Transfer</h3>
+                <p className="text-sm text-yellow-800 mb-3">
+                  You are about to transfer project ownership. This action will:
+                </p>
+                <ul className="text-xs text-yellow-800 list-disc ml-5 space-y-1 mb-3">
+                  <li>Give full project control to the new owner</li>
+                  <li>Allow them to edit or delete this project</li>
+                  <li>You will lose owner privileges</li>
+                </ul>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOwnerTransferConfirm(false);
+                      setSelectedOwnerId(project.ownerId);
+                    }}
+                    className="text-xs btn btn-secondary"
+                  >
+                    Cancel Transfer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSubmit(handleFormSubmit)()}
+                    className="text-xs btn bg-yellow-600 text-white hover:bg-yellow-700"
+                  >
+                    Confirm Transfer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Project Name <span className="text-red-500">*</span>
@@ -464,6 +529,30 @@ const EditProjectModal = ({
               rows={3}
               className="input mt-1"
             />
+          </div>
+
+          {/* Owner Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Project Owner
+            </label>
+            <select
+              value={selectedOwnerId}
+              onChange={(e) => setSelectedOwnerId(e.target.value)}
+              className="input"
+              disabled={isLoading}
+            >
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} {user.id === project.ownerId && '(Current Owner)'}
+                </option>
+              ))}
+            </select>
+            {ownerChanged && (
+              <p className="mt-1 text-xs text-yellow-600">
+                ⚠️ Changing owner will transfer all project privileges
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-3 mt-6">

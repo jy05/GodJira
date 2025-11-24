@@ -126,4 +126,10 @@ export const userApi = {
   adminResetPassword: async (id: string, passwordData: AdminResetPasswordData): Promise<void> => {
     await apiClient.patch(`/users/admin/${id}/reset-password`, passwordData);
   },
+
+  // Get user statistics (admin/manager only)
+  getUserStatistics: async (id: string): Promise<any> => {
+    const { data } = await apiClient.get(`/users/admin/${id}/stats`);
+    return data;
+  },
 };

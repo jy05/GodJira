@@ -575,6 +575,17 @@ export const UsersPage = () => {
           isLoading={resetPasswordMutation.isPending}
         />
       )}
+
+      {/* User Stats Modal */}
+      {showStatsModal && selectedUser && (
+        <UserStatsModal
+          userId={selectedUser.id}
+          onClose={() => {
+            setShowStatsModal(false);
+            setSelectedUser(null);
+          }}
+        />
+      )}
     </Layout>
   );
 };
