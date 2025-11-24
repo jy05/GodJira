@@ -32,12 +32,13 @@ export const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    if (isLoading) return; // Prevent double submission
+    if (isLoading || isLocked) return; // Prevent submission when locked or already loading
+    
+    setIsLoading(true);
+    setIsLocked(false);
+    setLockoutTime(0);
     
     try {
-      setIsLoading(true);
-      setIsLocked(false);
-      setLockoutTime(0);
       await login(data);
       toast.success('Login successful!');
     } catch (err) {
