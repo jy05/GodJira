@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/Layout';
 import { sprintApi } from '@/services/sprint.service';
 import { analyticsApi } from '@/services/analytics.service';
+import { DateDisplay, DateRange } from '@/components/DateDisplay';
 
 export const SprintDetailPage = () => {
   const { projectId, sprintId } = useParams<{ projectId: string; sprintId: string }>();
@@ -103,8 +104,7 @@ export const SprintDetailPage = () => {
               )}
               {sprint.startDate && sprint.endDate && (
                 <p className="text-xs text-gray-500">
-                  {new Date(sprint.startDate).toLocaleDateString()} -{' '}
-                  {new Date(sprint.endDate).toLocaleDateString()}
+                  <DateRange start={sprint.startDate} end={sprint.endDate} format="short" />
                 </p>
               )}
             </div>
@@ -249,7 +249,7 @@ export const SprintDetailPage = () => {
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Start Date</dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {new Date(sprint.startDate).toLocaleString()}
+                    <DateDisplay date={sprint.startDate} format="medium" />
                   </dd>
                 </div>
               )}
@@ -257,14 +257,14 @@ export const SprintDetailPage = () => {
                 <div>
                   <dt className="text-sm font-medium text-gray-500">End Date</dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {new Date(sprint.endDate).toLocaleString()}
+                    <DateDisplay date={sprint.endDate} format="medium" />
                   </dd>
                 </div>
               )}
               <div>
                 <dt className="text-sm font-medium text-gray-500">Created</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(sprint.createdAt).toLocaleString()}
+                  <DateDisplay date={sprint.createdAt} format="medium" />
                 </dd>
               </div>
             </dl>
