@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { projectApi } from '@/services/project.service';
 import { analyticsApi } from '@/services/analytics.service';
 import { DateDisplay } from '@/components/DateDisplay';
+import { VelocityChartWithInsights } from '@/components/VelocityChart';
 
 export const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -156,40 +157,60 @@ export const ProjectDetailPage = () => {
 
               {/* Velocity & AGILE Metrics */}
               {projectSummary && (
-                <div className="mt-6 card">
-                  <h3 className="text-md font-semibold text-gray-900 mb-3">AGILE Metrics</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <dt className="text-gray-500">Average Velocity</dt>
-                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
-                        {projectSummary.velocity.average.toFixed(1)} pts/sprint
-                      </dd>
-                      <dd className="text-xs text-gray-500">
-                        Trend: <span className={projectSummary.velocity.trend === 'INCREASING' ? 'text-green-600' : projectSummary.velocity.trend === 'DECREASING' ? 'text-red-600' : 'text-gray-600'}>
-                          {projectSummary.velocity.trend}
-                        </span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-gray-500">Commitment Accuracy</dt>
-                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
-                        {projectSummary.completionRate.toFixed(0)}%
-                      </dd>
-                      <dd className="text-xs text-gray-500">
-                        How well we estimate
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-gray-500">Issue Health</dt>
-                      <dd className="mt-1 text-2xl font-semibold text-gray-900">
-                        {projectSummary.issues.averageAge.toFixed(0)} days
-                      </dd>
-                      <dd className="text-xs text-gray-500">
-                        Average issue age ({projectSummary.issues.staleCount} stale)
-                      </dd>
+                <>
+                  <div className="mt-6 card">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">AGILE Metrics</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <dt className="text-gray-500">Average Velocity</dt>
+                        <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                          {projectSummary.velocity.average.toFixed(1)} pts/sprint
+                        </dd>
+                        <dd className="text-xs text-gray-500">
+                          Trend: <span className={projectSummary.velocity.trend === 'INCREASING' ? 'text-green-600' : projectSummary.velocity.trend === 'DECREASING' ? 'text-red-600' : 'text-gray-600'}>
+                            {projectSummary.velocity.trend}
+                          </span>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-gray-500">Commitment Accuracy</dt>
+                        <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                          {projectSummary.completionRate.toFixed(0)}%
+                        </dd>
+                        <dd className="text-xs text-gray-500">
+                          How well we estimate
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-gray-500">Issue Health</dt>
+                        <dd className="mt-1 text-2xl font-semibold text-gray-900">
+                          {projectSummary.issues.averageAge.toFixed(0)} days
+                        </dd>
+                        <dd className="text-xs text-gray-500">
+                          Average issue age ({projectSummary.issues.staleCount} stale)
+                        </dd>
+                      </div>
                     </div>
                   </div>
-                </div>
+
+                  {/* Velocity Chart */}
+                  {projectSummary.velocity.history && projectSummary.velocity.history.length > 0 && (
+                    <div className="mt-6 card">
+                      <h3 className="text-md font-semibold text-gray-900 mb-4">Velocity History</h3>
+                      <VelocityChartWithInsights 
+                        data={projectSummary.velocity.history}
+                        average={projectSummary.velocity.average}
+                        trend={projectSummary.velocity.trend}
+                        commitmentAccuracy={{
+                          sprints: stats?.completedSprints || 0,
+                          averageCommitment: projectSummary.velocity.average,
+                          averageCompletion: projectSummary.velocity.average * (projectSummary.completionRate / 100),
+                          accuracyRate: projectSummary.completionRate,
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </>
           ) : (

@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { sprintApi } from '@/services/sprint.service';
 import { analyticsApi } from '@/services/analytics.service';
 import { DateDisplay, DateRange } from '@/components/DateDisplay';
+import { BurndownChartWithSummary } from '@/components/BurndownChart';
 
 export const SprintDetailPage = () => {
   const { projectId, sprintId } = useParams<{ projectId: string; sprintId: string }>();
@@ -158,19 +159,10 @@ export const SprintDetailPage = () => {
               <div className="px-4 sm:px-0 mb-6">
                 <div className="card">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Burndown Chart</h2>
-                  <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600 mb-2">Burndown Visualization</p>
-                      {burndown.summary && (
-                        <p className="text-xs text-gray-500">
-                          {burndown.summary.completedStoryPoints} / {burndown.summary.totalStoryPoints} points completed
-                        </p>
-                      )}
-                      <p className="text-xs text-gray-500 mt-2">
-                        Chart visualization requires charting library (Chart.js/Recharts)
-                      </p>
-                    </div>
-                  </div>
+                  <BurndownChartWithSummary 
+                    data={burndown.chartData || []}
+                    summary={burndown.summary}
+                  />
                 </div>
               </div>
             )}
