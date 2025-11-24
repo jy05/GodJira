@@ -13,6 +13,9 @@ import type {
   UpdateSprintRequest,
   SprintStatus,
 } from '@/types';
+import { DateDisplay } from '@/components/DateDisplay';
+import { toDatetimeLocal, datetimeLocalToUTC } from '@/lib/date-utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const SprintsPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -399,17 +402,13 @@ const SprintCard = ({
             {sprint.startDate && (
               <div>
                 <span className="text-gray-500">Start:</span>{' '}
-                <span className="text-gray-900">
-                  {new Date(sprint.startDate).toLocaleDateString()}
-                </span>
+                <DateDisplay date={sprint.startDate} format="short" />
               </div>
             )}
             {sprint.endDate && (
               <div>
                 <span className="text-gray-500">End:</span>{' '}
-                <span className="text-gray-900">
-                  {new Date(sprint.endDate).toLocaleDateString()}
-                </span>
+                <DateDisplay date={sprint.endDate} format="short" />
               </div>
             )}
           </div>
@@ -485,6 +484,7 @@ const CreateSprintModal = ({
   onSubmit,
   isLoading,
 }: CreateSprintModalProps) => {
+  const { user } = useAuth();
   const {
     register,
     handleSubmit,
@@ -495,12 +495,22 @@ const CreateSprintModal = ({
     },
   });
 
+  const handleFormSubmit = (data: CreateSprintRequest) => {
+    const timezone = user?.timezone || 'UTC';
+    const payload = {
+      ...data,
+      startDate: data.startDate ? datetimeLocalToUTC(data.startDate, timezone) : undefined,
+      endDate: data.endDate ? datetimeLocalToUTC(data.endDate, timezone) : undefined,
+    };
+    onSubmit(payload);
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Sprint</h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           {/* Project Selection - Only show when not in project context */}
           {!projectId && projects.length > 0 && (
             <div>
@@ -612,6 +622,9 @@ const EditSprintModal = ({
   onSubmit,
   isLoading,
 }: EditSprintModalProps) => {
+  const { user } = useAuth();
+  const timezone = user?.timezone || 'UTC';
+  
   const {
     register,
     handleSubmit,
@@ -620,21 +633,26 @@ const EditSprintModal = ({
     defaultValues: {
       name: sprint.name,
       goal: sprint.goal || '',
-      startDate: sprint.startDate
-        ? new Date(sprint.startDate).toISOString().slice(0, 16)
-        : '',
-      endDate: sprint.endDate
-        ? new Date(sprint.endDate).toISOString().slice(0, 16)
-        : '',
+      startDate: sprint.startDate ? toDatetimeLocal(sprint.startDate, timezone) : '',
+      endDate: sprint.endDate ? toDatetimeLocal(sprint.endDate, timezone) : '',
     },
   });
+
+  const handleFormSubmit = (data: UpdateSprintRequest) => {
+    const payload = {
+      ...data,
+      startDate: data.startDate ? datetimeLocalToUTC(data.startDate, timezone) : undefined,
+      endDate: data.endDate ? datetimeLocalToUTC(data.endDate, timezone) : undefined,
+    };
+    onSubmit(payload);
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Sprint</h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Sprint Name <span className="text-red-500">*</span>
