@@ -243,8 +243,8 @@ export default function IssuesPage() {
                 <h1 className="text-3xl font-bold text-gray-900">
                   {project?.name ? `${project.name} - Issues` : 'All Issues'}
                 </h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  Manage your backlog, stories, tasks, bugs, and spikes
+                <p className="mt-2 text-sm text-gray-600">
+                  Detailed list view with advanced filtering and search. Manage your backlog, stories, tasks, bugs, and spikes.
                 </p>
               </div>
               <button
@@ -399,6 +399,11 @@ export default function IssuesPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Title
                 </th>
+                {!projectId && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Project
+                  </th>
+                )}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Type
                 </th>
@@ -437,6 +442,13 @@ export default function IssuesPage() {
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {issue.title}
                   </td>
+                  {!projectId && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                        {issue.project?.name || 'Unknown'}
+                      </span>
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-full ${getIssueTypeBadgeColor(

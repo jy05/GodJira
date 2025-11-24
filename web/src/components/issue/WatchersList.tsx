@@ -39,6 +39,7 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
       queryClient.invalidateQueries({ queryKey: ['watchers', issueId] });
       queryClient.invalidateQueries({ queryKey: ['is-watching', issueId] });
       queryClient.invalidateQueries({ queryKey: ['watcher-count', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['my-watched-issues'] }); // Refresh dashboard
       setShowWatchers(true); // Auto-expand to show the user in the list
       toast.success('You are now watching this issue');
     },
@@ -54,6 +55,7 @@ export const WatchersList: React.FC<WatchersListProps> = ({ issueId }) => {
       queryClient.invalidateQueries({ queryKey: ['watchers', issueId] });
       queryClient.invalidateQueries({ queryKey: ['is-watching', issueId] });
       queryClient.invalidateQueries({ queryKey: ['watcher-count', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['my-watched-issues'] }); // Refresh dashboard
       toast.success('You are no longer watching this issue');
     },
     onError: (error: any) => {

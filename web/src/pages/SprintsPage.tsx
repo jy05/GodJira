@@ -177,14 +177,12 @@ export const SprintsPage = () => {
                 </p>
               )}
             </div>
-            {projectId && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="btn btn-primary"
-              >
-                + New Sprint
-              </button>
-            )}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="btn btn-primary"
+            >
+              + New Sprint
+            </button>
           </div>
         </div>
 
@@ -273,7 +271,8 @@ export const SprintsPage = () => {
                 <SprintCard
                   key={sprint.id}
                   sprint={sprint}
-                  projectId={projectId!}
+                  projectId={projectId}
+                  showProjectBadge={!projectId}
                   onEdit={(s) => {
                     setSelectedSprint(s);
                     setShowEditModal(true);
@@ -292,9 +291,10 @@ export const SprintsPage = () => {
         </div>
 
         {/* Create Modal */}
-        {showCreateModal && projectId && (
+        {showCreateModal && (
           <CreateSprintModal
             projectId={projectId}
+            projects={allProjects}
             onClose={() => setShowCreateModal(false)}
             onSubmit={(data) => createMutation.mutate(data)}
             isLoading={createMutation.isPending}
@@ -336,7 +336,8 @@ export const SprintsPage = () => {
 // Sprint Card Component
 interface SprintCardProps {
   sprint: Sprint;
-  projectId: string;
+  projectId?: string;
+  showProjectBadge?: boolean;
   onEdit: (sprint: Sprint) => void;
   onDelete: (sprint: Sprint) => void;
   onStart: (sprint: Sprint) => void;
@@ -347,6 +348,7 @@ interface SprintCardProps {
 const SprintCard = ({
   sprint,
   projectId,
+  showProjectBadge = false,
   onEdit,
   onDelete,
   onStart,
@@ -380,6 +382,11 @@ const SprintCard = ({
             >
               {sprint.status}
             </span>
+            {showProjectBadge && sprint.project && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {sprint.project.name}
+              </span>
+            )}
           </div>
 
           {sprint.goal && (
@@ -411,7 +418,7 @@ const SprintCard = ({
         {/* Actions */}
         <div className="ml-4 flex flex-col space-y-2">
           <button
-            onClick={() => navigate(`/projects/${projectId}/sprints/${sprint.id}`)}
+            onClick={() => navigate(`/projects/${projectId || sprint.projectId}/sprints/${sprint.id}`)}
             className="btn btn-primary btn-sm"
           >
             View Details
@@ -464,7 +471,8 @@ const SprintCard = ({
 
 // Create Sprint Modal
 interface CreateSprintModalProps {
-  projectId: string;
+  projectId?: string;
+  projects?: any[];
   onClose: () => void;
   onSubmit: (data: CreateSprintRequest) => void;
   isLoading: boolean;
@@ -472,6 +480,7 @@ interface CreateSprintModalProps {
 
 const CreateSprintModal = ({
   projectId,
+  projects = [],
   onClose,
   onSubmit,
   isLoading,
@@ -482,7 +491,7 @@ const CreateSprintModal = ({
     formState: { errors },
   } = useForm<CreateSprintRequest>({
     defaultValues: {
-      projectId,
+      projectId: projectId || '',
     },
   });
 
@@ -492,6 +501,31 @@ const CreateSprintModal = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Sprint</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Project Selection - Only show when not in project context */}
+          {!projectId && projects.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Project <span className="text-red-500">*</span>
+              </label>
+              <select
+                {...register('projectId', {
+                  required: 'Project is required',
+                })}
+                className="input mt-1"
+              >
+                <option value="">Select a project</option>
+                {projects.map((project: any) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+              {errors.projectId && (
+                <p className="mt-1 text-sm text-red-600">{errors.projectId.message}</p>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Sprint Name <span className="text-red-500">*</span>

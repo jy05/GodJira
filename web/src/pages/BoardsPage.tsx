@@ -954,8 +954,8 @@ export default function BoardsPage() {
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Boards</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Multiple views of your team's work
+            <p className="mt-2 text-sm text-gray-600">
+              Visual kanban board with drag-and-drop for workflow management. Organize and track issues by status with multiple views.
             </p>
           </div>
 
