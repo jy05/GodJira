@@ -436,6 +436,10 @@ export const UsersPage = () => {
                             setSelectedUser(user);
                             setShowPasswordModal(true);
                           }}
+                          onViewStats={() => {
+                            setSelectedUser(user);
+                            setShowStatsModal(true);
+                          }}
                           isUpdating={
                             updateRoleMutation.isPending ||
                             deactivateMutation.isPending ||
