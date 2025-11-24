@@ -8,6 +8,7 @@ import { settingsApi } from '@/services/settings.service';
 import { COMMON_TIMEZONES } from '@/lib/timezone';
 import type { User, UserRole } from '@/types';
 import type { CreateUserData, AdminResetPasswordData } from '@/services/user.service';
+import { UserStatsModal } from '@/components/UserStatsModal';
 
 // Registration Toggle Component
 const RegistrationToggle = () => {
@@ -150,6 +151,7 @@ export const UsersPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 
@@ -582,6 +584,7 @@ interface UserRowProps {
   onDeactivate: () => void;
   onReactivate: () => void;
   onResetPassword: () => void;
+  onViewStats: () => void;
   isUpdating: boolean;
 }
 
@@ -594,6 +597,7 @@ const UserRow = ({
   onDeactivate,
   onReactivate,
   onResetPassword,
+  onViewStats,
   isUpdating,
 }: UserRowProps) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -723,6 +727,14 @@ const UserRow = ({
               title="Edit User"
             >
               Edit
+            </button>
+            <button
+              onClick={onViewStats}
+              disabled={isUpdating}
+              className="text-purple-600 hover:text-purple-900 disabled:opacity-50"
+              title="View Statistics"
+            >
+              View Stats
             </button>
             <button
               onClick={onResetPassword}
