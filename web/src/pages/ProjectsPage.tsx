@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectApi } from '@/services/project.service';
+import { userApi } from '@/services/user.service';
 import type { Project, CreateProjectRequest, UpdateProjectRequest } from '@/types';
 import { useForm } from 'react-hook-form';
 import { DateDisplay } from '@/components/DateDisplay';
@@ -542,7 +543,7 @@ const EditProjectModal = ({
               className="input"
               disabled={isLoading}
             >
-              {users.map((user) => (
+              {users.map((user: any) => (
                 <option key={user.id} value={user.id}>
                   {user.name} {user.id === project.ownerId && '(Current Owner)'}
                 </option>

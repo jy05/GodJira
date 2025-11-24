@@ -160,8 +160,15 @@ export const SprintDetailPage = () => {
                 <div className="card">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Burndown Chart</h2>
                   <BurndownChartWithSummary 
-                    data={burndown.chartData || []}
-                    summary={burndown.summary}
+                    data={burndown.dataPoints || []}
+                    summary={burndown.summary ? {
+                      totalStoryPoints: burndown.summary.totalStoryPoints,
+                      completedStoryPoints: burndown.summary.completedStoryPoints,
+                      remainingStoryPoints: burndown.summary.remainingStoryPoints,
+                      percentComplete: burndown.summary.completionRate || 0,
+                      daysRemaining: 0,
+                      projectedCompletion: null,
+                    } : undefined}
                   />
                 </div>
               </div>

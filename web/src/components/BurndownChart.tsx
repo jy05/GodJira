@@ -3,8 +3,10 @@ import { format } from 'date-fns';
 
 interface BurndownData {
   date: string;
-  ideal: number;
-  actual: number;
+  idealRemaining?: number;
+  actualRemaining?: number;
+  ideal?: number;
+  actual?: number;
 }
 
 interface BurndownChartProps {
@@ -28,6 +30,8 @@ export const BurndownChart = ({ data, className = '' }: BurndownChartProps) => {
   const formattedData = data.map(point => ({
     ...point,
     dateFormatted: format(new Date(point.date), 'MMM dd'),
+    ideal: point.ideal ?? point.idealRemaining ?? 0,
+    actual: point.actual ?? point.actualRemaining ?? 0,
   }));
 
   return (
