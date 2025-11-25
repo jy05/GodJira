@@ -14,6 +14,7 @@ import { issueApi } from '../services/issue.service';
 import { projectApi } from '../services/project.service';
 import { sprintApi } from '../services/sprint.service';
 import { userApi } from '../services/user.service';
+import { exportApi } from '../services/export.service';
 
 interface UserBasic {
   id: string;
@@ -34,6 +35,7 @@ export default function IssuesPage() {
   const [assigneeFilter, setAssigneeFilter] = useState('');
   const [sprintFilter, setSprintFilter] = useState<string | 'backlog' | ''>('');
   const [projectFilter, setProjectFilter] = useState<string>(''); // For filtering by project when viewing all issues
+  const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
 
   // Fetch project details
   const { data: project } = useQuery({
@@ -144,13 +146,30 @@ export default function IssuesPage() {
 
   const onSubmit = (data: CreateIssueRequest) => {
     console.log('Creating issue with data:', data);
-    createMutation.mutate({
+    
+    // Prepare the payload
+    const payload: any = {
       ...data,
       projectId: data.projectId || projectId!, // Use form projectId or route projectId
       labels: data.labels || [],
-      assigneeId: data.assigneeId === '' ? null : data.assigneeId,
-      sprintId: data.sprintId === '' ? null : data.sprintId,
-    });
+    };
+    
+    // Handle assigneeId - convert empty string to null, undefined to null
+    if (!data.assigneeId || data.assigneeId === '') {
+      payload.assigneeId = null;
+    } else {
+      payload.assigneeId = data.assigneeId;
+    }
+    
+    // Handle sprintId - convert empty string to null, undefined to null
+    if (!data.sprintId || data.sprintId === '') {
+      payload.sprintId = null;
+    } else {
+      payload.sprintId = data.sprintId;
+    }
+    
+    console.log('Final payload being sent:', payload);
+    createMutation.mutate(payload);
   };
 
   const handleDelete = (id: string) => {
@@ -214,6 +233,20 @@ export default function IssuesPage() {
       default:
         return 'bg-gray-400 text-white';
     }
+  };
+
+  // Export handler
+  const handleExport = (format: 'csv' | 'excel') => {
+    exportApi.exportIssues(format, {
+      projectId: projectId || projectFilter || undefined,
+      search: searchTerm || undefined,
+      type: typeFilter || undefined,
+      status: statusFilter || undefined,
+      priority: priorityFilter || undefined,
+      assigneeId: assigneeFilter || undefined,
+      sprintId: sprintFilter || undefined,
+    });
+    setIsExportDropdownOpen(false);
   };
 
   // Build breadcrumbs

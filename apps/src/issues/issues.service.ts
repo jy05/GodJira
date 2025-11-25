@@ -570,7 +570,7 @@ export class IssuesService {
   /**
    * Assign issue to user
    */
-  async assign(id: string, assigneeId: string) {
+  async assign(id: string, assigneeId: string | null) {
     const issue = await this.prisma.issue.findUnique({
       where: { id },
     });
@@ -579,6 +579,23 @@ export class IssuesService {
       throw new NotFoundException(`Issue with ID ${id} not found`);
     }
 
+    // If assigneeId is null or empty, unassign the issue
+    if (!assigneeId || assigneeId === '') {
+      const updatedIssue = await this.prisma.issue.update({
+        where: { id },
+        data: { assigneeId: null },
+        include: {
+          assignee: true,
+          project: true,
+          sprint: true,
+          creator: true,
+        },
+      });
+
+      return updatedIssue;
+    }
+
+    // Validate assignee exists
     const assignee = await this.prisma.user.findUnique({
       where: { id: assigneeId },
     });
@@ -599,6 +616,9 @@ export class IssuesService {
             avatar: true,
           },
         },
+        project: true,
+        sprint: true,
+        creator: true,
       },
     });
 
