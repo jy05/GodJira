@@ -148,6 +148,8 @@ export default function IssuesPage() {
       ...data,
       projectId: data.projectId || projectId!, // Use form projectId or route projectId
       labels: data.labels || [],
+      assigneeId: data.assigneeId === '' ? null : data.assigneeId,
+      sprintId: data.sprintId === '' ? null : data.sprintId,
     });
   };
 
