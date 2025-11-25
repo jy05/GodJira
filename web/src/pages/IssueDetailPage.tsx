@@ -6,6 +6,8 @@ import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { IssueLinkSection } from '@/components/issue/IssueLinkSection';
 import { WatchersList } from '@/components/issue/WatchersList';
+import { AttachmentUpload } from '@/components/issue/AttachmentUpload';
+import { AttachmentList } from '@/components/issue/AttachmentList';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -906,6 +908,21 @@ export default function IssueDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Attachments Section */}
+          {id && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-4">Attachments</h3>
+              
+              {/* Upload Component */}
+              <div className="mb-6">
+                <AttachmentUpload issueId={id} />
+              </div>
+
+              {/* Attachments List */}
+              <AttachmentList issueId={id} />
+            </div>
+          )}
 
           {/* Parent Issue Link */}
           {issue.parentIssueId && issue.parentIssue && (
