@@ -642,6 +642,21 @@ export default function IssueDetailPage() {
             </div>
           )}
 
+          {/* Attachments Section */}
+          {id && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-4">Attachments</h3>
+              
+              {/* Upload Component */}
+              <div className="mb-6">
+                <AttachmentUpload issueId={id} />
+              </div>
+
+              {/* Attachments List */}
+              <AttachmentList issueId={id} />
+            </div>
+          )}
+
           {/* Sub-tasks - Only show for parent issues, not for sub-tasks */}
           {!issue.parentIssueId && (
             <div className="bg-white p-6 rounded-lg shadow">
@@ -908,21 +923,6 @@ export default function IssueDetailPage() {
               )}
             </div>
           </div>
-
-          {/* Attachments Section */}
-          {id && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">Attachments</h3>
-              
-              {/* Upload Component */}
-              <div className="mb-6">
-                <AttachmentUpload issueId={id} />
-              </div>
-
-              {/* Attachments List */}
-              <AttachmentList issueId={id} />
-            </div>
-          )}
 
           {/* Parent Issue Link */}
           {issue.parentIssueId && issue.parentIssue && (

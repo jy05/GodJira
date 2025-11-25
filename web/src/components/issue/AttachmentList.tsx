@@ -16,14 +16,14 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: (attachmentId: string) =>
-      attachmentApi.deleteAttachment(issueId, attachmentId),
+      attachmentApi.deleteAttachment(attachmentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attachments', issueId] });
     },
   });
 
   const handleDownload = (attachment: Attachment) => {
-    attachmentApi.downloadAttachment(issueId, attachment.id, attachment.fileName);
+    attachmentApi.downloadAttachment(attachment.id);
   };
 
   const handleDelete = (attachmentId: string) => {
@@ -38,8 +38,8 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const getFileIcon = (mimeType: string): JSX.Element => {
-    if (mimeType.startsWith('image/')) {
+  const getFileIcon = (mimetype: string): JSX.Element => {
+    if (mimetype.startsWith('image/')) {
       return (
         <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -51,7 +51,7 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
         </svg>
       );
     }
-    if (mimeType === 'application/pdf') {
+    if (mimetype === 'application/pdf') {
       return (
         <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -64,8 +64,8 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
       );
     }
     if (
-      mimeType.includes('word') ||
-      mimeType.includes('document')
+      mimetype.includes('word') ||
+      mimetype.includes('document')
     ) {
       return (
         <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,9 +79,9 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
       );
     }
     if (
-      mimeType.includes('excel') ||
-      mimeType.includes('spreadsheet') ||
-      mimeType === 'text/csv'
+      mimetype.includes('excel') ||
+      mimetype.includes('spreadsheet') ||
+      mimetype === 'text/csv'
     ) {
       return (
         <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
         </svg>
       );
     }
-    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) {
+    if (mimetype.includes('zip') || mimetype.includes('rar') || mimetype.includes('7z')) {
       return (
         <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -157,15 +157,15 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
         >
           {/* File Icon or Thumbnail */}
           <div className="flex-shrink-0">
-            {attachment.thumbnailUrl ? (
+            {attachment.thumbnail ? (
               <img
-                src={attachment.thumbnailUrl}
-                alt={attachment.fileName}
+                src={attachment.thumbnail}
+                alt={attachment.filename}
                 className="w-12 h-12 object-cover rounded"
               />
             ) : (
               <div className="w-12 h-12 flex items-center justify-center bg-white rounded border border-gray-300">
-                {getFileIcon(attachment.mimeType)}
+                {getFileIcon(attachment.mimetype)}
               </div>
             )}
           </div>
@@ -173,13 +173,13 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
           {/* File Info */}
           <div className="flex-1 ml-3 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
-              {attachment.fileName}
+              {attachment.originalName || attachment.filename}
             </p>
             <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-              <span>{formatFileSize(attachment.fileSize)}</span>
+              <span>{formatFileSize(attachment.size)}</span>
               <span>•</span>
               <span>
-                {attachment.uploadedBy.name} uploaded{' '}
+                {attachment.uploader?.name || 'Unknown'} uploaded{' '}
                 {formatDistanceToNow(new Date(attachment.createdAt), { addSuffix: true })}
               </span>
             </div>
