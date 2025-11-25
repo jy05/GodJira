@@ -8,7 +8,7 @@ export const REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // File upload limits
 export const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
-export const MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB
+export const MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB
 
 // Pagination
 export const DEFAULT_PAGE_SIZE = 20;

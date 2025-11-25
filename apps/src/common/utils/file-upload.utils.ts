@@ -30,7 +30,7 @@ export const ALLOWED_ATTACHMENT_TYPES = [
 
 // Maximum file sizes
 export const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
-export const MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024; // 20MB
+export const MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB
 
 /**
  * Multer file filter for avatar images

@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -23,6 +24,7 @@ import {
 import { AttachmentsService } from './attachments.service';
 import { AttachmentResponseDto } from './dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   attachmentFileFilter,
   MAX_ATTACHMENT_SIZE,
@@ -31,6 +33,7 @@ import {
 
 @ApiTags('attachments')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('attachments')
 export class AttachmentsController {
   constructor(private readonly attachmentsService: AttachmentsService) {}
@@ -53,7 +56,7 @@ export class AttachmentsController {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'File to upload (max 20MB)',
+          description: 'File to upload (max 25MB)',
         },
       },
     },

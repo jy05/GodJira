@@ -7,7 +7,7 @@ interface AttachmentUploadProps {
   onUploadComplete?: () => void;
 }
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB in bytes
 
 const ALLOWED_MIME_TYPES = [
   // Images
@@ -56,12 +56,16 @@ export const AttachmentUpload = ({ issueId, onUploadComplete }: AttachmentUpload
     },
     onError: (error: any) => {
       setError(error.response?.data?.message || 'Failed to upload file');
+      // Reset file input on error to allow retry
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     },
   });
 
   const validateFile = (file: File): string | null => {
     if (file.size > MAX_FILE_SIZE) {
-      return `File size exceeds maximum of 20MB (${(file.size / 1024 / 1024).toFixed(2)}MB)`;
+      return `File size exceeds maximum of 25MB (${(file.size / 1024 / 1024).toFixed(2)}MB)`;
     }
 
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
@@ -75,9 +79,14 @@ export const AttachmentUpload = ({ issueId, onUploadComplete }: AttachmentUpload
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
+      // Reset file input to allow retry
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       return;
     }
 
+    setError(null);
     uploadMutation.mutate(file);
   };
 
@@ -160,7 +169,7 @@ export const AttachmentUpload = ({ issueId, onUploadComplete }: AttachmentUpload
                   <span className="text-blue-600 font-medium">Click to upload</span> or drag and drop
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Max file size: 20MB
+                  Max file size: 25MB
                 </p>
                 <p className="text-xs text-gray-500">
                   Supported: Images, PDFs, Office docs, Archives, Code files

@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { attachmentApi, Attachment } from '@/services/attachment.service';
 import { formatDistanceToNow } from 'date-fns';
+import { AttachmentPreviewModal } from './AttachmentPreviewModal';
 
 interface AttachmentListProps {
   issueId: string;
@@ -8,6 +10,7 @@ interface AttachmentListProps {
 
 export const AttachmentList = ({ issueId }: AttachmentListProps) => {
   const queryClient = useQueryClient();
+  const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
 
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: ['attachments', issueId],
@@ -150,29 +153,41 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
 
   return (
     <div className="space-y-3">
+      <AttachmentPreviewModal
+        attachment={previewAttachment}
+        onClose={() => setPreviewAttachment(null)}
+      />
+      
       {attachments.map((attachment) => (
         <div
           key={attachment.id}
-          className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+          className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
         >
-          {/* File Icon or Thumbnail */}
-          <div className="flex-shrink-0">
+          {/* File Icon or Thumbnail - Clickable for preview */}
+          <button
+            onClick={() => setPreviewAttachment(attachment)}
+            className="flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+            title="Click to preview"
+          >
             {attachment.thumbnail ? (
               <img
                 src={attachment.thumbnail}
                 alt={attachment.filename}
-                className="w-12 h-12 object-cover rounded"
+                className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
               />
             ) : (
-              <div className="w-12 h-12 flex items-center justify-center bg-white rounded border border-gray-300">
+              <div className="w-12 h-12 flex items-center justify-center bg-white rounded border border-gray-300 cursor-pointer hover:border-blue-400 transition-colors">
                 {getFileIcon(attachment.mimetype)}
               </div>
             )}
-          </div>
+          </button>
 
-          {/* File Info */}
-          <div className="flex-1 ml-3 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+          {/* File Info - Clickable for preview */}
+          <button
+            onClick={() => setPreviewAttachment(attachment)}
+            className="flex-1 ml-3 min-w-0 text-left focus:outline-none"
+          >
+            <p className="text-sm font-medium text-gray-900 truncate hover:text-blue-600 transition-colors">
               {attachment.originalName || attachment.filename}
             </p>
             <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
@@ -183,7 +198,7 @@ export const AttachmentList = ({ issueId }: AttachmentListProps) => {
                 {formatDistanceToNow(new Date(attachment.createdAt), { addSuffix: true })}
               </span>
             </div>
-          </div>
+          </button>
 
           {/* Actions */}
           <div className="flex items-center space-x-2 ml-3">
