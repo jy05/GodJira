@@ -108,33 +108,24 @@ export const AttachmentPreviewModal = ({ attachment, onClose }: AttachmentPrevie
               )}
               
               {isPDF && (
-                <div className="w-full h-full min-h-[70vh] flex flex-col">
-                  <object
-                    data={attachment.data}
-                    type="application/pdf"
-                    className="w-full h-full flex-1"
-                  >
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-white p-8">
-                      <svg className="w-24 h-24 mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <p className="text-lg font-medium text-gray-700 mb-2">PDF Preview Unavailable</p>
-                      <p className="text-sm text-gray-500 mb-4">
-                        Your browser cannot display this PDF inline
-                      </p>
-                      <button
-                        onClick={handleDownload}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        Download PDF to View
-                      </button>
-                    </div>
-                  </object>
+                <div className="w-full h-full min-h-[70vh] flex flex-col bg-gray-100">
+                  <iframe
+                    src={attachment.data}
+                    className="w-full h-full flex-1 border-0"
+                    title={attachment.filename}
+                    style={{ minHeight: '70vh' }}
+                  />
+                  <div className="p-3 bg-gray-50 border-t border-gray-200 text-center">
+                    <p className="text-sm text-gray-600 mb-2">
+                      If the PDF doesn't display, you can download it below
+                    </p>
+                    <button
+                      onClick={handleDownload}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      Download PDF
+                    </button>
+                  </div>
                 </div>
               )}
               
