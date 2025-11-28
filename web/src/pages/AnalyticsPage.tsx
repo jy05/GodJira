@@ -4,27 +4,6 @@ import { Layout } from '@/components/Layout';
 import { analyticsApi, IssueAgingReport, TeamCapacityReport } from '@/services/analytics.service';
 import { projectApi } from '@/services/project.service';
 import { teamApi } from '@/services/team.service';
-import { Bar, Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 export const AnalyticsPage = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -33,7 +12,7 @@ export const AnalyticsPage = () => {
   // Fetch projects for dropdown
   const { data: projects } = useQuery({
     queryKey: ['projects'],
-    queryFn: () => projectApi.getProjects({ page: 1, limit: 100 }),
+    queryFn: () => projectApi.getProjects({ skip: 0, take: 100 }),
   });
 
   // Fetch teams for dropdown
@@ -75,7 +54,7 @@ export const AnalyticsPage = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Select a project...</option>
-                {projects?.data.map((project: any) => (
+                {projects?.map((project: any) => (
                   <option key={project.id} value={project.id}>
                     {project.name} ({project.key})
                   </option>
@@ -136,57 +115,58 @@ export const AnalyticsPage = () => {
                 </div>
 
                 {/* Age Distribution Chart */}
-                <div className="h-80">
-                  <Bar
-                    data={{
-                      labels: ['0-7 days', '8-14 days', '15-30 days', '30+ days'],
-                      datasets: [
-                        {
-                          label: 'Number of Issues',
-                          data: [
-                            issueAgingData.aged0to7Days.length,
-                            issueAgingData.aged8to14Days.length,
-                            issueAgingData.aged15to30Days.length,
-                            issueAgingData.aged30PlusDays.length,
-                          ],
-                          backgroundColor: [
-                            'rgba(34, 197, 94, 0.7)',
-                            'rgba(59, 130, 246, 0.7)',
-                            'rgba(251, 191, 36, 0.7)',
-                            'rgba(239, 68, 68, 0.7)',
-                          ],
-                          borderColor: [
-                            'rgb(34, 197, 94)',
-                            'rgb(59, 130, 246)',
-                            'rgb(251, 191, 36)',
-                            'rgb(239, 68, 68)',
-                          ],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          position: 'top',
-                        },
-                        title: {
-                          display: true,
-                          text: 'Issue Age Distribution',
-                        },
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          ticks: {
-                            precision: 0,
-                          },
-                        },
-                      },
-                    }}
-                  />
+                <div className="mb-6">
+                  <h4 className="text-md font-semibold text-gray-900 mb-3">Age Distribution</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>0-7 days</span>
+                        <span className="font-medium">{issueAgingData.aged0to7Days.length}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-green-500 h-3 rounded-full" 
+                          style={{ width: `${(issueAgingData.aged0to7Days.length / issueAgingData.totalIssues) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>8-14 days</span>
+                        <span className="font-medium">{issueAgingData.aged8to14Days.length}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-blue-500 h-3 rounded-full" 
+                          style={{ width: `${(issueAgingData.aged8to14Days.length / issueAgingData.totalIssues) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>15-30 days</span>
+                        <span className="font-medium">{issueAgingData.aged15to30Days.length}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-yellow-500 h-3 rounded-full" 
+                          style={{ width: `${(issueAgingData.aged15to30Days.length / issueAgingData.totalIssues) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>30+ days (Stale)</span>
+                        <span className="font-medium">{issueAgingData.aged30PlusDays.length}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-red-500 h-3 rounded-full" 
+                          style={{ width: `${(issueAgingData.aged30PlusDays.length / issueAgingData.totalIssues) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Stale Issues Table */}
@@ -261,85 +241,68 @@ export const AnalyticsPage = () => {
                   </div>
                 </div>
 
-                {/* Capacity Distribution Chart */}
+                {/* Capacity Distribution */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  {/* Story Points Distribution */}
-                  <div className="h-80">
-                    <Bar
-                      data={{
-                        labels: teamCapacityData.members.map((m) => m.userName),
-                        datasets: [
-                          {
-                            label: 'Completed',
-                            data: teamCapacityData.members.map((m) => m.completedPoints),
-                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                          },
-                          {
-                            label: 'In Progress',
-                            data: teamCapacityData.members.map((m) => m.inProgressPoints),
-                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                          },
-                        ],
-                      }}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            position: 'top',
-                          },
-                          title: {
-                            display: true,
-                            text: 'Story Points by Member',
-                          },
-                        },
-                        scales: {
-                          x: {
-                            stacked: true,
-                          },
-                          y: {
-                            stacked: true,
-                            beginAtZero: true,
-                          },
-                        },
-                      }}
-                    />
+                  {/* Story Points Bar Chart */}
+                  <div>
+                    <h4 className="text-md font-semibold text-gray-900 mb-3">Story Points by Member</h4>
+                    <div className="space-y-3">
+                      {teamCapacityData.members.map((member) => (
+                        <div key={member.userId}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>{member.userName}</span>
+                            <span className="font-medium">{member.completedPoints + member.inProgressPoints} pts</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-6 flex overflow-hidden">
+                            <div 
+                              className="bg-green-500 h-6 flex items-center justify-center text-xs text-white font-medium" 
+                              style={{ width: `${(member.completedPoints / (member.completedPoints + member.inProgressPoints || 1)) * 100}%` }}
+                            >
+                              {member.completedPoints > 0 && member.completedPoints}
+                            </div>
+                            <div 
+                              className="bg-blue-500 h-6 flex items-center justify-center text-xs text-white font-medium" 
+                              style={{ width: `${(member.inProgressPoints / (member.completedPoints + member.inProgressPoints || 1)) * 100}%` }}
+                            >
+                              {member.inProgressPoints > 0 && member.inProgressPoints}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex gap-4 text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-green-500 rounded"></div>
+                        <span>Completed</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                        <span>In Progress</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Utilization Pie Chart */}
-                  <div className="h-80">
-                    <Pie
-                      data={{
-                        labels: teamCapacityData.members.map((m) => m.userName),
-                        datasets: [
-                          {
-                            label: 'Utilization %',
-                            data: teamCapacityData.members.map((m) => m.utilizationPercentage),
-                            backgroundColor: [
-                              'rgba(59, 130, 246, 0.7)',
-                              'rgba(34, 197, 94, 0.7)',
-                              'rgba(251, 191, 36, 0.7)',
-                              'rgba(239, 68, 68, 0.7)',
-                              'rgba(168, 85, 247, 0.7)',
-                              'rgba(236, 72, 153, 0.7)',
-                            ],
-                          },
-                        ],
-                      }}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            position: 'right',
-                          },
-                          title: {
-                            display: true,
-                            text: 'Member Utilization Distribution',
-                          },
-                        },
-                      }}
-                    />
+                  {/* Utilization List */}
+                  <div>
+                    <h4 className="text-md font-semibold text-gray-900 mb-3">Member Utilization</h4>
+                    <div className="space-y-2">
+                      {teamCapacityData.members.map((member) => (
+                        <div key={member.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                          <span className="text-sm font-medium">{member.userName}</span>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${
+                              member.utilizationPercentage >= 80
+                                ? 'bg-green-100 text-green-800'
+                                : member.utilizationPercentage >= 50
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {Math.round(member.utilizationPercentage)}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

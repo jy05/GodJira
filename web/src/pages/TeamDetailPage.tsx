@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
-import { teamApi, type Team, type TeamMemberRole } from '@/services/team.service';
+import { teamApi, type TeamMemberRole } from '@/services/team.service';
 import { userApi } from '@/services/user.service';
 import { projectApi } from '@/services/project.service';
 

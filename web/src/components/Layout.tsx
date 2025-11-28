@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from './RoleBasedRoute';
+import { NotificationBell } from './NotificationBell';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,11 +27,13 @@ export const Layout = ({ children }: LayoutProps) => {
         { name: 'Issues', href: '/issues' },
       ],
     },
-    { name: 'Reports', href: '/reports' },
+    { name: 'Teams', href: '/teams' },
+    { name: 'Analytics', href: '/analytics' },
   ];
 
-  // Add Admin link for admins only
+  // Add Audit link for admins only
   if (isAdmin()) {
+    navigation.push({ name: 'Audit Logs', href: '/audit' });
     navigation.push({ name: 'Admin', href: '/admin' });
   }
 
@@ -102,6 +105,9 @@ export const Layout = ({ children }: LayoutProps) => {
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <NotificationBell />
+
               {/* User Avatar & Name */}
               <Link
                 to="/profile"

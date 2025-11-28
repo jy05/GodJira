@@ -27,6 +27,7 @@ export interface AuditLog {
   entityId: string;
   action: AuditAction;
   userId: string;
+  userName?: string;
   user?: {
     id: string;
     name: string;

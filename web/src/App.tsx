@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './contexts/AuthContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
 import { RoleBasedRoute } from './components/RoleBasedRoute';
@@ -24,6 +25,11 @@ import IssuesPage from './pages/IssuesPage';
 import IssueDetailPage from './pages/IssueDetailPage';
 import KanbanBoardPage from './pages/KanbanBoardPage';
 import BoardsPage from './pages/BoardsPage';
+import { TeamsPage } from './pages/TeamsPage';
+import { TeamDetailPage } from './pages/TeamDetailPage';
+import { NotificationsPage } from './pages/NotificationsPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { AuditLogsPage } from './pages/AuditLogsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -44,7 +50,8 @@ function App() {
         <Toaster position="top-right" richColors closeButton />
         <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthProvider>
-            <Routes>
+            <WebSocketProvider>
+              <Routes>
             {/* Public routes */}
             <Route
               path="/login"
@@ -174,12 +181,63 @@ function App() {
               }
             />
 
+            {/* Teams routes */}
+            <Route
+              path="/teams"
+              element={
+                <ProtectedRoute>
+                  <TeamsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teams/:id"
+              element={
+                <ProtectedRoute>
+                  <TeamDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Notifications route */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Analytics route */}
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Audit logs route (admin only) */}
+            <Route
+              path="/audit"
+              element={
+                <ProtectedRoute>
+                  <RoleBasedRoute allowedRoles={['ADMIN']}>
+                    <AuditLogsPage />
+                  </RoleBasedRoute>
+                </ProtectedRoute>
+              }
+            />
+
             {/* Default redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+            </WebSocketProvider>
         </AuthProvider>
       </HashRouter>
     </QueryClientProvider>
