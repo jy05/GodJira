@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
 import {
   HealthCheck,
   HealthCheckService,
@@ -19,6 +19,7 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
+  @Header('Content-Type', 'application/json')
   @ApiOperation({ summary: 'Health check endpoint for Kubernetes probes and encryption status' })
   @ApiResponse({
     status: 200,

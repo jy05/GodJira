@@ -37,8 +37,10 @@ async function bootstrap() {
     }),
   );
 
-  // API prefix
-  app.setGlobalPrefix('api/v1');
+  // API prefix (exclude health endpoint)
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['health'],
+  });
 
   // Swagger documentation
   const config = new DocumentBuilder()
