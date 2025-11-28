@@ -8,6 +8,8 @@ import { IssueLinkSection } from '@/components/issue/IssueLinkSection';
 import { WatchersList } from '@/components/issue/WatchersList';
 import { AttachmentUpload } from '@/components/issue/AttachmentUpload';
 import { AttachmentList } from '@/components/issue/AttachmentList';
+import { WorkLogModal } from '@/components/issue/WorkLogModal';
+import { WorkLogsList } from '@/components/issue/WorkLogsList';
 import {
   UpdateIssueRequest,
   IssueType,
@@ -33,6 +35,7 @@ export default function IssueDetailPage() {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [isEditingKey, setIsEditingKey] = useState(false);
   const [tempKey, setTempKey] = useState('');
+  const [showWorkLogModal, setShowWorkLogModal] = useState(false);
 
   // Fetch issue details
   const { data: issue, isLoading } = useQuery({
@@ -654,6 +657,26 @@ export default function IssueDetailPage() {
 
               {/* Attachments List */}
               <AttachmentList issueId={id} />
+            </div>
+          )}
+
+          {/* Work Logs Section */}
+          {id && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Time Tracking</h3>
+                <button
+                  onClick={() => setShowWorkLogModal(true)}
+                  className="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Log Work</span>
+                </button>
+              </div>
+              
+              <WorkLogsList issueId={id} />
             </div>
           )}
 
