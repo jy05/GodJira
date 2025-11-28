@@ -63,7 +63,7 @@ Write-Host "🎉 GodJira Backend is ready!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Available services:" -ForegroundColor Cyan
 Write-Host "  - PostgreSQL: localhost:5432" -ForegroundColor White
-Write-Host "  - PgAdmin: http://localhost:5050 (admin@godjira.local / admin123)" -ForegroundColor White
+Write-Host "  - PgAdmin: http://localhost:5050 (credentials from .env file)" -ForegroundColor White
 Write-Host ""
 Write-Host "To start the API server:" -ForegroundColor Cyan
 Write-Host "  cd apps/api" -ForegroundColor White

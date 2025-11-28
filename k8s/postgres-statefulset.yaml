@@ -14,7 +14,10 @@ metadata:
   namespace: godjira
 type: Opaque
 stringData:
-  POSTGRES_PASSWORD: godjira123
+  # CRITICAL: DO NOT commit actual password to version control!
+  # Create this secret externally:
+  # kubectl create secret generic postgres-secret --from-literal=POSTGRES_PASSWORD="<secure-random-password>"
+  POSTGRES_PASSWORD: "PLACEHOLDER-generate-secure-password-min-32-chars"
 ---
 apiVersion: v1
 kind: Service

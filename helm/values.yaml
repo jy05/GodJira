@@ -102,7 +102,9 @@ postgresql:
   auth:
     database: godjira
     username: godjira
-    password: godjira123  # Change in production!
+    # WARNING: Set this via --set postgresql.auth.password=<secure-password> or use external secrets
+    # NEVER commit actual passwords to version control
+    password: ""  # Must be provided at install time
   
   persistence:
     enabled: true

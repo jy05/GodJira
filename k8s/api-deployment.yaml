@@ -4,7 +4,8 @@ metadata:
   name: api-config
   namespace: godjira
 data:
-  DATABASE_URL: "postgresql://godjira:godjira123@postgres:5432/godjira?schema=public"
+  # DATABASE_URL should be set via Secret, not ConfigMap
+  # See api-secret below for DATABASE_URL configuration
   NODE_ENV: "production"
   PORT: "3000"
   FRONTEND_URL: "https://godjira.example.com"
@@ -16,12 +17,17 @@ metadata:
   namespace: godjira
 type: Opaque
 stringData:
-  # IMPORTANT: These are placeholder values. Replace with actual secrets!
-  # Generate with: kubectl create secret generic api-secret --from-literal=...
-  # Or use external secrets manager (AWS Secrets Manager, Vault, etc.)
-  JWT_SECRET: "change-this-to-a-secure-random-string-min-32-chars"
-  JWT_REFRESH_SECRET: "change-this-to-another-secure-random-string"
-  ENCRYPTION_KEY: "change-this-to-64-char-hex-string-openssl-rand-hex-32"
+  # CRITICAL: DO NOT commit actual secrets to version control!
+  # These must be created externally using one of these methods:
+  # 1. kubectl create secret generic api-secret --from-literal=DATABASE_URL="..." --from-literal=JWT_SECRET="..."
+  # 2. Use external secrets operator with AWS Secrets Manager, Azure Key Vault, or HashiCorp Vault
+  # 3. Use sealed-secrets or SOPS for encrypted secrets in git
+  # 
+  # Required secrets (replace PLACEHOLDER values before deployment):
+  DATABASE_URL: "PLACEHOLDER-postgresql://user:pass@postgres:5432/godjira?schema=public"
+  JWT_SECRET: "PLACEHOLDER-generate-with-openssl-rand-base64-64"
+  JWT_REFRESH_SECRET: "PLACEHOLDER-generate-with-openssl-rand-base64-64"
+  ENCRYPTION_KEY: "PLACEHOLDER-generate-with-openssl-rand-hex-32"
 ---
 apiVersion: v1
 kind: Service
