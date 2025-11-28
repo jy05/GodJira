@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { notificationApi, getNotificationIcon, getNotificationColor } from '@/services/notification.service';
+import { notificationApi, getNotificationColor } from '@/services/notification.service';
+import { NotificationIcon } from './NotificationIcon';
 import { formatDistanceToNow } from 'date-fns';
 
 interface NotificationDropdownProps {
@@ -87,7 +88,6 @@ export const NotificationDropdown = ({ onClose }: NotificationDropdownProps) => 
           </div>
         ) : notifications && notifications.data.length > 0 ? (
           notifications.data.map((notification: any) => {
-            const Icon = getNotificationIcon(notification.type);
             const colorClass = getNotificationColor(notification.type);
 
             return (
@@ -105,7 +105,6 @@ export const NotificationDropdown = ({ onClose }: NotificationDropdownProps) => 
                   >
                     <NotificationContent
                       notification={notification}
-                      Icon={Icon}
                       colorClass={colorClass}
                       onDelete={handleDelete}
                     />
@@ -114,7 +113,6 @@ export const NotificationDropdown = ({ onClose }: NotificationDropdownProps) => 
                   <div onClick={() => handleNotificationClick(notification)}>
                     <NotificationContent
                       notification={notification}
-                      Icon={Icon}
                       colorClass={colorClass}
                       onDelete={handleDelete}
                     />
@@ -146,17 +144,16 @@ export const NotificationDropdown = ({ onClose }: NotificationDropdownProps) => 
 
 interface NotificationContentProps {
   notification: any;
-  Icon: any;
   colorClass: string;
   onDelete: (e: React.MouseEvent, id: string) => void;
 }
 
-const NotificationContent = ({ notification, Icon, colorClass, onDelete }: NotificationContentProps) => {
+const NotificationContent = ({ notification, colorClass, onDelete }: NotificationContentProps) => {
   return (
     <div className="flex items-start space-x-3">
       {/* Icon */}
       <div className={`flex-shrink-0 w-8 h-8 ${colorClass} rounded-full flex items-center justify-center`}>
-        <Icon className="w-4 h-4 text-white" />
+        <NotificationIcon type={notification.type} className="w-4 h-4 text-white" />
       </div>
 
       {/* Content */}

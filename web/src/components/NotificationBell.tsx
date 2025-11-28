@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { notificationApi, getNotificationIcon, getNotificationColor } from '@/services/notification.service';
+import { notificationApi } from '@/services/notification.service';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { NotificationDropdown } from './NotificationDropdown';
 
