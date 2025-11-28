@@ -12,6 +12,20 @@ out/
 .env
 .env*.local
 .env.production
+.env.prod
+
+# SSL/TLS Certificates and Private Keys (NEVER COMMIT!)
+*.key
+*.crt
+*.pem
+*.csr
+*.p12
+*.pfx
+docker/nginx/ssl/
+docker/postgres/ssl/
+docker/redis/ssl/
+docker/ssl/
+*.srl
 
 # IDE
 .vscode/

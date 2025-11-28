@@ -11,6 +11,7 @@ import {
   getExtensionFromMimeType,
   generateThumbnail,
 } from '../common/utils/file-upload.utils';
+import { encryptDataUrl, decryptDataUrl } from '../common/utils/encryption.utils';
 
 @Injectable()
 export class AttachmentsService {
@@ -38,22 +39,28 @@ export class AttachmentsService {
     // Convert buffer to base64 data URL
     const dataUrl = bufferToBase64DataUrl(file.buffer, file.mimetype);
 
+    // Encrypt the data URL for storage (data-at-rest encryption)
+    const encryptedData = encryptDataUrl(dataUrl);
+
     // Generate thumbnail for images (200x200)
-    const thumbnail = await generateThumbnail(file.buffer, file.mimetype, 200, 200);
+    const thumbnailDataUrl = await generateThumbnail(file.buffer, file.mimetype, 200, 200);
+    
+    // Encrypt thumbnail if it exists
+    const encryptedThumbnail = thumbnailDataUrl ? encryptDataUrl(thumbnailDataUrl) : null;
 
     // Generate filename if not provided
     const extension = getExtensionFromMimeType(file.mimetype);
     const filename = file.originalname || `attachment${extension}`;
 
-    // Create attachment record
+    // Create attachment record with encrypted data
     const attachment = await this.prisma.attachment.create({
       data: {
         filename,
         originalName: file.originalname,
         mimetype: file.mimetype,
         size: file.size,
-        data: dataUrl,
-        thumbnail: thumbnail || null,
+        data: encryptedData,
+        thumbnail: encryptedThumbnail,
         issueId,
         uploadedBy: userId,
       },
@@ -68,11 +75,17 @@ export class AttachmentsService {
       },
     });
 
-    return attachment;
+    // Decrypt data before returning to client
+    return {
+      ...attachment,
+      data: decryptDataUrl(attachment.data),
+      thumbnail: attachment.thumbnail ? decryptDataUrl(attachment.thumbnail) : null,
+    };
   }
 
   /**
    * Get all attachments for an issue
+   * Decrypts attachment data before returning
    */
   async findByIssue(issueId: string) {
     // Verify issue exists
@@ -98,11 +111,17 @@ export class AttachmentsService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return attachments;
+    // Decrypt all attachment data before returning
+    return attachments.map(attachment => ({
+      ...attachment,
+      data: decryptDataUrl(attachment.data),
+      thumbnail: attachment.thumbnail ? decryptDataUrl(attachment.thumbnail) : null,
+    }));
   }
 
   /**
    * Get a single attachment by ID
+   * Decrypts attachment data before returning
    */
   async findOne(id: string) {
     const attachment = await this.prisma.attachment.findUnique({
@@ -122,7 +141,12 @@ export class AttachmentsService {
       throw new NotFoundException(`Attachment with ID ${id} not found`);
     }
 
-    return attachment;
+    // Decrypt data before returning
+    return {
+      ...attachment,
+      data: decryptDataUrl(attachment.data),
+      thumbnail: attachment.thumbnail ? decryptDataUrl(attachment.thumbnail) : null,
+    };
   }
 
   /**

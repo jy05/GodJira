@@ -1,0 +1,231 @@
+# Docker Compose - Production Environment
+# This file is optimized for production deployment with TLS/SSL encryption
+# Features: HTTPS, PostgreSQL SSL, Redis TLS, data-at-rest encryption, security hardening
+# For development, use docker-compose.dev.yml
+
+version: '3.8'
+
+services:
+  # Nginx Reverse Proxy - TLS Termination & Security Headers
+  nginx:
+    image: nginx:alpine
+    container_name: godjira-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - api
+      - web
+    networks:
+      - godjira-network
+    environment:
+      - TZ=UTC
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database - Production with SSL
+  postgres:
+    image: postgres:15-alpine
+    container_name: godjira-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.utf8"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/ssl:/var/lib/postgresql/ssl:ro
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt
+      -c ssl_key_file=/var/lib/postgresql/ssl/server.key
+      -c ssl_ca_file=/var/lib/postgresql/ssl/ca.crt
+      -c config_file=/etc/postgresql/postgresql.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - godjira-network
+    security_opt:
+      - no-new-privileges:true
+
+  # Redis Cache - Production with TLS
+  redis:
+    image: redis:7-alpine
+    container_name: godjira-redis-prod
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./docker/redis/ssl:/etc/redis/ssl:ro
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --requirepass ${REDIS_PASSWORD}
+      --tls-port 6379
+      --port 0
+      --tls-cert-file /etc/redis/ssl/redis.crt
+      --tls-key-file /etc/redis/ssl/redis.key
+      --tls-ca-cert-file /etc/redis/ssl/ca.crt
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "--tls", "--cert", "/etc/redis/ssl/redis.crt", "--key", "/etc/redis/ssl/redis.key", "--cacert", "/etc/redis/ssl/ca.crt", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - godjira-network
+    security_opt:
+      - no-new-privileges:true
+
+  # NestJS API - Production
+  api:
+    build:
+      context: .
+      dockerfile: apps/Dockerfile
+      args:
+        NODE_ENV: production
+    container_name: godjira-api-prod
+    restart: always
+    environment:
+      # Database with SSL
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public&sslmode=require&sslcert=/app/ssl/client.crt&sslkey=/app/ssl/client.key&sslrootcert=/app/ssl/ca.crt
+      
+      # Node Environment
+      NODE_ENV: production
+      PORT: 3000
+      
+      # JWT Secrets - MUST be set via environment or secrets manager
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      
+      # Encryption - MUST be set for data-at-rest encryption
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      
+      # Email (Production SMTP)
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      MAIL_FROM_EMAIL: ${MAIL_FROM_EMAIL}
+      MAIL_SECURE: ${MAIL_SECURE:-true}
+      
+      # File Upload
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-26214400}
+      UPLOAD_PATH: /app/uploads
+      
+      # Redis with TLS
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_TLS: "true"
+      
+      # CORS
+      FRONTEND_URL: ${FRONTEND_URL}
+      
+      # Security
+      RATE_LIMIT_TTL: ${RATE_LIMIT_TTL:-60000}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-100}
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      
+      # Timezone
+      TZ: UTC
+    volumes:
+      - uploads:/app/uploads
+      - ./docker/ssl/client:/app/ssl:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - godjira-network
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # React Frontend - Production
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_WS_URL: ${VITE_WS_URL}
+    container_name: godjira-web-prod
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+    depends_on:
+      - api
+    networks:
+      - godjira-network
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  godjira-network:
+    driver: bridge
+    name: godjira-prod-network
+
+volumes:
+  postgres_data:
+    driver: local
+    name: godjira_postgres_prod_data
+  redis_data:
+    driver: local
+    name: godjira_redis_prod_data
+  uploads:
+    driver: local
+    name: godjira_uploads_prod
+  nginx_cache:
+    driver: local
+    name: godjira_nginx_cache
+  nginx_logs:
+    driver: local
+    name: godjira_nginx_logs

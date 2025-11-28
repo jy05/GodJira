@@ -6,6 +6,7 @@ import {
 } from '@nestjs/terminus';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { validateEncryptionSetup } from '../common/utils/encryption.utils';
 
 @ApiTags('health')
 @Controller('health')
@@ -18,7 +19,7 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  @ApiOperation({ summary: 'Health check endpoint for Kubernetes probes' })
+  @ApiOperation({ summary: 'Health check endpoint for Kubernetes probes and encryption status' })
   @ApiResponse({
     status: 200,
     description: 'Service is healthy',
@@ -36,6 +37,26 @@ export class HealthController {
             status: 'up',
           },
         };
+      },
+      async () => {
+        try {
+          const encryptionStatus = validateEncryptionSetup();
+          return {
+            encryption: {
+              status: 'up',
+              configured: encryptionStatus.configured,
+              keyLength: encryptionStatus.keyLength,
+              environment: encryptionStatus.environment,
+            },
+          };
+        } catch (error) {
+          return {
+            encryption: {
+              status: 'down',
+              error: error.message,
+            },
+          };
+        }
       },
     ]);
   }

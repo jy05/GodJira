@@ -16,8 +16,12 @@ metadata:
   namespace: godjira
 type: Opaque
 stringData:
+  # IMPORTANT: These are placeholder values. Replace with actual secrets!
+  # Generate with: kubectl create secret generic api-secret --from-literal=...
+  # Or use external secrets manager (AWS Secrets Manager, Vault, etc.)
   JWT_SECRET: "change-this-to-a-secure-random-string-min-32-chars"
   JWT_REFRESH_SECRET: "change-this-to-another-secure-random-string"
+  ENCRYPTION_KEY: "change-this-to-64-char-hex-string-openssl-rand-hex-32"
 ---
 apiVersion: v1
 kind: Service

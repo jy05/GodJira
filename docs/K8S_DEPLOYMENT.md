@@ -50,6 +50,39 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx
 
 ```powershell
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+
+# Verify cert-manager is running
+kubectl get pods -n cert-manager
+```
+
+### Create Kubernetes Secrets for Encryption
+
+```powershell
+# Generate encryption key (AES-256)
+$encryptionKey = openssl rand -hex 32
+
+# Create secret for data-at-rest encryption
+kubectl create secret generic godjira-encryption `
+  --from-literal=encryption-key=$encryptionKey `
+  --namespace godjira
+
+# Generate JWT secrets
+$jwtSecret = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(64))
+$jwtRefreshSecret = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(64))
+
+# Create secret for JWT authentication
+kubectl create secret generic godjira-jwt `
+  --from-literal=jwt-secret=$jwtSecret `
+  --from-literal=jwt-refresh-secret=$jwtRefreshSecret `
+  --namespace godjira
+
+# Create secret for database password
+kubectl create secret generic godjira-db `
+  --from-literal=postgres-password=$(openssl rand -base64 32) `
+  --namespace godjira
+
+# Verify secrets created
+kubectl get secrets -n godjira
 ```
 
 ### Install Prometheus Operator (Monitoring)
@@ -84,13 +117,13 @@ kubectl get svc -n godjira
 # Install with default values
 helm install godjira ./helm/godjira --namespace godjira --create-namespace
 
-# Or customize values
+# Or customize values with encryption and TLS
 helm install godjira ./helm/godjira --namespace godjira --create-namespace \
   --set global.domain=your-domain.com \
   --set api.replicaCount=3 \
-  --set postgresql.auth.password=secure-password \
-  --set api.secrets.jwtSecret=$(openssl rand -base64 32) \
-  --set api.secrets.jwtRefreshSecret=$(openssl rand -base64 32)
+  --set postgresql.auth.existingSecret=godjira-db \
+  --set api.secrets.existingSecret=godjira-jwt \
+  --set api.encryption.existingSecret=godjira-encryption
 
 # Upgrade deployment
 helm upgrade godjira ./helm/godjira --namespace godjira
@@ -98,6 +131,8 @@ helm upgrade godjira ./helm/godjira --namespace godjira
 # Uninstall
 helm uninstall godjira --namespace godjira
 ```
+
+**Important:** Ensure encryption and JWT secrets are created before installing (see Step 2).
 
 ## Step 4: Database Migration
 
@@ -197,6 +232,64 @@ kubectl port-forward -n monitoring svc/prometheus-grafana 3001:80
    # Request duration
    http_request_duration_seconds_bucket
    ```
+
+4. **Verify Encryption Status**:
+   ```powershell
+   # Port-forward to API
+   kubectl port-forward -n godjira svc/api 3000:3000
+   
+   # Check health endpoint
+   curl http://localhost:3000/health | jq '.info.encryption'
+   
+   # Expected output:
+   # {
+   #   "status": "up",
+   #   "configured": true,
+   #   "keyLength": 32,
+   #   "environment": "production"
+   # }
+   ```
+
+## Security & Encryption
+
+### Data-at-Rest Encryption
+
+GodJira implements AES-256-GCM encryption for sensitive data (attachments, etc.). 
+
+**Required Kubernetes Secret:**
+```powershell
+# Already created in Step 2
+kubectl get secret godjira-encryption -n godjira
+
+# To rotate encryption key:
+kubectl create secret generic godjira-encryption-new \
+  --from-literal=encryption-key=$(openssl rand -hex 32) \
+  -n godjira
+
+# Update deployment to use new secret
+# Re-encrypt existing data (see PRODUCTION_SECURITY.md)
+```
+
+### TLS/HTTPS
+
+TLS is automatically configured via cert-manager and Let's Encrypt:
+- Ingress controller terminates TLS
+- cert-manager auto-renews certificates every 90 days
+- HSTS headers enforce HTTPS
+
+**Manual Certificate Verification:**
+```powershell
+# Check certificate
+kubectl get certificate -n godjira
+
+# Describe certificate details
+kubectl describe certificate godjira-tls-cert -n godjira
+
+# Check cert-manager logs
+kubectl logs -n cert-manager deployment/cert-manager
+```
+
+**For more details, see:** [PRODUCTION_SECURITY.md](./PRODUCTION_SECURITY.md)
 
 ## Cloudflare Tunnel Setup (Optional)
 
