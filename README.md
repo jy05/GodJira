@@ -645,6 +645,36 @@ All configuration is managed through environment variables and Kubernetes secret
 
 See [docs/env.md](./docs/env.md) for complete reference.
 
+### Public Access with HTTPS
+
+🌍 **Make GodJira publicly accessible with automatic HTTPS:**
+
+**Cloudflare Tunnel** (Recommended - Free):
+- ✅ Automatic HTTPS certificates
+- ✅ Hides your private IP address
+- ✅ No port forwarding needed
+- ✅ DDoS protection included
+- ✅ Works behind NAT/firewall
+- ✅ Perfect for Raspberry Pi and home servers
+
+```bash
+# Quick setup
+cloudflared tunnel login
+cloudflared tunnel create godjira
+cloudflared tunnel route dns godjira godjira.yourdomain.com
+cloudflared tunnel run godjira
+# Done! Access at https://godjira.yourdomain.com
+```
+
+📖 **Complete Guide**: [Public Deployment with Cloudflare](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
+
+Includes:
+- Step-by-step Cloudflare Tunnel setup
+- Kubernetes + cert-manager integration
+- Let's Encrypt certificate automation
+- Security best practices
+- Troubleshooting guide
+
 ### TLS/SSL Certificates
 
 **Automatic** (recommended):
