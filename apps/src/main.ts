@@ -13,7 +13,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security middleware
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+  }));
   app.use(compression.default());
   app.use(cookieParser.default());
 
@@ -37,9 +46,9 @@ async function bootstrap() {
     }),
   );
 
-  // API prefix (exclude health endpoint)
+  // API prefix (exclude health endpoint and its sub-routes)
   app.setGlobalPrefix('api/v1', {
-    exclude: ['health'],
+    exclude: ['health', 'health/json', 'health/ui'],
   });
 
   // Swagger documentation
