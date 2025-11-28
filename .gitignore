@@ -8,11 +8,17 @@ build/
 .next/
 out/
 
-# Environment variables
+# Environment variables (NEVER COMMIT SECRETS!)
 .env
 .env*.local
 .env.production
 .env.prod
+.env.development
+.env.staging
+secrets.yaml
+secrets.yml
+*-secrets.yaml
+*-secrets.yml
 
 # SSL/TLS Certificates and Private Keys (NEVER COMMIT!)
 *.key

@@ -1,13 +1,25 @@
 # GodJira (WIP Not Fully Functional)
 
+⚠️ **SECURITY NOTICE**: Before deploying, read [SECURITY.md](./SECURITY.md) for critical security setup instructions.
+
 GodJira is an enterprise-grade project management system inspired by Atlassian JIRA. Built with NestJS, Prisma, PostgreSQL, and React, it provides comprehensive issue tracking, sprint management, team collaboration, and real-time notifications.
 
 The system is designed for containerized deployment on Kubernetes, featuring a complete REST API backend with 113 endpoints across 16 modules, WebSocket-based real-time updates, and advanced analytics capabilities. It includes full support for agile workflows with sprint planning, burndown charts, time tracking, file attachments, and role-based access control.
 
 GodJira implements NIST-compliant security standards with JWT authentication, bcrypt password hashing, rate limiting, and comprehensive audit logging. The architecture supports horizontal scaling through stateless API design and includes integrated monitoring with Prometheus and Grafana.
 
+## 🔒 Security First
+
+**CRITICAL**: All hardcoded credentials have been removed as of November 27, 2025. You **MUST** set up secure credentials before deploying:
+
+1. 📖 Read [SECURITY.md](./SECURITY.md) - **Required before deployment**
+2. 🔐 Generate secure secrets: `.\scripts\generate-secrets.ps1 -All`
+3. 🚫 Never commit `.env` files or secrets to version control
+4. ✅ Verify all placeholder passwords are replaced
+
 ## Table of Contents
 
+- [Security](#security-first)
 - [Prerequisites](#prerequisites)
 - [Dependencies](#dependencies)
 - [Installation](#installation)
