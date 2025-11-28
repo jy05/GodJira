@@ -131,34 +131,34 @@ export class HealthController {
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         
         .header h1 {
-            font-size: 2.25rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             color: #111827;
         }
         
         .header p {
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             color: #6b7280;
             margin-top: 0.25rem;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 0.5rem 1.5rem;
+            padding: 0.375rem 1rem;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 1.1rem;
-            margin-top: 1rem;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
         }
         
         .status-badge.ok {
@@ -178,41 +178,41 @@ export class HealthController {
         
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
         }
         
         .card {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
             border-bottom: 2px solid #f3f4f6;
         }
         
         .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-right: 1rem;
+            font-size: 18px;
+            margin-right: 0.75rem;
         }
         
         .card-icon.up {
@@ -226,7 +226,7 @@ export class HealthController {
         }
         
         .card-title {
-            font-size: 1.5rem;
+            font-size: 1.125rem;
             font-weight: 600;
             color: #1f2937;
         }
@@ -234,28 +234,28 @@ export class HealthController {
         .card-body {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.625rem;
         }
         
         .info-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem;
+            padding: 0.5rem;
             background: #f9fafb;
-            border-radius: 8px;
+            border-radius: 6px;
         }
         
         .info-label {
             font-weight: 500;
             color: #6b7280;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         
         .info-value {
             font-weight: 600;
             color: #1f2937;
-            font-size: 1rem;
+            font-size: 0.875rem;
         }
         
         .info-value.up {
