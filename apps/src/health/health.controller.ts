@@ -269,8 +269,7 @@ export class HealthController {
         
         .timestamp {
             text-align: center;
-            color: white;
-            opacity: 0.8;
+            color: #6b7280;
             margin-top: 2rem;
             font-size: 0.9rem;
         }
@@ -509,18 +508,7 @@ export class HealthController {
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   }
-
-  @Get('ui')
-  @ApiOperation({ summary: 'Health check dashboard with formatted UI' })
-  @ApiResponse({
-    status: 200,
-    description: 'Health dashboard page',
-  })
-  async healthUI(@Res() res: Response) {
-    // Get health data
-    const healthData = await this.check();
-    
-    const html = `
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -714,8 +702,7 @@ export class HealthController {
         
         .timestamp {
             text-align: center;
-            color: white;
-            opacity: 0.8;
+            color: #6b7280;
             margin-top: 2rem;
             font-size: 0.9rem;
         }
