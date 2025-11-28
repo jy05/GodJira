@@ -273,42 +273,42 @@ export class HealthController {
         .timestamp {
             text-align: center;
             color: #6b7280;
-            margin-top: 2rem;
-            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
         }
         
         .details-section {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .details-title {
-            font-size: 1.5rem;
+            font-size: 1.125rem;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
             border-bottom: 2px solid #f3f4f6;
         }
         
         pre {
             background: #1f2937;
             color: #f3f4f6;
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 1rem;
+            border-radius: 8px;
             overflow-x: auto;
             font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
+            font-size: 0.75rem;
+            line-height: 1.4;
         }
         
         .loading {
             text-align: center;
-            padding: 2rem;
+            padding: 1.5rem;
             color: #6b7280;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
         
         .error-message {
