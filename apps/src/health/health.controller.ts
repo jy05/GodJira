@@ -114,15 +114,18 @@ export class HealthController {
             align-items: center;
             cursor: pointer;
             transition: opacity 0.2s;
+            text-decoration: none;
         }
         
-        .logo-link:hover {
-            opacity: 0.8;
+        .logo-link:hover .logo-text {
+            color: #1e40af;
         }
         
-        .logo {
-            height: 40px;
-            width: auto;
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            transition: color 0.2s;
         }
         
         .container {
@@ -341,15 +344,7 @@ export class HealthController {
     <nav class="navbar">
         <div class="nav-content">
             <a href="http://localhost:5173" class="logo-link" title="Back to GodJira">
-                <svg class="logo" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <text x="10" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="url(#logoGradient)">GodJira</text>
-                </svg>
+                <span class="logo-text">GodJira</span>
             </a>
         </div>
     </nav>
