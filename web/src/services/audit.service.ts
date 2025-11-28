@@ -80,6 +80,7 @@ export const auditApi = {
   getActivityFeed: async (params?: {
     skip?: number;
     take?: number;
+    projectId?: string;
   }): Promise<{ data: ActivityFeedItem[]; total: number }> => {
     const response = await apiClient.get<{
       data: ActivityFeedItem[];
