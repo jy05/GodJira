@@ -48,7 +48,7 @@ async function bootstrap() {
 
   // API prefix (exclude health endpoint and its sub-routes)
   app.setGlobalPrefix('api/v1', {
-    exclude: ['health', 'health/json', 'health/ui'],
+    exclude: ['health', 'health/json'],
   });
 
   // Swagger documentation

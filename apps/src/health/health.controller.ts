@@ -340,8 +340,16 @@ export class HealthController {
     <!-- Top Navigation Bar -->
     <nav class="navbar">
         <div class="nav-content">
-            <a href="/" class="logo-link" title="Back to GodJira">
-                <img src="/logo.png" alt="GodJira Logo" class="logo" />
+            <a href="http://localhost:5173" class="logo-link" title="Back to GodJira">
+                <svg class="logo" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <text x="10" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="url(#logoGradient)">GodJira</text>
+                </svg>
             </a>
         </div>
     </nav>
