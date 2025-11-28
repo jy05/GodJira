@@ -330,9 +330,9 @@ export class HealthController {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(209, 213, 219, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #f59e0b;
             animation: spin 1s linear infinite;
         }
     </style>
