@@ -62,6 +62,7 @@ GodJira is built on a containerized microservices architecture optimized for Kub
   - [Development (Docker Compose)](#development-environment-docker-compose)
   - [Production (Kubernetes + Helm)](#production-deployment-kubernetes--helm)
   - [Production (Kubernetes Manifests)](#production-deployment-kubernetes-manifests)
+  - [Raspberry Pi & ARM Systems](#raspberry-pi--arm-systems)
 - [Dependencies & Containers](#dependencies--containers)
 - [Configuration](#configuration)
 - [Monitoring & Observability](#monitoring--observability)
@@ -161,6 +162,23 @@ Write-Host "Please restart your computer to complete the installation"
 
 **All dependencies are containerized** - no external installations required for deployment.
 
+### Multi-Architecture Support
+
+🌍 **GodJira supports multiple CPU architectures:**
+
+- ✅ **AMD64/x86_64** - Intel/AMD processors (standard servers, desktops)
+- ✅ **ARM64/aarch64** - Raspberry Pi, Apple Silicon, AWS Graviton
+- ✅ **Automatic selection** - Docker pulls the correct image for your system
+
+All official images support ARM64 natively:
+- `postgres:15-alpine` - Multi-arch official image
+- `redis:7-alpine` - Multi-arch official image
+- `node:20-alpine` - Multi-arch official image
+- `prom/prometheus` - Multi-arch official image
+- `grafana/grafana` - Multi-arch official image
+
+**Custom images** (API/Web) are built from multi-arch base images and can be compiled for any platform.
+
 ### Container Architecture
 
 GodJira uses a fully containerized architecture where **every service runs in its own container/pod**:
@@ -213,6 +231,59 @@ Choose the appropriate method for your environment:
 - 🔧 **Development**: Docker Compose (quick local setup)
 - 🚀 **Production**: Kubernetes with Helm (recommended)
 - ⚙️ **Production**: Kubernetes with raw manifests (advanced)
+- 🥧 **Raspberry Pi / ARM**: See [Raspberry Pi Deployment Guide](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+
+### System Portability
+
+✅ **GodJira is 100% containerized and portable!**
+
+Run on **ANY** platform with Docker/Kubernetes:
+
+| Platform | Architecture | Status |
+|----------|-------------|--------|
+| 🥧 **Raspberry Pi 4/5** | ARM64 | ✅ Full Support |
+| 🐧 **Linux** | AMD64/ARM64 | ✅ Production Ready |
+| 🪟 **Windows** | AMD64 | ✅ Docker Desktop |
+| 🍎 **macOS (Intel)** | AMD64 | ✅ Docker Desktop |
+| 🍎 **macOS (Apple Silicon)** | ARM64 | ✅ Native Support |
+| ☁️ **AWS/Azure/GCP** | AMD64 | ✅ Cloud Ready |
+| 🔶 **Orange Pi / Rock Pi** | ARM64 | ✅ Compatible |
+
+**All dependencies are containerized** - no external software installation required beyond Docker/Kubernetes!
+
+## Raspberry Pi & ARM Systems
+
+GodJira runs perfectly on Raspberry Pi and other ARM-based systems!
+
+### Quick Start for Raspberry Pi
+
+```bash
+# 1. Install Docker
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+# 2. Clone and build
+git clone https://github.com/jy05/GodJira.git
+cd GodJira
+docker build -t godjira-api:latest -f apps/Dockerfile ./apps
+docker build -t godjira-web:latest -f web/Dockerfile ./web
+
+# 3. Configure and start
+export POSTGRES_PASSWORD="$(openssl rand -base64 32)"
+export PGADMIN_PASSWORD="$(openssl rand -base64 32)"
+export GRAFANA_PASSWORD="$(openssl rand -base64 32)"
+docker compose -f docker-compose.dev.yml up -d
+```
+
+📖 **Complete Guide**: [Raspberry Pi Deployment Guide](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+
+Includes:
+- Docker Compose setup for single Pi
+- K3s (lightweight Kubernetes) deployment
+- Performance optimization for ARM
+- Raspberry Pi cluster configuration
+- Troubleshooting for ARM systems
 
 ## Development Environment (Docker Compose)
 
@@ -769,10 +840,11 @@ See [LICENSE](./LICENSE) for details.
 
 ## Support
 
-- 📖 Documentation: [docs/](./docs/)
-- 🐛 Issues: [GitHub Issues](https://github.com/jy05/GodJira/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/jy05/GodJira/discussions)
-- 🔒 Security: [SECURITY.md](./SECURITY.md)
+- 📖 **Documentation**: [docs/](./docs/)
+- 🥧 **Raspberry Pi Guide**: [RASPBERRY_PI_DEPLOYMENT.md](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/jy05/GodJira/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/jy05/GodJira/discussions)
+- 🔒 **Security**: [SECURITY.md](./SECURITY.md)
 
 ---
 
