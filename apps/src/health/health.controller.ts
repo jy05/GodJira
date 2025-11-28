@@ -536,33 +536,67 @@ export class HealthController {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f9fafb;
             min-height: 100vh;
-            padding: 2rem;
             color: #333;
+        }
+        
+        /* Top Navigation Bar */
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .logo-link:hover {
+            opacity: 0.8;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
         }
         
         .header {
             text-align: center;
             margin-bottom: 3rem;
-            color: white;
         }
         
         .header h1 {
-            font-size: 3rem;
+            font-size: 2.25rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            color: #111827;
         }
         
         .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
         }
         
         .status-badge {
@@ -725,9 +759,18 @@ export class HealthController {
     </style>
 </head>
 <body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo-link" title="Back to GodJira">
+                <img src="/logo.png" alt="GodJira Logo" class="logo" />
+            </a>
+        </div>
+    </nav>
+    
     <div class="container">
         <div class="header">
-            <h1>🚀 GodJira Health Dashboard</h1>
+            <h1>Health Check Dashboard</h1>
             <p>System Status & Monitoring</p>
             <div class="status-badge ${healthData.status === 'ok' ? 'ok' : 'error'}">
                 System: ${healthData.status.toUpperCase()}
