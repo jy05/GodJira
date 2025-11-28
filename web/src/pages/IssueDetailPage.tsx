@@ -1159,6 +1159,15 @@ export default function IssueDetailPage() {
       </div>
         </div>
       </div>
+
+      {/* Work Log Modal */}
+      {showWorkLogModal && issue && (
+        <WorkLogModal
+          issueId={issue.id}
+          issueKey={issue.key}
+          onClose={() => setShowWorkLogModal(false)}
+        />
+      )}
     </Layout>
   );
 }
