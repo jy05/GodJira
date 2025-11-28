@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Attachment } from '@/services/attachment.service';
 
 interface AttachmentPreviewModalProps {
@@ -7,6 +7,8 @@ interface AttachmentPreviewModalProps {
 }
 
 export const AttachmentPreviewModal = ({ attachment, onClose }: AttachmentPreviewModalProps) => {
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -14,6 +16,34 @@ export const AttachmentPreviewModal = ({ attachment, onClose }: AttachmentPrevie
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
+
+  // Convert base64 PDF to blob URL for better browser compatibility
+  useEffect(() => {
+    if (attachment && attachment.mimetype === 'application/pdf') {
+      try {
+        // Extract base64 data from data URL
+        const base64Data = attachment.data.split(',')[1];
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        setPdfBlobUrl(url);
+        
+        // Cleanup blob URL when component unmounts or attachment changes
+        return () => {
+          if (url) URL.revokeObjectURL(url);
+        };
+      } catch (error) {
+        console.error('Error creating PDF blob URL:', error);
+        setPdfBlobUrl(null);
+      }
+    } else {
+      setPdfBlobUrl(null);
+    }
+  }, [attachment]);
 
   if (!attachment) return null;
 
@@ -110,7 +140,7 @@ export const AttachmentPreviewModal = ({ attachment, onClose }: AttachmentPrevie
               {isPDF && (
                 <div className="w-full h-full min-h-[70vh] flex flex-col bg-gray-100">
                   <iframe
-                    src={attachment.data}
+                    src={pdfBlobUrl || attachment.data}
                     className="w-full h-full flex-1 border-0"
                     title={attachment.filename}
                     style={{ minHeight: '70vh' }}
