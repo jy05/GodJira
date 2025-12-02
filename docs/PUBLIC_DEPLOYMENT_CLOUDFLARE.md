@@ -1,16 +1,247 @@
-# GodJira Public Deployment with Cloudflare
+# GodJira Public Deployment with HTTPS
 
 ## Overview
 
-This guide shows how to make GodJira publicly accessible using **Cloudflare Tunnel** (formerly Argo Tunnel), which:
+This comprehensive guide shows you how to make GodJira publicly accessible with automatic HTTPS. It includes both a **Quick Start** (30 minutes) and detailed deployment options.
 
-✅ **Protects your private IP** - No port forwarding needed  
-✅ **Automatic HTTPS** - Free SSL/TLS certificates from Cloudflare  
-✅ **DDoS Protection** - Cloudflare's global network shields your server  
-✅ **Zero Trust Security** - No exposed ports on your firewall  
-✅ **Works anywhere** - Behind NAT, on Raspberry Pi, any network  
+**What you'll achieve:**
 
-## Methods Comparison
+- GodJira running on your server (Raspberry Pi, Linux, Windows, macOS)
+- Accessible at `https://godjira.yourdomain.com`
+- Automatic HTTPS certificate (free)
+- Your private IP stays hidden
+- DDoS protection included
+- No port forwarding needed
+
+---
+
+## Table of Contents
+
+1. [Quick Start (30 Minutes)](#quick-start-30-minutes)
+2. [Deployment Methods Comparison](#deployment-methods-comparison)
+3. [Method 1: Cloudflare Tunnel (Detailed)](#method-1-cloudflare-tunnel-detailed)
+4. [Method 2: Kubernetes with cert-manager](#method-2-cloudflare-with-kubernetes-ingress)
+5. [Method 3: Tailscale Private Access](#method-3-tailscale-private-access)
+6. [Security Best Practices](#security-best-practices)
+7. [Troubleshooting](#troubleshooting)
+8. [Quick Reference](#quick-reference)
+
+---
+
+# Quick Start (30 Minutes)
+
+**Fastest way to deploy GodJira with public HTTPS access.**
+
+## Prerequisites Checklist
+
+- [ ] Server with Docker installed (can be Raspberry Pi)
+- [ ] Domain name (buy one for ~$10/year)
+- [ ] Cloudflare account (free)
+- [ ] 30 minutes of time
+
+---
+
+## Step-by-Step (Copy & Paste)
+
+### Step 1: Setup Domain (5 minutes)
+
+1. Buy domain at Namecheap, Cloudflare, Google Domains, etc.
+2. Sign up at cloudflare.com (free plan)
+3. Add your domain to Cloudflare
+4. Update nameservers at your registrar to Cloudflare's
+5. Wait 10-30 minutes for activation
+
+### Step 2: Install GodJira (10 minutes)
+
+```bash
+# Clone repository
+git clone https://github.com/jy05/GodJira.git
+cd GodJira
+
+# Generate secrets
+export POSTGRES_PASSWORD="$(openssl rand -base64 32)"
+export PGADMIN_PASSWORD="$(openssl rand -base64 32)"
+export GRAFANA_PASSWORD="$(openssl rand -base64 32)"
+
+# Configure environment
+cp apps/.env.example apps/.env
+# Edit apps/.env:
+# - Replace JWT_SECRET with: $(openssl rand -base64 64)
+# - Replace JWT_REFRESH_SECRET with: $(openssl rand -base64 64)
+# - Replace ENCRYPTION_KEY with: $(openssl rand -hex 32)
+# - Replace POSTGRES_PASSWORD with your generated password
+
+# Start GodJira
+docker compose -f docker-compose.dev.yml up -d
+
+# Verify it's running
+curl http://localhost:5173
+```
+
+### Step 3: Install Cloudflare Tunnel (5 minutes)
+
+```bash
+# For Linux/Raspberry Pi (AMD64)
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared-linux-amd64.deb
+
+# For Raspberry Pi (ARM64)
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
+sudo mv cloudflared-linux-arm64 /usr/local/bin/cloudflared
+sudo chmod +x /usr/local/bin/cloudflared
+
+# For macOS
+brew install cloudflared
+
+# For Windows (PowerShell as Admin)
+# Download from: https://github.com/cloudflare/cloudflared/releases/latest
+# Move to: C:\Program Files\cloudflared\
+
+# Verify
+cloudflared --version
+```
+
+### Step 4: Configure Tunnel (5 minutes)
+
+```bash
+# Login to Cloudflare (opens browser)
+cloudflared tunnel login
+
+# Create tunnel
+cloudflared tunnel create godjira
+# Save the Tunnel ID shown!
+
+# Create config file
+mkdir -p ~/.cloudflared
+nano ~/.cloudflared/config.yml
+```
+
+Paste this (replace YOUR_TUNNEL_ID and yourdomain.com):
+
+```yaml
+tunnel: godjira
+credentials-file: /home/YOUR_USERNAME/.cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: godjira.yourdomain.com
+    service: http://localhost:5173
+  - hostname: api.godjira.yourdomain.com
+    service: http://localhost:3000
+  - service: http_status:404
+```
+
+```bash
+# Create DNS records
+cloudflared tunnel route dns godjira godjira.yourdomain.com
+cloudflared tunnel route dns godjira api.godjira.yourdomain.com
+```
+
+### Step 5: Update GodJira Config (2 minutes)
+
+```bash
+# Edit apps/.env
+nano apps/.env
+
+# Update these lines:
+FRONTEND_URL=https://godjira.yourdomain.com
+ALLOWED_ORIGINS=https://godjira.yourdomain.com,https://api.godjira.yourdomain.com
+
+# Edit web/.env (if exists)
+nano web/.env
+
+# Update:
+VITE_API_BASE_URL=https://api.godjira.yourdomain.com
+VITE_WS_URL=wss://api.godjira.yourdomain.com
+
+# Restart containers
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### Step 6: Start Tunnel (2 minutes)
+
+```bash
+# Run tunnel (test first)
+cloudflared tunnel run godjira
+
+# Leave this running and test in browser:
+# https://godjira.yourdomain.com
+# HTTPS works automatically!
+
+# If it works, install as service:
+sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+```
+
+### Step 7: Configure Cloudflare Security (3 minutes)
+
+1. Go to Cloudflare Dashboard → Your Domain
+2. **SSL/TLS** → Set to **Full**
+3. **Security** → Enable **WAF** (Web Application Firewall)
+4. **Speed** → Enable **Auto Minify**
+5. Done!
+
+---
+
+## Quick Start Verification
+
+```bash
+# Test HTTPS
+curl -I https://godjira.yourdomain.com
+# Should return: HTTP/2 200, server: cloudflare
+
+# Test API
+curl https://api.godjira.yourdomain.com/health
+
+# Test in browser
+# Visit: https://godjira.yourdomain.com
+# Should load with HTTPS lock icon!
+```
+
+---
+
+## What Just Happened?
+
+```
+Internet Users
+      ↓
+Cloudflare (HTTPS, DDoS protection)
+      ↓
+Cloudflare Tunnel (encrypted)
+      ↓
+Your Server (private IP)
+      ↓
+GodJira (localhost)
+```
+
+1. **GodJira** runs on your local server (localhost:5173, localhost:3000)
+2. **Cloudflare Tunnel** creates encrypted connection to Cloudflare
+3. **Cloudflare** provides:
+   - Free HTTPS certificate (automatic)
+   - DDoS protection
+   - CDN (faster loading globally)
+   - Hides your IP address
+4. **Users** access via `https://godjira.yourdomain.com`
+5. **Your IP** stays completely hidden
+
+---
+
+## Cost Breakdown
+
+| Item | Cost |
+|------|------|
+| Domain name | $10-15/year |
+| Cloudflare account | Free |
+| Cloudflare Tunnel | Free |
+| HTTPS certificate | Free (automatic) |
+| DDoS protection | Free |
+| CDN | Free |
+| **Total** | **~$1/month** |
+
+---
+
+# Deployment Methods Comparison
 
 | Method | Pros | Cons | Best For |
 |--------|------|------|----------|
@@ -20,16 +251,15 @@ This guide shows how to make GodJira publicly accessible using **Cloudflare Tunn
 
 ---
 
-## Method 1: Cloudflare Tunnel (Recommended)
+# Method 1: Cloudflare Tunnel (Detailed)
 
-### Prerequisites
+# Method 1: Cloudflare Tunnel (Detailed)
 
-1. **Domain name** (can buy on Cloudflare, Namecheap, etc.)
-2. **Cloudflare account** (free tier works)
-3. **Domain added to Cloudflare** (change nameservers at your registrar)
-4. **GodJira running** (Docker Compose or Kubernetes)
+This section provides detailed configuration options and advanced setups for Cloudflare Tunnel.
 
-### Architecture
+## Architecture
+
+**Cloudflare Tunnel creates a secure connection from your server to Cloudflare's network:**
 
 ```
 Internet Users
@@ -47,94 +277,15 @@ GodJira (localhost)
 
 ---
 
-## Step-by-Step Setup
+## Detailed Configuration Guide
 
-### Step 1: Add Domain to Cloudflare
+### Advanced Tunnel Configuration
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Click **Add a Site**
-3. Enter your domain (e.g., `yourdomain.com`)
-4. Select **Free plan**
-5. Copy the nameservers provided
-6. Update nameservers at your domain registrar
-7. Wait for activation (5-30 minutes)
+### Advanced Tunnel Configuration
 
-### Step 2: Install Cloudflared
+**Configuration file options for different deployment scenarios:**
 
-#### On Linux (including Raspberry Pi ARM64)
-
-```bash
-# For AMD64/x86_64
-wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-sudo dpkg -i cloudflared-linux-amd64.deb
-
-# For ARM64 (Raspberry Pi 4/5)
-wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
-sudo mv cloudflared-linux-arm64 /usr/local/bin/cloudflared
-sudo chmod +x /usr/local/bin/cloudflared
-
-# Verify installation
-cloudflared --version
-```
-
-#### On Windows (PowerShell as Administrator)
-
-```powershell
-# Download cloudflared
-Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" -OutFile "cloudflared.exe"
-
-# Move to Program Files
-Move-Item cloudflared.exe "C:\Program Files\cloudflared\cloudflared.exe"
-
-# Add to PATH
-$env:Path += ";C:\Program Files\cloudflared"
-
-# Verify
-cloudflared --version
-```
-
-#### On macOS
-
-```bash
-brew install cloudflared
-
-# Verify
-cloudflared --version
-```
-
-### Step 3: Authenticate with Cloudflare
-
-```bash
-# This opens browser for authentication
-cloudflared tunnel login
-
-# Follow the browser prompts to select your domain
-# This creates credentials at ~/.cloudflared/cert.pem
-```
-
-### Step 4: Create Tunnel
-
-```bash
-# Create a tunnel (choose a name)
-cloudflared tunnel create godjira
-
-# This creates credentials at ~/.cloudflared/<TUNNEL-ID>.json
-# Save the Tunnel ID shown in the output
-```
-
-### Step 5: Configure Tunnel
-
-Create tunnel configuration file:
-
-```bash
-# Create config directory if it doesn't exist
-mkdir -p ~/.cloudflared
-
-# Create configuration file
-nano ~/.cloudflared/config.yml
-```
-
-**For Docker Compose Deployment:**
+#### For Docker Compose Deployment:
 
 ```yaml
 # ~/.cloudflared/config.yml
@@ -165,7 +316,7 @@ ingress:
   - service: http_status:404
 ```
 
-**For Kubernetes Deployment:**
+#### For Kubernetes Deployment:
 
 ```yaml
 # ~/.cloudflared/config.yml
@@ -195,34 +346,9 @@ ingress:
 - `yourdomain.com` with your actual domain
 - Port numbers if you changed them
 
-### Step 6: Create DNS Records
+### Production Deployment Options
 
-```bash
-# Create DNS records pointing to your tunnel
-cloudflared tunnel route dns godjira godjira.yourdomain.com
-cloudflared tunnel route dns godjira api.godjira.yourdomain.com
-cloudflared tunnel route dns godjira docs.godjira.yourdomain.com
-cloudflared tunnel route dns godjira metrics.godjira.yourdomain.com
-
-# Verify DNS records in Cloudflare dashboard
-```
-
-### Step 7: Run Tunnel
-
-#### Test Mode (Foreground)
-
-```bash
-# Run in foreground to test
-cloudflared tunnel run godjira
-
-# Leave running and test in browser
-# Visit https://godjira.yourdomain.com
-# HTTPS is automatic - Cloudflare provides the certificate!
-```
-
-#### Production Mode (Background Service)
-
-**Linux (systemd):**
+#### Option 1: Linux Systemd Service
 
 ```bash
 # Install as a service
@@ -246,7 +372,7 @@ sudo systemctl status cloudflared
 sudo journalctl -u cloudflared -f
 ```
 
-**Windows (Task Scheduler):**
+#### Option 2: Windows Task Scheduler
 
 ```powershell
 # Create a scheduled task
@@ -259,7 +385,7 @@ Register-ScheduledTask -TaskName "CloudflaredTunnel" -Action $action -Trigger $t
 Start-ScheduledTask -TaskName "CloudflaredTunnel"
 ```
 
-**Docker (Alternative):**
+#### Option 3: Docker Container
 
 ```yaml
 # Add to docker-compose.dev.yml or docker-compose.prod.yml
@@ -282,9 +408,9 @@ Then run:
 docker compose -f docker-compose.dev.yml up -d cloudflared
 ```
 
-### Step 8: Configure Cloudflare Security
+### Cloudflare Dashboard Configuration
 
-#### Enable Security Features
+#### SSL/TLS Settings
 
 1. Go to Cloudflare Dashboard → Your Domain
 2. **SSL/TLS** → Set to **Full** or **Full (strict)**
@@ -292,7 +418,7 @@ docker compose -f docker-compose.dev.yml up -d cloudflared
 4. **Security** → **DDoS Protection** → Enable (automatic)
 5. **Speed** → **Optimization** → Enable Auto Minify (HTML, CSS, JS)
 
-#### Create Firewall Rules (Optional)
+#### Optional Firewall Rules
 
 ```bash
 # Block specific countries (if needed)
