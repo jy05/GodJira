@@ -65,6 +65,7 @@ GodJira is built on a containerized microservices architecture optimized for Kub
   - [Raspberry Pi & ARM Systems](#raspberry-pi--arm-systems)
 - [Dependencies & Containers](#dependencies--containers)
 - [Configuration](#configuration)
+  - [Public Access with HTTPS](#public-access-with-https)
 - [Monitoring & Observability](#monitoring--observability)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -649,6 +650,8 @@ See [docs/env.md](./docs/env.md) for complete reference.
 
 🌍 **Make GodJira publicly accessible with automatic HTTPS:**
 
+⚡ **Want to deploy in 30 minutes?** → **[Quick Start Guide](./docs/QUICK_START_PUBLIC_HTTPS.md)**
+
 **Cloudflare Tunnel** (Recommended - Free):
 - ✅ Automatic HTTPS certificates
 - ✅ Hides your private IP address
@@ -666,7 +669,9 @@ cloudflared tunnel run godjira
 # Done! Access at https://godjira.yourdomain.com
 ```
 
-📖 **Complete Guide**: [Public Deployment with Cloudflare](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
+📖 **Documentation**:
+- **[Quick Start Guide](./docs/QUICK_START_PUBLIC_HTTPS.md)** - 30-minute deployment
+- **[Complete Guide](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)** - Detailed setup & troubleshooting
 
 Includes:
 - Step-by-step Cloudflare Tunnel setup
@@ -846,8 +851,9 @@ Before deploying to production:
 - [ ] Read [SECURITY.md](./SECURITY.md) completely
 - [ ] Generate unique secrets for production environment
 - [ ] Configure external secret management (Vault, AWS Secrets Manager)
-- [ ] Set up TLS certificates (cert-manager or manual)
-- [ ] Configure ingress with your domain name
+- [ ] **Set up public HTTPS access** - See [PUBLIC_DEPLOYMENT_CLOUDFLARE.md](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
+- [ ] Configure domain name and DNS
+- [ ] Enable Cloudflare DDoS protection and WAF
 - [ ] Set resource limits and requests appropriately
 - [ ] Enable horizontal pod autoscaling
 - [ ] Configure persistent volume backup strategy
@@ -872,6 +878,7 @@ See [LICENSE](./LICENSE) for details.
 
 - 📖 **Documentation**: [docs/](./docs/)
 - 🥧 **Raspberry Pi Guide**: [RASPBERRY_PI_DEPLOYMENT.md](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+- 🌍 **Public HTTPS Deployment**: [PUBLIC_DEPLOYMENT_CLOUDFLARE.md](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/jy05/GodJira/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/jy05/GodJira/discussions)
 - 🔒 **Security**: [SECURITY.md](./SECURITY.md)
