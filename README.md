@@ -1,6 +1,6 @@
 # GodJira - Enterprise Project Management System
 
-⚠️ **SECURITY NOTICE**: Before deploying, read [SECURITY.md](./SECURITY.md) and [SECURITY_QUICK_START.md](./SECURITY_QUICK_START.md) for critical security setup instructions.
+**SECURITY NOTICE**: Before deploying, read [SECURITY.md](./SECURITY.md) and [SECURITY_QUICK_START.md](./SECURITY_QUICK_START.md) for critical security setup instructions.
 
 ## Overview
 
@@ -32,26 +32,26 @@ GodJira is built on a containerized microservices architecture optimized for Kub
 
 ### Production-Ready Features
 
-✅ **Fully Containerized** - All dependencies packaged in Docker images  
-✅ **Kubernetes Native** - StatefulSets, Deployments, Services, and Ingress  
-✅ **Helm Charts** - Simplified deployment and configuration management  
-✅ **Horizontal Scaling** - Stateless API design for auto-scaling  
-✅ **Health Checks** - Liveness and readiness probes  
-✅ **TLS/SSL** - Automatic certificate management with cert-manager  
-✅ **Secret Management** - Integration with external secret stores  
-✅ **Database Migrations** - Automated via Prisma on pod startup  
-✅ **NIST Security Compliance** - Industry-standard authentication and encryption  
-✅ **Zero External Dependencies** - All services run within Kubernetes cluster
+- **Fully Containerized** - All dependencies packaged in Docker images  
+- **Kubernetes Native** - StatefulSets, Deployments, Services, and Ingress  
+- **Helm Charts** - Simplified deployment and configuration management  
+- **Horizontal Scaling** - Stateless API design for auto-scaling  
+- **Health Checks** - Liveness and readiness probes  
+- **TLS/SSL** - Automatic certificate management with cert-manager  
+- **Secret Management** - Integration with external secret stores  
+- **Database Migrations** - Automated via Prisma on pod startup  
+- **NIST Security Compliance** - Industry-standard authentication and encryption  
+- **Zero External Dependencies** - All services run within Kubernetes cluster
 
-## 🔒 Security First
+## Security First
 
 **CRITICAL**: All hardcoded credentials have been removed as of November 27, 2025. You **MUST** set up secure credentials before deploying:
 
-1. 📖 Read [SECURITY.md](./SECURITY.md) - **Required before deployment**
-2. 🚀 Quick Start: [SECURITY_QUICK_START.md](./SECURITY_QUICK_START.md)
-3. 🔐 Generate secure secrets: `.\scripts\generate-secrets.ps1 -All`
-4. 🚫 Never commit `.env` files or secrets to version control
-5. ✅ Verify all placeholder passwords are replaced
+1. Read [SECURITY.md](./SECURITY.md) - **Required before deployment**
+2. Quick Start: [SECURITY_QUICK_START.md](./SECURITY_QUICK_START.md)
+3. Generate secure secrets: `.\scripts\generate-secrets.ps1 -All`
+4. Never commit `.env` files or secrets to version control
+5. Verify all placeholder passwords are replaced
 
 ## Table of Contents
 
@@ -165,11 +165,11 @@ Write-Host "Please restart your computer to complete the installation"
 
 ### Multi-Architecture Support
 
-🌍 **GodJira supports multiple CPU architectures:**
+**GodJira supports multiple CPU architectures:**
 
-- ✅ **AMD64/x86_64** - Intel/AMD processors (standard servers, desktops)
-- ✅ **ARM64/aarch64** - Raspberry Pi, Apple Silicon, AWS Graviton
-- ✅ **Automatic selection** - Docker pulls the correct image for your system
+- **AMD64/x86_64** - Intel/AMD processors (standard servers, desktops)
+- **ARM64/aarch64** - Raspberry Pi, Apple Silicon, AWS Graviton
+- **Automatic selection** - Docker pulls the correct image for your system
 
 All official images support ARM64 natively:
 - `postgres:15-alpine` - Multi-arch official image
@@ -197,20 +197,20 @@ GodJira uses a fully containerized architecture where **every service runs in it
 ### Container Contents
 
 #### API Backend Container (`apps/Dockerfile`)
-- ✅ Node.js 20 runtime
-- ✅ NestJS framework
-- ✅ Prisma Client (auto-generated)
-- ✅ TypeScript compiled artifacts
-- ✅ All npm dependencies bundled
-- ✅ Database migration scripts
-- ✅ Health check endpoints
+- Node.js 20 runtime
+- NestJS framework
+- Prisma Client (auto-generated)
+- TypeScript compiled artifacts
+- All npm dependencies bundled
+- Database migration scripts
+- Health check endpoints
 
 #### Frontend Container (`web/Dockerfile`)
-- ✅ Vite-built static assets
-- ✅ Nginx web server
-- ✅ Optimized for production (gzip, caching)
-- ✅ SPA routing configuration
-- ✅ Health check endpoint
+- Vite-built static assets
+- Nginx web server
+- Optimized for production (gzip, caching)
+- SPA routing configuration
+- Health check endpoint
 
 ### Persistent Storage
 
@@ -229,26 +229,26 @@ All other services are **stateless** and can be scaled horizontally.
 
 Choose the appropriate method for your environment:
 
-- 🔧 **Development**: Docker Compose (quick local setup)
-- 🚀 **Production**: Kubernetes with Helm (recommended)
-- ⚙️ **Production**: Kubernetes with raw manifests (advanced)
-- 🥧 **Raspberry Pi / ARM**: See [Raspberry Pi Deployment Guide](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+- **Development**: Docker Compose (quick local setup)
+- **Production**: Kubernetes with Helm (recommended)
+- **Production**: Kubernetes with raw manifests (advanced)
+- **Raspberry Pi / ARM**: See [Raspberry Pi Deployment Guide](./docs/RASPBERRY_PI_DEPLOYMENT.md)
 
 ### System Portability
 
-✅ **GodJira is 100% containerized and portable!**
+**GodJira is 100% containerized and portable!**
 
 Run on **ANY** platform with Docker/Kubernetes:
 
 | Platform | Architecture | Status |
 |----------|-------------|--------|
-| 🥧 **Raspberry Pi 4/5** | ARM64 | ✅ Full Support |
-| 🐧 **Linux** | AMD64/ARM64 | ✅ Production Ready |
-| 🪟 **Windows** | AMD64 | ✅ Docker Desktop |
-| 🍎 **macOS (Intel)** | AMD64 | ✅ Docker Desktop |
-| 🍎 **macOS (Apple Silicon)** | ARM64 | ✅ Native Support |
-| ☁️ **AWS/Azure/GCP** | AMD64 | ✅ Cloud Ready |
-| 🔶 **Orange Pi / Rock Pi** | ARM64 | ✅ Compatible |
+| **Raspberry Pi 4/5** | ARM64 | Full Support |
+| **Linux** | AMD64/ARM64 | Production Ready |
+| **Windows** | AMD64 | Docker Desktop |
+| **macOS (Intel)** | AMD64 | Docker Desktop |
+| **macOS (Apple Silicon)** | ARM64 | Native Support |
+| **AWS/Azure/GCP** | AMD64 | Cloud Ready |
+| **Orange Pi / Rock Pi** | ARM64 | Compatible |
 
 **All dependencies are containerized** - no external software installation required beyond Docker/Kubernetes!
 
@@ -648,17 +648,17 @@ See [docs/env.md](./docs/env.md) for complete reference.
 
 ### Public Access with HTTPS
 
-🌍 **Make GodJira publicly accessible with automatic HTTPS:**
+**Make GodJira publicly accessible with automatic HTTPS:**
 
-⚡ **Want to deploy in 30 minutes?** → **[Quick Start Guide](./docs/QUICK_START_PUBLIC_HTTPS.md)**
+**Want to deploy in 30 minutes?** - **[Quick Start Guide](./docs/QUICK_START_PUBLIC_HTTPS.md)**
 
 **Cloudflare Tunnel** (Recommended - Free):
-- ✅ Automatic HTTPS certificates
-- ✅ Hides your private IP address
-- ✅ No port forwarding needed
-- ✅ DDoS protection included
-- ✅ Works behind NAT/firewall
-- ✅ Perfect for Raspberry Pi and home servers
+- Automatic HTTPS certificates
+- Hides your private IP address
+- No port forwarding needed
+- DDoS protection included
+- Works behind NAT/firewall
+- Perfect for Raspberry Pi and home servers
 
 ```bash
 # Quick setup
@@ -669,7 +669,7 @@ cloudflared tunnel run godjira
 # Done! Access at https://godjira.yourdomain.com
 ```
 
-📖 **Documentation**:
+**Documentation**:
 - **[Quick Start Guide](./docs/QUICK_START_PUBLIC_HTTPS.md)** - 30-minute deployment
 - **[Complete Guide](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)** - Detailed setup & troubleshooting
 
@@ -876,15 +876,15 @@ See [LICENSE](./LICENSE) for details.
 
 ## Support
 
-- 📖 **Documentation**: [docs/](./docs/)
-- 🥧 **Raspberry Pi Guide**: [RASPBERRY_PI_DEPLOYMENT.md](./docs/RASPBERRY_PI_DEPLOYMENT.md)
-- 🌍 **Public HTTPS Deployment**: [PUBLIC_DEPLOYMENT_CLOUDFLARE.md](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/jy05/GodJira/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/jy05/GodJira/discussions)
-- 🔒 **Security**: [SECURITY.md](./SECURITY.md)
+- **Documentation**: [docs/](./docs/)
+- **Raspberry Pi Guide**: [RASPBERRY_PI_DEPLOYMENT.md](./docs/RASPBERRY_PI_DEPLOYMENT.md)
+- **Public HTTPS Deployment**: [PUBLIC_DEPLOYMENT_CLOUDFLARE.md](./docs/PUBLIC_DEPLOYMENT_CLOUDFLARE.md)
+- **Issues**: [GitHub Issues](https://github.com/jy05/GodJira/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jy05/GodJira/discussions)
+- **Security**: [SECURITY.md](./SECURITY.md)
 
 ---
 
 **Last Updated**: November 27, 2025  
 **Version**: 2.0.0  
-**Status**: Production Ready ✅
+**Status**: Production Ready
