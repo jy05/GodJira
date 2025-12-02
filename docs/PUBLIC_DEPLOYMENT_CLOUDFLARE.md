@@ -429,7 +429,7 @@ docker compose -f docker-compose.dev.yml up -d cloudflared
 # Example: Limit login attempts to 5 per minute
 ```
 
-#### Enable Zero Trust (Recommended)
+#### Optional Zero Trust Protection
 
 ```bash
 # Protect admin areas with Cloudflare Access
@@ -442,9 +442,7 @@ docker compose -f docker-compose.dev.yml up -d cloudflared
 # - Policy: Email with your domain
 ```
 
-### Step 9: Update GodJira Configuration
-
-Update your `.env` files to use your public domain:
+### Update GodJira for Public Access
 
 ```bash
 # apps/.env
@@ -462,7 +460,7 @@ docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-### Step 10: Test Your Deployment
+### Testing Your Deployment
 
 ```bash
 # Test HTTPS (should work automatically)
@@ -482,7 +480,7 @@ curl https://api.godjira.yourdomain.com/health
 
 ---
 
-## Method 2: Cloudflare with Kubernetes Ingress
+# Method 2: Cloudflare with Kubernetes Ingress
 
 For Kubernetes clusters with a public IP/LoadBalancer.
 
@@ -619,7 +617,7 @@ kubectl describe certificate godjira-tls -n godjira
 
 ---
 
-## Method 3: Tailscale (Private Access)
+# Method 3: Tailscale (Private Access)
 
 For secure private access without exposing to public internet.
 
@@ -641,7 +639,7 @@ sudo tailscale cert godjira.YOUR-TAILNET.ts.net
 
 ---
 
-## Security Best Practices
+# Security Best Practices
 
 ### 1. Enable Cloudflare WAF Rules
 
@@ -693,7 +691,9 @@ API_URL=https://api.godjira.yourdomain.com
 
 ---
 
-## Troubleshooting
+# Troubleshooting
+
+## Common Issues
 
 ### Tunnel Not Connecting
 
