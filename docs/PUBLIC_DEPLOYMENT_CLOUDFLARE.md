@@ -748,19 +748,9 @@ ingress:
 
 ---
 
-## Cost Breakdown
+# Complete Setup Example
 
-| Service | Cost | What You Get |
-|---------|------|--------------|
-| Cloudflare Free | $0/month | Tunnel, HTTPS, DDoS protection, CDN |
-| Domain Name | $10-15/year | Your custom domain |
-| **Total** | **~$1/month** | Professional setup with HTTPS |
-
-**No additional costs** - Cloudflare Tunnel is free forever!
-
----
-
-## Complete Setup Example
+**Complete copy-paste example for quick deployment:**
 
 ```bash
 # 1. Install cloudflared
@@ -807,7 +797,7 @@ cloudflared tunnel run godjira
 
 # 9. Test in browser
 # Visit: https://godjira.yourdomain.com
-# HTTPS works automatically! 🎉
+# HTTPS works automatically!
 
 # 10. Install as service (optional)
 sudo cloudflared service install
@@ -817,7 +807,7 @@ sudo systemctl start cloudflared
 
 ---
 
-## Quick Reference
+# Quick Reference
 
 ### Tunnel Commands
 
